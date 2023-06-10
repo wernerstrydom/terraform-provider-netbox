@@ -157,6 +157,8 @@ func (n *netboxProvider) Configure(
 func (n *netboxProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
     return []func() datasource.DataSource{
         NewSitesDataSource,
+        NewPrefixDataSource,
+
     }
 }
 
