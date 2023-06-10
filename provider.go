@@ -11,6 +11,7 @@ import (
     "github.com/hashicorp/terraform-plugin-framework/provider/schema"
     "github.com/hashicorp/terraform-plugin-framework/resource"
     "github.com/hashicorp/terraform-plugin-framework/types"
+    "github.com/hashicorp/terraform-plugin-log/tflog"
 
     "github.com/netbox-community/go-netbox/v3/netbox"
 )
@@ -68,18 +69,17 @@ func (n *netboxProvider) Configure(
     request provider.ConfigureRequest,
     response *provider.ConfigureResponse,
 ) {
-    req := request
-    resp := response
+    tflog.Info(ctx, "Configuring HashiCups client")
 
     var config netboxProviderModel
-    diags := req.Config.Get(ctx, &config)
-    resp.Diagnostics.Append(diags...)
-    if resp.Diagnostics.HasError() {
+    diags := request.Config.Get(ctx, &config)
+    response.Diagnostics.Append(diags...)
+    if response.Diagnostics.HasError() {
         return
     }
 
     if config.ServerURL.IsUnknown() {
-        resp.Diagnostics.AddAttributeError(
+        response.Diagnostics.AddAttributeError(
             path.Root("server_url"),
             "Unknown Netbox API Server URL",
             "The provider cannot create the Netbox API client as there is an unknown configuration value for the Netbox API serverUrl. "+
@@ -88,7 +88,7 @@ func (n *netboxProvider) Configure(
     }
 
     if config.Token.IsUnknown() {
-        resp.Diagnostics.AddAttributeError(
+        response.Diagnostics.AddAttributeError(
             path.Root("api_token"),
             "Unknown Netbox API Token",
             "The provider cannot create the Netbox API client as there is an unknown configuration value for the Netbox API token. "+
@@ -96,7 +96,7 @@ func (n *netboxProvider) Configure(
         )
     }
 
-    if resp.Diagnostics.HasError() {
+    if response.Diagnostics.HasError() {
         return
     }
 
@@ -115,7 +115,7 @@ func (n *netboxProvider) Configure(
     // errors with provider-specific guidance.
 
     if serverUrl == "" {
-        resp.Diagnostics.AddAttributeError(
+        response.Diagnostics.AddAttributeError(
             path.Root("serverUrl"),
             "Missing Netbox API ServerURL",
             "The provider cannot create the Netbox API client as there is a missing or empty value for the Netbox API serverUrl. "+
@@ -125,7 +125,7 @@ func (n *netboxProvider) Configure(
     }
 
     if token == "" {
-        resp.Diagnostics.AddAttributeError(
+        response.Diagnostics.AddAttributeError(
             path.Root("token"),
             "Missing Netbox API Token",
             "The provider cannot create the Netbox API client as there is a missing or empty value for the Netbox API token. "+
@@ -136,7 +136,7 @@ func (n *netboxProvider) Configure(
 
     u, err := url.Parse(serverUrl)
     if err != nil {
-        resp.Diagnostics.AddError(
+        response.Diagnostics.AddError(
             "Invalid Netbox API ServerURL",
             "The provider cannot create the Netbox API client as the Netbox API serverUrl is invalid. "+
                 "Set the serverUrl value in the configuration or use the NETBOX_SERVER_URL environment variable. "+
@@ -144,14 +144,21 @@ func (n *netboxProvider) Configure(
         )
     }
 
-    if resp.Diagnostics.HasError() {
+    if response.Diagnostics.HasError() {
         return
     }
 
+    ctx = tflog.SetField(ctx, "netbox_url", serverUrl)
+    ctx = tflog.SetField(ctx, "netbox_token", token)
+    ctx = tflog.MaskFieldValuesWithFieldKeys(ctx, "netbox_token")
+    tflog.Debug(ctx, "Creating Netbox client")
+
     client := netbox.NewNetboxWithAPIKey(u.Host, token)
 
-    resp.DataSourceData = client
-    resp.ResourceData = client
+    response.DataSourceData = client
+    response.ResourceData = client
+
+    tflog.Info(ctx, "Configured Netbox client", map[string]any{"success": true})
 }
 
 func (n *netboxProvider) DataSources(ctx context.Context) []func() datasource.DataSource {

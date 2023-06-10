@@ -144,14 +144,19 @@ func (d *prefixDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 }
 
 // Read refreshes the Terraform state with the latest data.
-func (d *prefixDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *prefixDataSource) Read(
+    ctx context.Context,
+    request datasource.ReadRequest,
+    response *datasource.ReadResponse,
+) {
     var state prefixModel
+    response.Diagnostics.Append(request.Config.Get(ctx, &state)...)
 
-    params := ipam.NewIpamPrefixesReadParams().WithID(197)
+    params := ipam.NewIpamPrefixesReadParams().WithID(state.ID.ValueInt64())
 
     output, err := d.client.Ipam.IpamPrefixesRead(params, nil)
     if err != nil {
-        resp.Diagnostics.AddError(
+        response.Diagnostics.AddError(
             "Unable to read prefix",
             fmt.Sprintf("Unable to read prefix: %s", err),
         )
@@ -192,9 +197,9 @@ func (d *prefixDataSource) Read(ctx context.Context, req datasource.ReadRequest,
         state.Family = types.StringPointerValue(output.Payload.Family.Label)
     }
 
-    diags := resp.State.Set(ctx, state)
-    resp.Diagnostics.Append(diags...)
-    if resp.Diagnostics.HasError() {
+    diags := response.State.Set(ctx, state)
+    response.Diagnostics.Append(diags...)
+    if response.Diagnostics.HasError() {
         return
     }
 }
