@@ -6,28 +6,9 @@ import (
 
     "github.com/hashicorp/terraform-plugin-framework/datasource"
     "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-    "github.com/hashicorp/terraform-plugin-framework/types"
     "github.com/netbox-community/go-netbox/v3/netbox/client"
     "github.com/netbox-community/go-netbox/v3/netbox/client/ipam"
 )
-
-// coffeesModel maps coffees schema data.
-type prefixModel struct {
-    Comments     types.String `tfsdk:"comments"`
-    Description  types.String `tfsdk:"description"`
-    Display      types.String `tfsdk:"display"`
-    Family       types.String `tfsdk:"family"`
-    ID           types.Int64  `tfsdk:"id"`
-    IsPool       types.Bool   `tfsdk:"is_pool"`
-    MarkUtilized types.Bool   `tfsdk:"mark_utilized"`
-    Prefix       types.String `tfsdk:"prefix"`
-    Status       types.String `tfsdk:"status"`
-    Role         types.Int64  `tfsdk:"role_id"`
-    Site         types.Int64  `tfsdk:"site_id"`
-    Tenant       types.Int64  `tfsdk:"tenant_id"`
-    Vlan         types.Int64  `tfsdk:"vlan_id"`
-    Vrf          types.Int64  `tfsdk:"vrf_id"`
-}
 
 // Ensure the implementation satisfies the expected interfaces.
 var (
@@ -164,38 +145,7 @@ func (d *prefixDataSource) Read(
         return
     }
 
-    state.Comments = types.StringValue(output.Payload.Comments)
-    state.Description = types.StringValue(output.Payload.Description)
-    state.Display = types.StringValue(output.Payload.Display)
-    state.ID = types.Int64Value(output.Payload.ID)
-    state.IsPool = types.BoolValue(output.Payload.IsPool)
-    state.MarkUtilized = types.BoolValue(output.Payload.MarkUtilized)
-    state.Prefix = types.StringPointerValue(output.Payload.Prefix)
-    if output.Payload.Role != nil {
-        state.Role = types.Int64Value(output.Payload.Role.ID)
-    }
-
-    if output.Payload.Site != nil {
-        state.Site = types.Int64Value(output.Payload.Site.ID)
-    }
-
-    if output.Payload.Status != nil {
-        state.Status = types.StringPointerValue(output.Payload.Status.Value)
-    }
-
-    if output.Payload.Tenant != nil {
-        state.Tenant = types.Int64Value(output.Payload.Tenant.ID)
-    }
-    if output.Payload.Vlan != nil {
-        state.Vlan = types.Int64Value(output.Payload.Vlan.ID)
-    }
-    if output.Payload.Vrf != nil {
-        state.Vrf = types.Int64Value(output.Payload.Vrf.ID)
-    }
-
-    if output.Payload.Family != nil {
-        state.Family = types.StringPointerValue(output.Payload.Family.Label)
-    }
+    state.Update(ctx, output.Payload)
 
     diags := response.State.Set(ctx, state)
     response.Diagnostics.Append(diags...)
