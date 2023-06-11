@@ -2,6 +2,7 @@ package main
 
 import (
     "context"
+    "strconv"
 
     "github.com/hashicorp/terraform-plugin-framework/types"
     "github.com/netbox-community/go-netbox/v3/netbox/models"
@@ -13,7 +14,7 @@ type prefixModel struct {
     Description  types.String `tfsdk:"description"`
     Display      types.String `tfsdk:"display"`
     Family       types.String `tfsdk:"family"`
-    ID           types.Int64  `tfsdk:"id"`
+    ID           types.String `tfsdk:"id"`
     IsPool       types.Bool   `tfsdk:"is_pool"`
     MarkUtilized types.Bool   `tfsdk:"mark_utilized"`
     Prefix       types.String `tfsdk:"prefix"`
@@ -61,7 +62,10 @@ func (m *prefixModel) Update(ctx context.Context, payload *models.Prefix) {
     m.Comments = types.StringValue(comments)
     m.Description = types.StringValue(description)
     m.Display = types.StringValue(display)
-    m.ID = types.Int64Value(id)
+
+    idString := strconv.FormatInt(id, 10)
+
+    m.ID = types.StringValue(idString)
     m.IsPool = types.BoolValue(isPool)
     m.MarkUtilized = types.BoolValue(markUtilized)
     m.Prefix = types.StringPointerValue(prefix)

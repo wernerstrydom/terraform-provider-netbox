@@ -80,7 +80,7 @@ func (d *prefixDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
                 Optional: true,
                 Computed: true,
             },
-            "id": schema.Int64Attribute{
+            "id": schema.StringAttribute{
                 Optional: true,
                 Computed: true,
             },
@@ -133,7 +133,28 @@ func (d *prefixDataSource) Read(
     var state prefixModel
     response.Diagnostics.Append(request.Config.Get(ctx, &state)...)
 
-    params := ipam.NewIpamPrefixesReadParams().WithID(state.ID.ValueInt64())
+    idString := state.ID.String()
+    if idString == "" {
+        response.Diagnostics.AddError(
+            "Unable to read prefix",
+            fmt.Sprintf("Unable to read prefix: %s", "ID is empty"),
+        )
+
+        return
+    }
+
+    var id int64
+    _, err := fmt.Sscanf(idString, "%d", &id)
+    if err != nil {
+        response.Diagnostics.AddError(
+            "Unable to read prefix",
+            fmt.Sprintf("Unable to parse id: %s", err),
+        )
+
+        return
+    }
+
+    params := ipam.NewIpamPrefixesReadParams().WithID(id)
 
     output, err := d.client.Ipam.IpamPrefixesRead(params, nil)
     if err != nil {

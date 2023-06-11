@@ -4,7 +4,9 @@ import (
     "context"
     "errors"
     "net/http"
+    "strconv"
 
+    "github.com/hashicorp/terraform-plugin-framework/path"
     "github.com/hashicorp/terraform-plugin-framework/resource"
     "github.com/hashicorp/terraform-plugin-framework/resource/schema"
     "github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -13,7 +15,6 @@ import (
     "github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
     "github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
     "github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-    "github.com/hashicorp/terraform-plugin-framework/types"
     "github.com/netbox-community/go-netbox/v3/netbox/client"
     "github.com/netbox-community/go-netbox/v3/netbox/client/ipam"
     "github.com/netbox-community/go-netbox/v3/netbox/models"
@@ -21,8 +22,9 @@ import (
 
 // Ensure the implementation satisfies the expected interfaces.
 var (
-    _ resource.Resource              = &prefixResource{}
-    _ resource.ResourceWithConfigure = &prefixResource{}
+    _ resource.Resource                = &prefixResource{}
+    _ resource.ResourceWithConfigure   = &prefixResource{}
+    _ resource.ResourceWithImportState = &prefixResource{}
 )
 
 // NewPrefixResource is a helper function to simplify the provider implementation.
@@ -100,10 +102,10 @@ func (p *prefixResource) Schema(
                     stringplanmodifier.UseStateForUnknown(),
                 },
             },
-            "id": schema.Int64Attribute{
+            "id": schema.StringAttribute{
                 Computed: true,
-                PlanModifiers: []planmodifier.Int64{
-                    int64planmodifier.UseStateForUnknown(),
+                PlanModifiers: []planmodifier.String{
+                    stringplanmodifier.UseStateForUnknown(),
                 },
             },
             "is_pool": schema.BoolAttribute{
@@ -240,8 +242,24 @@ func (p *prefixResource) Read(ctx context.Context, request resource.ReadRequest,
         return
     }
 
+    idString := plan.ID.ValueString()
+    if idString == "" {
+        response.State.RemoveResource(ctx)
+        return
+    }
+
+    id, err := strconv.ParseInt(idString, 10, 64)
+    if err != nil {
+        response.Diagnostics.AddError(
+            "Unable to parse prefix id",
+            err.Error(),
+        )
+        return
+    }
+
     params := ipam.NewIpamPrefixesReadParams()
-    params.ID = plan.ID.ValueInt64()
+    params.ID = id
+
     output, err := p.client.Ipam.IpamPrefixesRead(params, nil)
     if err != nil {
         var apiErr *ipam.IpamPrefixesReadDefault
@@ -264,34 +282,8 @@ func (p *prefixResource) Read(ctx context.Context, request resource.ReadRequest,
         return
     }
 
-    plan.ID = types.Int64Value(output.Payload.ID)
-    if output.Payload.Family != nil {
-        plan.Family = types.StringPointerValue(output.Payload.Family.Label)
-    }
-    plan.Prefix = types.StringPointerValue(output.Payload.Prefix)
-    plan.Description = types.StringValue(output.Payload.Description)
-    plan.Comments = types.StringValue(output.Payload.Comments)
-    plan.Display = types.StringValue(output.Payload.Display)
-    plan.IsPool = types.BoolValue(output.Payload.IsPool)
-    plan.MarkUtilized = types.BoolValue(output.Payload.MarkUtilized)
-    if output.Payload.Status != nil {
-        plan.Status = types.StringPointerValue(output.Payload.Status.Value)
-    }
-    if output.Payload.Tenant != nil {
-        plan.Tenant = types.Int64Value(output.Payload.Tenant.ID)
-    }
-    if output.Payload.Site != nil {
-        plan.Site = types.Int64Value(output.Payload.Site.ID)
-    }
-    if output.Payload.Vrf != nil {
-        plan.Vrf = types.Int64Value(output.Payload.Vrf.ID)
-    }
-    if output.Payload.Vlan != nil {
-        plan.Vlan = types.Int64Value(output.Payload.Vlan.ID)
-    }
-    if output.Payload.Role != nil {
-        plan.Role = types.Int64Value(output.Payload.Role.ID)
-    }
+    payload := output.Payload
+    plan.Update(ctx, payload)
 
     diags = response.State.Set(ctx, &plan)
     response.Diagnostics.Append(diags...)
@@ -313,13 +305,22 @@ func (p *prefixResource) Update(
         return
     }
 
+    id, err := strconv.ParseInt(plan.ID.ValueString(), 10, 64)
+    if err != nil {
+        response.Diagnostics.AddError(
+            "Unable to parse prefix id",
+            err.Error(),
+        )
+        return
+    }
+
     params := ipam.NewIpamPrefixesUpdateParams()
-    params.ID = plan.ID.ValueInt64()
+    params.ID = id
     params.Data = &models.WritablePrefix{
         Comments:     plan.Comments.ValueString(),
         Description:  plan.Display.ValueString(),
         Display:      plan.Display.ValueString(),
-        ID:           plan.ID.ValueInt64(),
+        ID:           id,
         IsPool:       plan.IsPool.ValueBool(),
         MarkUtilized: plan.MarkUtilized.ValueBool(),
         Prefix:       plan.Prefix.ValueStringPointer(),
@@ -340,34 +341,8 @@ func (p *prefixResource) Update(
         return
     }
 
-    plan.ID = types.Int64Value(output.Payload.ID)
-    if output.Payload.Family != nil {
-        plan.Family = types.StringPointerValue(output.Payload.Family.Label)
-    }
-    plan.Prefix = types.StringPointerValue(output.Payload.Prefix)
-    plan.Description = types.StringValue(output.Payload.Description)
-    plan.Comments = types.StringValue(output.Payload.Comments)
-    plan.Display = types.StringValue(output.Payload.Display)
-    plan.IsPool = types.BoolValue(output.Payload.IsPool)
-    plan.MarkUtilized = types.BoolValue(output.Payload.MarkUtilized)
-    if output.Payload.Status != nil {
-        plan.Status = types.StringPointerValue(output.Payload.Status.Value)
-    }
-    if output.Payload.Tenant != nil {
-        plan.Tenant = types.Int64Value(output.Payload.Tenant.ID)
-    }
-    if output.Payload.Site != nil {
-        plan.Site = types.Int64Value(output.Payload.Site.ID)
-    }
-    if output.Payload.Vrf != nil {
-        plan.Vrf = types.Int64Value(output.Payload.Vrf.ID)
-    }
-    if output.Payload.Vlan != nil {
-        plan.Vlan = types.Int64Value(output.Payload.Vlan.ID)
-    }
-    if output.Payload.Role != nil {
-        plan.Role = types.Int64Value(output.Payload.Role.ID)
-    }
+    payload := output.Payload
+    plan.Update(ctx, payload)
 
     diags = response.State.Set(ctx, &plan)
     response.Diagnostics.Append(diags...)
@@ -388,10 +363,19 @@ func (p *prefixResource) Delete(
         return
     }
 
-    params := ipam.NewIpamPrefixesDeleteParams()
-    params.ID = plan.ID.ValueInt64()
+    id, err := strconv.ParseInt(plan.ID.ValueString(), 10, 64)
+    if err != nil {
+        response.Diagnostics.AddError(
+            "Unable to parse prefix id",
+            err.Error(),
+        )
+        return
+    }
 
-    _, err := p.client.Ipam.IpamPrefixesDelete(params, nil)
+    params := ipam.NewIpamPrefixesDeleteParams()
+    params.ID = id
+
+    _, err = p.client.Ipam.IpamPrefixesDelete(params, nil)
     if err != nil {
         var apiErr *ipam.IpamPrefixesDeleteDefault
         if errors.As(err, &apiErr) {
@@ -405,4 +389,12 @@ func (p *prefixResource) Delete(
         )
         return
     }
+}
+
+func (p *prefixResource) ImportState(
+    ctx context.Context,
+    request resource.ImportStateRequest,
+    response *resource.ImportStateResponse,
+) {
+    resource.ImportStatePassthroughID(ctx, path.Root("id"), request, response)
 }
