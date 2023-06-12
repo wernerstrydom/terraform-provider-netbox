@@ -65,19 +65,19 @@ func (d *prefixDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
     response.Schema = schema.Schema{
         Attributes: map[string]schema.Attribute{
             "comments": schema.StringAttribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "description": schema.StringAttribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "display": schema.StringAttribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "family": schema.StringAttribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "id": schema.StringAttribute{
@@ -85,39 +85,39 @@ func (d *prefixDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
                 Computed: true,
             },
             "is_pool": schema.BoolAttribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "mark_utilized": schema.BoolAttribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "prefix": schema.StringAttribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "role_id": schema.Int64Attribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "site_id": schema.Int64Attribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "status": schema.StringAttribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "tenant_id": schema.Int64Attribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "vlan_id": schema.Int64Attribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
             "vrf_id": schema.Int64Attribute{
-                Optional: true,
+                // Optional: true,
                 Computed: true,
             },
         },
