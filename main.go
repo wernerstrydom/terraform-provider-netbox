@@ -6,6 +6,8 @@ import (
     "log"
 
     "github.com/hashicorp/terraform-plugin-framework/providerserver"
+
+    "terraform-provider-netbox/internal/provider"
 )
 
 // Formats terraform files
@@ -29,7 +31,7 @@ func main() {
         Debug:   debug,
     }
 
-    err := providerserver.Serve(context.Background(), New(version), opts)
+    err := providerserver.Serve(context.Background(), provider.New(version), opts)
 
     if err != nil {
         log.Fatal(err.Error())
