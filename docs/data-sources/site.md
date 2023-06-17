@@ -50,4 +50,5 @@ data "netbox_site" "this" {
 - `tag_ids` (Set of Number) The tags assigned to this site.
 - `tenant_id` (Number) The tenant to which the site belongs, if any.
 - `timezone` (String) IANA timezone for the site, if any.
+- `virtual_machine_count` (Number) Number of virtual machines at this site.
 - `vlan_count` (Number) Number of VLANs assigned to this site.
