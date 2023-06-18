@@ -1,0 +1,20 @@
+services:
+  ipam:
+    name: IPAM
+    description: IP Address Management
+    resources:
+      prefix:
+        name: Prefix
+        description: IP Prefix
+  dcim:
+    name: DCIM
+    description: Datacenter Infrastructure Management
+    resources:
+      site:
+        name: Site
+        description: A site will equate to a building or campus, or a branch location.
+        attributes:
+
+
+
+

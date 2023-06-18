@@ -285,8 +285,6 @@ func (d *siteDataSource) Read(
     state.VlanCount = types.Int64Value(payload.VlanCount)
     state.VirtualMachineCount = types.Int64Value(payload.VirtualmachineCount)
 
-    response.State.Set(ctx, site)
-
     diags := response.State.Set(ctx, state)
     response.Diagnostics.Append(diags...)
     if response.Diagnostics.HasError() {
