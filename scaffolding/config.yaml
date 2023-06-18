@@ -1,0 +1,53 @@
+services:
+    dcim:
+        name: dcim
+        description: Data Center Infrastructure Management
+        resources:
+            site:
+                name: site
+                plural: sites
+                description: A site represents a logical grouping of devices, typically by physical location or purpose. For example, a site might be a data center, an office building, or a distributed network of servers.
+                attributes:
+                    id:
+                        name: ID
+                        description: The unique numeric ID of the site.
+                        type: int64
+                        key: true
+                    name:
+                        name: Name
+                        description: The name of the site.
+                        value: Test Site
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                    slug:
+                        name: Slug
+                        description: A unique slug identifier for the site.
+                        value: test-site
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                        pattern: ^[-a-zA-Z0-9_]+$
+    ipam:
+        name: ipam
+        description: IP Address Management
+        resources:
+            prefix:
+                name: prefix
+                plural: prefixes
+                description: A prefix represents an assignable range of IP addresses
+                attributes:
+                    id:
+                        name: ID
+                        description: The unique numeric ID of the prefix.
+                        value: "123"
+                        type: int64
+                        key: true
+                    prefix:
+                        name: Prefix
+                        description: The prefix address in CIDR notation.
+                        value: 10.0.0.0/24
+                        type: string
+                        maxLength: 43
+                        minLength: 1
+                        pattern: ^[0-9a-fA-F.:]+/[0-9]+$
