@@ -112,6 +112,8 @@ func Generate() {
         },
     }
 
+    var path string
+    var err error
     for serviceKey, service := range c.Services {
         for resourceKey, resource := range service.Resources {
 
@@ -120,8 +122,14 @@ func Generate() {
                 Resource:       resource,
             }
 
-            path := filepath.Join("generated", "internal", serviceKey, resourceKey+"_resource_gen.go")
-            err := writeTemplate(path, resourceTemplate, data)
+            path = filepath.Join("generated", "internal", serviceKey, resourceKey+"_resource_gen.go")
+            err = writeTemplate(path, resourceTemplate, data)
+            if err != nil {
+                fmt.Println(err)
+            }
+
+            path = filepath.Join("generated", "internal", serviceKey, resourceKey+"_data_source_gen.go")
+            err = writeTemplate(path, datasourceTemplate, data)
             if err != nil {
                 fmt.Println(err)
             }
