@@ -13,6 +13,15 @@ import (
     "github.com/iancoleman/strcase"
 )
 
+//go:embed datasource.tmpl
+var datasourceTemplate string
+
+//go:embed datasources.tmpl
+var datasourcesTemplate string
+
+//go:embed resource.tmpl
+var resourceTemplate string
+
 type Configuration struct {
     Services map[string]Service
 }
@@ -34,12 +43,6 @@ type TemplateData struct {
     ServicePackage string
     Resource       Resource
 }
-
-//go:embed datasource.tmpl
-var datasourceTemplate string
-
-//go:embed resource.tmpl
-var resourceTemplate string
 
 var funcMap = template.FuncMap{
     "lower":      strings.ToLower,
@@ -72,7 +75,7 @@ func (a Attribute) IsRequired() bool {
     return !a.ReadOnly && !a.IsKey && a.MinLength > 0
 }
 
-func Generate() {
+func Generate(outputPath string) error {
     c := Configuration{
         Services: map[string]Service{
             "dcim": {
@@ -115,33 +118,48 @@ func Generate() {
     var path string
     var err error
     for serviceKey, service := range c.Services {
-        for resourceKey, resource := range service.Resources {
+        for _, resource := range service.Resources {
 
             data := TemplateData{
                 ServicePackage: serviceKey,
                 Resource:       resource,
             }
 
-            path = filepath.Join("generated", "internal", serviceKey, resourceKey+"_resource_gen.go")
+            path = filepath.Join(
+                outputPath,
+                "internal",
+                serviceKey,
+                strcase.ToSnake(resource.Name)+"_resource_gen.go",
+            )
             err = writeTemplate(path, resourceTemplate, data)
             if err != nil {
-                fmt.Println(err)
+                return err
             }
 
-            path = filepath.Join("generated", "internal", serviceKey, resourceKey+"_data_source_gen.go")
+            path = filepath.Join(
+                outputPath,
+                "internal",
+                serviceKey,
+                strcase.ToSnake(resource.Name)+"_data_source_gen.go",
+            )
             err = writeTemplate(path, datasourceTemplate, data)
             if err != nil {
-                fmt.Println(err)
+                return err
             }
 
-            path = filepath.Join("generated", "internal", serviceKey, resourceKey+"_data_source_gen.go")
-            err = writeTemplate(path, datasourceTemplate, data)
+            path = filepath.Join(
+                outputPath,
+                "internal",
+                serviceKey,
+                strcase.ToSnake(resource.Plural)+"_data_source_gen.go",
+            )
+            err = writeTemplate(path, datasourcesTemplate, data)
             if err != nil {
-                fmt.Println(err)
+                return err
             }
         }
     }
-
+    return nil
 }
 
 func writeTemplate(filename string, tmpl string, data any) error {
