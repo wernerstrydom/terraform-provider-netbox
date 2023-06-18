@@ -2,6 +2,7 @@ package generator
 
 import (
     "bytes"
+    "embed"
     _ "embed"
     "fmt"
     "go/format"
@@ -21,6 +22,9 @@ var datasourcesTemplate string
 
 //go:embed resource.tmpl
 var resourceTemplate string
+
+//go:embed *.tmpl
+var templateFS embed.FS
 
 type Configuration struct {
     Services map[string]Service
@@ -114,49 +118,122 @@ func Generate(outputPath string) error {
             },
         },
     }
-
-    var path string
+    
     var err error
+
+    dir, err := templateFS.ReadDir(".")
+    if err != nil {
+        return err
+    }
+    for _, entry := range dir {
+        if entry.IsDir() {
+            continue
+        }
+        fmt.Println(entry.Name())
+    }
+
     for serviceKey, service := range c.Services {
         for _, resource := range service.Resources {
+
+            templateMap := map[string]string{
+                "datasource.tmpl": filepath.Join(
+                    outputPath,
+                    "internal",
+                    serviceKey,
+                    strcase.ToSnake(resource.Name)+"_data_source_gen.go",
+                ),
+                "datasources.tmpl": filepath.Join(
+                    outputPath,
+                    "internal",
+                    serviceKey,
+                    strcase.ToSnake(resource.Plural)+"_data_source_gen.go",
+                ),
+                "resource.tmpl": filepath.Join(
+                    outputPath,
+                    "internal",
+                    serviceKey,
+                    strcase.ToSnake(resource.Name)+"_resource_gen.go",
+                ),
+            }
 
             data := TemplateData{
                 ServicePackage: serviceKey,
                 Resource:       resource,
             }
 
-            path = filepath.Join(
-                outputPath,
-                "internal",
-                serviceKey,
-                strcase.ToSnake(resource.Name)+"_resource_gen.go",
-            )
-            err = writeTemplate(path, resourceTemplate, data)
-            if err != nil {
-                return err
+            for templateName, path := range templateMap {
+                content, err := templateFS.ReadFile(templateName)
+                if err != nil {
+                    return err
+                }
+
+                tmpl, err := template.New("template").Funcs(funcMap).Parse(string(content))
+                if err != nil {
+                    return err
+                }
+
+                var buf bytes.Buffer
+                err = tmpl.Execute(&buf, data)
+                if err != nil {
+                    return err
+                }
+
+                formatted, err := format.Source(buf.Bytes())
+                if err != nil {
+                    return err
+                }
+
+                d := filepath.Dir(path)
+                err = os.MkdirAll(d, 0755)
+                if err != nil {
+                    return err
+                }
+
+                f, err := os.Create(path)
+                defer f.Close()
+                if err != nil {
+                    return err
+                }
+
+                _, err = f.Write(formatted)
+                if err != nil {
+                    return err
+                }
+
             }
 
-            path = filepath.Join(
-                outputPath,
-                "internal",
-                serviceKey,
-                strcase.ToSnake(resource.Name)+"_data_source_gen.go",
-            )
-            err = writeTemplate(path, datasourceTemplate, data)
-            if err != nil {
-                return err
-            }
-
-            path = filepath.Join(
-                outputPath,
-                "internal",
-                serviceKey,
-                strcase.ToSnake(resource.Plural)+"_data_source_gen.go",
-            )
-            err = writeTemplate(path, datasourcesTemplate, data)
-            if err != nil {
-                return err
-            }
+            // path = filepath.Join(
+            //     outputPath,
+            //     "internal",
+            //     serviceKey,
+            //     strcase.ToSnake(resource.Name)+"_resource_gen.go",
+            // )
+            // err = writeTemplate(path, resourceTemplate, data)
+            // if err != nil {
+            //     return err
+            // }
+            //
+            // path = filepath.Join(
+            //     outputPath,
+            //     "internal",
+            //     serviceKey,
+            //     strcase.ToSnake(resource.Name)+"_data_source_gen.go",
+            // )
+            // err = writeTemplate(path, datasourceTemplate, data)
+            // if err != nil {
+            //     return err
+            // }
+            //
+            // path = filepath.Join(
+            //     outputPath,
+            //     "internal",
+            //     serviceKey,
+            //     strcase.ToSnake(resource.Plural)+"_data_source_gen.go",
+            // )
+            // err = writeTemplate(path, datasourcesTemplate, data)
+            // if err != nil {
+            //     return err
+            // }
         }
     }
     return nil
