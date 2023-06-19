@@ -58,6 +58,11 @@ services:
                         minLength: 1
                         pattern: ^[0-9a-fA-F.:]+/[0-9]+$
                 associations:
+                    role:
+                        name: Role
+                        description: The role to which this prefix is assigned.
+                        type: role
+                        max: 1
                     site:
                         name: Site
                         description: The site to which this prefix is assigned.
@@ -66,8 +71,33 @@ services:
                     tenant:
                         name: Tenant
                         description: The tenant to which this prefix is assigned.
-                        type: site
+                        type: tenant
                         max: 1
+            role:
+                name: role
+                plural: roles
+                description: A role indicates the function of a prefix or VLAN. For example, you might define Data, Voice, and Security roles. A role can be assigned to multiple prefixes and VLANs.
+                attributes:
+                    id:
+                        name: ID
+                        description: The unique numeric ID of the role.
+                        type: int64
+                        key: true
+                    name:
+                        name: Name
+                        description: The name of the role.
+                        value: Test Role
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                    slug:
+                        name: Slug
+                        description: A unique slug identifier for the role.
+                        value: test-role
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                        pattern: ^[-a-zA-Z0-9_]+$
     tenancy:
         name: tenancy
         description: Tenancy provides a framework for logically isolating objects within NetBox.
