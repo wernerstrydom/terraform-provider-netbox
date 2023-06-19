@@ -6,7 +6,6 @@ import (
     _ "embed"
     "fmt"
     "go/format"
-    "math"
     "os"
     "path/filepath"
     "strings"
@@ -120,15 +119,15 @@ func Generate(outputPath string) error {
                                 Value:       "test-site",
                             },
                         },
-                        Associations: map[string]Association{
-                            "prefix": {
-                                Name:        "Prefixes",
-                                Description: "The prefixes assigned to this site.",
-                                Type:        "prefix",
-                                Min:         0,
-                                Max:         math.MaxInt64,
-                            },
-                        },
+                        // Associations: map[string]Association{
+                        //     "prefix": {
+                        //         Name:        "Prefixes",
+                        //         Description: "The prefixes assigned to this site.",
+                        //         Type:        "prefix",
+                        //         Min:         0,
+                        //         Max:         math.MaxInt64,
+                        //     },
+                        // },
                     },
                 },
             },

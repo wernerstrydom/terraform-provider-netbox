@@ -51,3 +51,9 @@ services:
                         maxLength: 43
                         minLength: 1
                         pattern: ^[0-9a-fA-F.:]+/[0-9]+$
+                associations:
+                    site:
+                        name: Site
+                        description: The site to which this prefix is assigned.
+                        type: site
+                        max: 1
