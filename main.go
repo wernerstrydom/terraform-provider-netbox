@@ -7,7 +7,7 @@ import (
 
     "github.com/hashicorp/terraform-plugin-framework/providerserver"
 
-    "terraform-provider-netbox/internal/provider"
+    "terraform-provider-netbox/backup/internal/provider"
 )
 
 // Formats terraform files

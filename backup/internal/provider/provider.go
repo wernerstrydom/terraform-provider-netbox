@@ -15,8 +15,8 @@ import (
 
     "github.com/netbox-community/go-netbox/v3/netbox"
 
-    "terraform-provider-netbox/internal/dcim/sites"
-    "terraform-provider-netbox/internal/ipam/prefixes"
+    sites2 "terraform-provider-netbox/backup/internal/dcim/sites"
+    prefixes2 "terraform-provider-netbox/backup/internal/ipam/prefixes"
 )
 
 var (
@@ -166,17 +166,17 @@ func (n *netboxProvider) Configure(
 
 func (n *netboxProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
     return []func() datasource.DataSource{
-        prefixes.NewPrefixDataSource,
+        prefixes2.NewPrefixDataSource,
 
-        sites.NewSiteDataSource,
-        sites.NewSitesDataSource,
+        sites2.NewSiteDataSource,
+        sites2.NewSitesDataSource,
     }
 }
 
 func (n *netboxProvider) Resources(ctx context.Context) []func() resource.Resource {
     return []func() resource.Resource{
-        prefixes.NewPrefixResource,
+        prefixes2.NewPrefixResource,
 
-        sites.NewSiteResource,
+        sites2.NewSiteResource,
     }
 }
