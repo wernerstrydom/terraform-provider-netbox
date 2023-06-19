@@ -258,7 +258,8 @@ func (p *{{ camelCase .Resource.Name }}Resource) Update(
     } else {
         {{ camelCase $association.Name }}ID = &payload.{{ pascalCase $association.Name }}.ID
     }
-    state.{{ pascalCase $association.Name }}ID = types.Int64PointerValue({{ camelCase $association.Name }}ID){{ end }}
+    state.{{ pascalCase $association.Name }}ID = types.Int64PointerValue({{ camelCase $association.Name }}ID)
+    {{ end }}
 
     diags := response.State.Set(ctx, state)
     response.Diagnostics.Append(diags...)

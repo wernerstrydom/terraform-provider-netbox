@@ -137,7 +137,8 @@ func (d *{{ camelCase .Resource.Name }}DataSource) Read(
     } else {
         {{ camelCase $association.Name }}ID = &payload.{{ pascalCase $association.Name }}.ID
     }
-    state.{{ pascalCase $association.Name }}ID = types.Int64PointerValue({{ camelCase $association.Name }}ID){{ end }}
+    state.{{ pascalCase $association.Name }}ID = types.Int64PointerValue({{ camelCase $association.Name }}ID)
+    {{ end }}
 
 
     diags := response.State.Set(ctx, state)

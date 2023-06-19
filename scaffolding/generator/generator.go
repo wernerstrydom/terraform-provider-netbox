@@ -86,6 +86,81 @@ func (a Attribute) IsRequired() bool {
 func Generate(outputPath string) error {
     c := Configuration{
         Services: map[string]Service{
+            "tenancy": {
+                Name:        "tenancy",
+                Description: "Tenancy provides a framework for logically isolating objects within NetBox.",
+                Resources: map[string]Resource{
+                    "tenant": {
+                        Name:        "tenant",
+                        Plural:      "tenants",
+                        Description: "A tenant represents a discrete grouping of resources used for administrative purposes.",
+                        Attributes: map[string]Attribute{
+                            "id": {
+                                Name:        "ID",
+                                Description: "The unique numeric ID of the tenant.",
+                                Type:        "int64",
+                                IsKey:       true,
+                            },
+                            "name": {
+                                Name:        "Name",
+                                Description: "The name of the tenant.",
+                                Type:        "string",
+                                MaxLength:   100,
+                                MinLength:   1,
+                                Value:       "Test Tenant",
+                            },
+                            "slug": {
+                                Name:        "Slug",
+                                Description: "A unique slug identifier for the tenant.",
+                                Type:        "string",
+                                MaxLength:   100,
+                                MinLength:   1,
+                                Pattern:     "^[-a-zA-Z0-9_]+$",
+                                Value:       "test-tenant",
+                            },
+                        },
+                        Associations: map[string]Association{
+                            "group": {
+                                Name:        "Group",
+                                Description: "The tenant group this tenant belongs to.",
+                                Type:        "tenant_group",
+                                Min:         0,
+                                Max:         1,
+                            },
+                        },
+                    },
+                    "tenant_group": {
+                        Name:        "tenant group",
+                        Plural:      "tenant groups",
+                        Description: "A tenant group represents a collection of tenants.",
+                        Attributes: map[string]Attribute{
+                            "id": {
+                                Name:        "ID",
+                                Description: "The unique numeric ID of the tenant group.",
+                                Type:        "int64",
+                                IsKey:       true,
+                            },
+                            "name": {
+                                Name:        "Name",
+                                Description: "The name of the tenant group.",
+                                Type:        "string",
+                                MaxLength:   100,
+                                MinLength:   1,
+                                Value:       "Test Tenant Group",
+                            },
+                            "slug": {
+                                Name:        "Slug",
+                                Description: "A unique slug identifier for the tenant group.",
+                                Type:        "string",
+                                MaxLength:   100,
+                                MinLength:   1,
+                                Pattern:     "^[-a-zA-Z0-9_]+$",
+                                Value:       "test-tenant-group",
+                            },
+                        },
+                    },
+                },
+            },
             "dcim": {
                 Name:        "dcim",
                 Description: "Data Center Infrastructure Management",
@@ -119,16 +194,17 @@ func Generate(outputPath string) error {
                                 Value:       "test-site",
                             },
                         },
-                        // Associations: map[string]Association{
-                        //     "prefix": {
-                        //         Name:        "Prefixes",
-                        //         Description: "The prefixes assigned to this site.",
-                        //         Type:        "prefix",
-                        //         Min:         0,
-                        //         Max:         math.MaxInt64,
-                        //     },
-                        // },
+                        Associations: map[string]Association{
+                            "tenant": {
+                                Name:        "Tenant",
+                                Description: "The tenant to which this site is assigned.",
+                                Type:        "site",
+                                Min:         0,
+                                Max:         1,
+                            },
+                        },
                     },
+
                 },
             },
             "ipam": {
@@ -161,6 +237,13 @@ func Generate(outputPath string) error {
                             "site": {
                                 Name:        "Site",
                                 Description: "The site to which this prefix is assigned.",
+                                Type:        "site",
+                                Min:         0,
+                                Max:         1,
+                            },
+                            "tenant": {
+                                Name:        "Tenant",
+                                Description: "The tenant to which this prefix is assigned.",
                                 Type:        "site",
                                 Min:         0,
                                 Max:         1,

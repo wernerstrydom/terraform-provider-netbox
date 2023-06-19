@@ -28,6 +28,12 @@ services:
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
+                associations:
+                    tenant:
+                        name: Tenant
+                        description: The tenant to which this site is assigned.
+                        type: site
+                        max: 1
     ipam:
         name: ipam
         description: IP Address Management
@@ -57,3 +63,68 @@ services:
                         description: The site to which this prefix is assigned.
                         type: site
                         max: 1
+                    tenant:
+                        name: Tenant
+                        description: The tenant to which this prefix is assigned.
+                        type: site
+                        max: 1
+    tenancy:
+        name: tenancy
+        description: Tenancy provides a framework for logically isolating objects within NetBox.
+        resources:
+            tenant:
+                name: tenant
+                plural: tenants
+                description: A tenant represents a discrete grouping of resources used for administrative purposes.
+                attributes:
+                    id:
+                        name: ID
+                        description: The unique numeric ID of the tenant.
+                        type: int64
+                        key: true
+                    name:
+                        name: Name
+                        description: The name of the tenant.
+                        value: Test Tenant
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                    slug:
+                        name: Slug
+                        description: A unique slug identifier for the tenant.
+                        value: test-tenant
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                        pattern: ^[-a-zA-Z0-9_]+$
+                associations:
+                    group:
+                        name: Group
+                        description: The tenant group this tenant belongs to.
+                        type: tenant_group
+                        max: 1
+            tenant_group:
+                name: tenant group
+                plural: tenant groups
+                description: A tenant group represents a collection of tenants.
+                attributes:
+                    id:
+                        name: ID
+                        description: The unique numeric ID of the tenant group.
+                        type: int64
+                        key: true
+                    name:
+                        name: Name
+                        description: The name of the tenant group.
+                        value: Test Tenant Group
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                    slug:
+                        name: Slug
+                        description: A unique slug identifier for the tenant group.
+                        value: test-tenant-group
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                        pattern: ^[-a-zA-Z0-9_]+$
