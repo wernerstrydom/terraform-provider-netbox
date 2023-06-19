@@ -165,6 +165,36 @@ func Generate(outputPath string) error {
                 Name:        "dcim",
                 Description: "Data Center Infrastructure Management",
                 Resources: map[string]Resource{
+                    "manufacturer": {
+                        Name:        "manufacturer",
+                        Plural:      "manufacturers",
+                        Description: "A manufacturer represents a company which produces hardware devices; for example, Juniper or Dell.",
+                        Attributes: map[string]Attribute{
+                            "id": {
+                                Name:        "ID",
+                                Description: "The unique numeric ID of the manufacturer.",
+                                Type:        "int64",
+                                IsKey:       true,
+                            },
+                            "name": {
+                                Name:        "Name",
+                                Description: "The name of the manufacturer.",
+                                Type:        "string",
+                                MaxLength:   100,
+                                MinLength:   1,
+                                Value:       "Test Manufacturer",
+                            },
+                            "slug": {
+                                Name:        "Slug",
+                                Description: "A unique slug identifier for the manufacturer.",
+                                Type:        "string",
+                                MaxLength:   100,
+                                MinLength:   1,
+                                Pattern:     "^[-a-zA-Z0-9_]+$",
+                                Value:       "test-manufacturer",
+                            },
+                        },
+                    },
                     "site": {
                         Name:        "site",
                         Plural:      "sites",

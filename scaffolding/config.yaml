@@ -3,6 +3,31 @@ services:
         name: dcim
         description: Data Center Infrastructure Management
         resources:
+            manufacturer:
+                name: manufacturer
+                plural: manufacturers
+                description: A manufacturer represents a company which produces hardware devices; for example, Juniper or Dell.
+                attributes:
+                    id:
+                        name: ID
+                        description: The unique numeric ID of the manufacturer.
+                        type: int64
+                        key: true
+                    name:
+                        name: Name
+                        description: The name of the manufacturer.
+                        value: Test Manufacturer
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                    slug:
+                        name: Slug
+                        description: A unique slug identifier for the manufacturer.
+                        value: test-manufacturer
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                        pattern: ^[-a-zA-Z0-9_]+$
             site:
                 name: site
                 plural: sites
