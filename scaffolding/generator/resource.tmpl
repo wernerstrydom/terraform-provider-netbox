@@ -102,7 +102,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Create(
     }
 
     params := {{ snakeCase .ServicePackage }}.{{ pascalCase .ServicePackage }}{{ pascalCase .Resource.Plural }}CreateParams{
-        Data: &models.Writable{{ pascalCase .Resource.Name }}{
+        Data: &models.{{ .Resource.WriteableModel }}{
         {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
             {{ pascalCase $attribute.Name }}: state.{{ pascalCase $attribute.Name }}.ValueStringPointer(),{{ end }}{{ end }}
         {{- range $name, $association := .Resource.Associations }}
@@ -228,7 +228,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Update(
     }
 
     params := &{{ snakeCase .ServicePackage }}.{{ pascalCase .ServicePackage }}{{ pascalCase .Resource.Plural }}UpdateParams{
-        Data: &models.Writable{{ pascalCase .Resource.Name }}{
+        Data: &models.{{ .Resource.WriteableModel }}{
                       {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
                           {{ pascalCase $attribute.Name }}: state.{{ pascalCase $attribute.Name }}.ValueStringPointer(),{{ end }}{{ end }}
                       {{- range $name, $association := .Resource.Associations }}

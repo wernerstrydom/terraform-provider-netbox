@@ -3,7 +3,6 @@ sources = $(wildcard *.go) $(wildcard internal/*.go) $(wildcard internal/dcim/*.
 
 all: output/terraform-provider-netbox
 
-
 output/terraform-provider-netbox: $(sources) Makefile go.mod
 	go build -o output/terraform-provider-netbox .
 

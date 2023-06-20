@@ -28,6 +28,8 @@ services:
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
+                writeableModel: Manufacturer
+                readableModel: Manufacturer
             site:
                 name: site
                 plural: sites
@@ -59,6 +61,8 @@ services:
                         description: The tenant to which this site is assigned.
                         type: site
                         max: 1
+                writeableModel: WritableSite
+                readableModel: Site
     ipam:
         name: ipam
         description: IP Address Management
@@ -98,6 +102,8 @@ services:
                         description: The tenant to which this prefix is assigned.
                         type: tenant
                         max: 1
+                writeableModel: WritablePrefix
+                readableModel: Prefix
             role:
                 name: role
                 plural: roles
@@ -123,6 +129,8 @@ services:
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
+                writeableModel: Role
+                readableModel: Role
     tenancy:
         name: tenancy
         description: Tenancy provides a framework for logically isolating objects within NetBox.
@@ -158,6 +166,8 @@ services:
                         description: The tenant group this tenant belongs to.
                         type: tenant_group
                         max: 1
+                writeableModel: WritableTenant
+                readableModel: Tenant
             tenant_group:
                 name: tenant group
                 plural: tenant groups
@@ -183,3 +193,5 @@ services:
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
+                writeableModel: WritableTenantGroup
+                readableModel: TenantGroup

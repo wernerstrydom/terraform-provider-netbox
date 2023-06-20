@@ -15,8 +15,8 @@ import (
 
     "github.com/netbox-community/go-netbox/v3/netbox"
 
-    sites2 "terraform-provider-netbox/backup/internal/dcim/sites"
-    prefixes2 "terraform-provider-netbox/backup/internal/ipam/prefixes"
+    {{ range $serviceName, $services := .Configuration.Services }}
+    "terraform-provider-netbox/internal/{{ $serviceName }}"{{ end }}
 )
 
 var (
@@ -164,19 +164,21 @@ func (n *netboxProvider) Configure(
     tflog.Info(ctx, "Configured Netbox client", map[string]any{"success": true})
 }
 
-func (n *netboxProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
+func (n *netboxProvider) DataSources(_ context.Context) []func() datasource.DataSource {
     return []func() datasource.DataSource{
-        prefixes2.NewPrefixDataSource,
-
-        sites2.NewSiteDataSource,
-        sites2.NewSitesDataSource,
+    {{ range $serviceName, $services := .Configuration.Services }}
+       {{ range $resourceName, $resource := $services.Resources }}
+            {{ $serviceName }}.New{{ pascalCase $resource.Name }}DataSource,
+            {{ $serviceName }}.New{{ pascalCase $resource.Plural }}DataSource,{{ end }}
+    {{ end }}
     }
 }
 
-func (n *netboxProvider) Resources(ctx context.Context) []func() resource.Resource {
+func (n *netboxProvider) Resources(_ context.Context) []func() resource.Resource {
     return []func() resource.Resource{
-        prefixes2.NewPrefixResource,
-
-        sites2.NewSiteResource,
+        {{ range $serviceName, $services := .Configuration.Services }}
+           {{ range $resourceName, $resource := $services.Resources }}
+                {{ $serviceName }}.New{{ pascalCase $resource.Name }}Resource,{{ end }}
+        {{ end }}
     }
 }

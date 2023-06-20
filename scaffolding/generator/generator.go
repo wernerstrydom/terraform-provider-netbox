@@ -21,21 +21,23 @@ var templateFS embed.FS
 type Configuration struct {
     Services map[string]Service `yaml:"services,omitempty"`
 
-    resourceMap map[string]Resource
+    resourceMap map[string]*Resource
 }
 
 type Service struct {
-    Name        string              `yaml:"name,omitempty"`
-    Description string              `yaml:"description,omitempty"`
-    Resources   map[string]Resource `yaml:"resources,omitempty"`
+    Name        string               `yaml:"name,omitempty"`
+    Description string               `yaml:"description,omitempty"`
+    Resources   map[string]*Resource `yaml:"resources,omitempty"`
 }
 
 type Resource struct {
-    Name         string                 `yaml:"name,omitempty"`
-    Plural       string                 `yaml:"plural,omitempty"`
-    Description  string                 `yaml:"description,omitempty"`
-    Attributes   map[string]Attribute   `yaml:"attributes,omitempty"`
-    Associations map[string]Association `yaml:"associations,omitempty"`
+    Name           string                  `yaml:"name,omitempty"`
+    Plural         string                  `yaml:"plural,omitempty"`
+    Description    string                  `yaml:"description,omitempty"`
+    Attributes     map[string]*Attribute   `yaml:"attributes,omitempty"`
+    Associations   map[string]*Association `yaml:"associations,omitempty"`
+    WriteableModel string                  `yaml:"writeableModel,omitempty"`
+    ReadableModel  string                  `yaml:"readableModel,omitempty"`
 }
 
 type Attribute struct {
@@ -60,7 +62,8 @@ type Association struct {
 
 type TemplateData struct {
     ServicePackage string
-    Resource       Resource
+    Resource       *Resource
+    Configuration  *Configuration
 }
 
 var funcMap = template.FuncMap{
@@ -89,12 +92,12 @@ func Generate(outputPath string) error {
             "tenancy": {
                 Name:        "tenancy",
                 Description: "Tenancy provides a framework for logically isolating objects within NetBox.",
-                Resources: map[string]Resource{
+                Resources: map[string]*Resource{
                     "tenant": {
                         Name:        "tenant",
                         Plural:      "tenants",
                         Description: "A tenant represents a discrete grouping of resources used for administrative purposes.",
-                        Attributes: map[string]Attribute{
+                        Attributes: map[string]*Attribute{
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the tenant.",
@@ -119,7 +122,7 @@ func Generate(outputPath string) error {
                                 Value:       "test-tenant",
                             },
                         },
-                        Associations: map[string]Association{
+                        Associations: map[string]*Association{
                             "group": {
                                 Name:        "Group",
                                 Description: "The tenant group this tenant belongs to.",
@@ -133,7 +136,7 @@ func Generate(outputPath string) error {
                         Name:        "tenant group",
                         Plural:      "tenant groups",
                         Description: "A tenant group represents a collection of tenants.",
-                        Attributes: map[string]Attribute{
+                        Attributes: map[string]*Attribute{
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the tenant group.",
@@ -164,12 +167,12 @@ func Generate(outputPath string) error {
             "dcim": {
                 Name:        "dcim",
                 Description: "Data Center Infrastructure Management",
-                Resources: map[string]Resource{
+                Resources: map[string]*Resource{
                     "manufacturer": {
                         Name:        "manufacturer",
                         Plural:      "manufacturers",
                         Description: "A manufacturer represents a company which produces hardware devices; for example, Juniper or Dell.",
-                        Attributes: map[string]Attribute{
+                        Attributes: map[string]*Attribute{
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the manufacturer.",
@@ -199,7 +202,7 @@ func Generate(outputPath string) error {
                         Name:        "site",
                         Plural:      "sites",
                         Description: "A site represents a logical grouping of devices, typically by physical location or purpose. For example, a site might be a data center, an office building, or a distributed network of servers.",
-                        Attributes: map[string]Attribute{
+                        Attributes: map[string]*Attribute{
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the site.",
@@ -224,7 +227,7 @@ func Generate(outputPath string) error {
                                 Value:       "test-site",
                             },
                         },
-                        Associations: map[string]Association{
+                        Associations: map[string]*Association{
                             "tenant": {
                                 Name:        "Tenant",
                                 Description: "The tenant to which this site is assigned.",
@@ -240,12 +243,12 @@ func Generate(outputPath string) error {
             "ipam": {
                 Name:        "ipam",
                 Description: "IP Address Management",
-                Resources: map[string]Resource{
+                Resources: map[string]*Resource{
                     "prefix": {
                         Name:        "prefix",
                         Plural:      "prefixes",
                         Description: "A prefix represents an assignable range of IP addresses",
-                        Attributes: map[string]Attribute{
+                        Attributes: map[string]*Attribute{
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the prefix.",
@@ -263,7 +266,7 @@ func Generate(outputPath string) error {
                                 Value:       "10.0.0.0/24",
                             },
                         },
-                        Associations: map[string]Association{
+                        Associations: map[string]*Association{
                             "site": {
                                 Name:        "Site",
                                 Description: "The site to which this prefix is assigned.",
@@ -291,7 +294,7 @@ func Generate(outputPath string) error {
                         Name:        "role",
                         Plural:      "roles",
                         Description: "A role indicates the function of a prefix or VLAN. For example, you might define Data, Voice, and Security roles. A role can be assigned to multiple prefixes and VLANs.",
-                        Attributes: map[string]Attribute{
+                        Attributes: map[string]*Attribute{
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the role.",
@@ -322,10 +325,23 @@ func Generate(outputPath string) error {
         },
     }
 
-    c.resourceMap = make(map[string]Resource)
+    c.resourceMap = make(map[string]*Resource)
     for _, service := range c.Services {
         for _, resource := range service.Resources {
             c.resourceMap[resource.Name] = resource
+        }
+    }
+
+    // update writable models
+    for _, service := range c.Services {
+        for _, resource := range service.Resources {
+            switch resource.Name {
+            case "role", "manufacturer":
+                resource.WriteableModel = strcase.ToCamel(resource.Name)
+            default:
+                resource.WriteableModel = "Writable" + strcase.ToCamel(resource.Name)
+            }
+            resource.ReadableModel = strcase.ToCamel(resource.Name)
         }
     }
 
@@ -358,6 +374,12 @@ func Generate(outputPath string) error {
         for _, resource := range service.Resources {
 
             templateMap := map[string]string{
+                "provider.tmpl": filepath.Join(
+                    outputPath,
+                    "internal",
+                    "provider",
+                    "provider.go",
+                ),
                 "datasource.tmpl": filepath.Join(
                     outputPath,
                     "internal",
@@ -397,15 +419,17 @@ func Generate(outputPath string) error {
                     "netbox_"+strcase.ToSnake(resource.Plural),
                     "main.tf",
                 ),
+
             }
 
             data := TemplateData{
                 ServicePackage: serviceKey,
                 Resource:       resource,
+                Configuration:  &c,
             }
 
             for templateName, path := range templateMap {
-                fmt.Println("Generating", path)
+                fmt.Printf("Generating %s from %s\n", path, templateName)
                 content, err := templateFS.ReadFile(templateName)
                 if err != nil {
                     return err
@@ -419,33 +443,38 @@ func Generate(outputPath string) error {
                 var buf bytes.Buffer
                 err = tmpl.Execute(&buf, data)
                 if err != nil {
-                    return err
+                    return fmt.Errorf("error executing template '%s': %s", templateName, err)
                 }
 
                 content = buf.Bytes()
 
-                if strings.HasSuffix(path, ".go") {
-                    content, err = format.Source(content)
-                    if err != nil {
-                        return err
-                    }
-                }
+                // if strings.HasSuffix(path, ".go") {
+                //     content, err = format.Source(content)
+                //     if err != nil {
+                //         return fmt.Errorf(
+                //             "error formatting go source generated by template '%s': %s",
+                //             templateName,
+                //             err,
+                //         )
+                //     }
+                // }
 
                 d := filepath.Dir(path)
                 err = os.MkdirAll(d, 0755)
                 if err != nil {
-                    return err
+                    return fmt.Errorf("error creating directory (%s): %s", d, err)
                 }
 
                 f, err := os.Create(path)
-                defer f.Close()
+
                 if err != nil {
-                    return err
+                    return fmt.Errorf("error creating file (%s): %s", path, err)
                 }
+                defer f.Close()
 
                 _, err = f.Write(content)
                 if err != nil {
-                    return err
+                    return fmt.Errorf("error writing file (%s): %s", path, err)
                 }
 
             }
