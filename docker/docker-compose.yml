@@ -2,6 +2,7 @@ version: '3.4'
 services:
   netbox: &netbox
     image: docker.io/netboxcommunity/netbox:${VERSION-v3.5-2.6.1}
+    container_name: netbox
     depends_on:
       - postgres
       - redis
@@ -18,8 +19,11 @@ services:
       - netbox-media-files:/opt/netbox/netbox/media:z,rw
       - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
       - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
+    ports:
+      - "8090:8080"
   netbox-worker:
     <<: *netbox
+    container_name: netbox-worker
     depends_on:
       netbox:
         condition: service_healthy
@@ -27,6 +31,8 @@ services:
       - /opt/netbox/venv/bin/python
       - /opt/netbox/netbox/manage.py
       - rqworker
+    ports:
+      - "8091:8080"
     healthcheck:
       start_period: 20s
       timeout: 3s
@@ -34,6 +40,7 @@ services:
       test: "ps -aux | grep -v grep | grep -q rqworker || exit 1"
   netbox-housekeeping:
     <<: *netbox
+    container_name: netbox-housekeeping
     depends_on:
       netbox:
         condition: service_healthy
@@ -44,9 +51,11 @@ services:
       timeout: 3s
       interval: 15s
       test: "ps -aux | grep -v grep | grep -q housekeeping || exit 1"
-
+    ports:
+      - "8092:8080"
   # postgres
   postgres:
+    container_name: netbox-postgres
     image: docker.io/postgres:15-alpine
     env_file: env/postgres.env
     volumes:
@@ -54,6 +63,7 @@ services:
 
   # redis
   redis:
+    container_name: netbox-redis
     image: docker.io/redis:7-alpine
     command:
       - sh
@@ -63,6 +73,7 @@ services:
     volumes:
       - netbox-redis-data:/data
   redis-cache:
+    container_name: netbox-redis-cache
     image: docker.io/redis:7-alpine
     command:
       - sh
@@ -71,7 +82,6 @@ services:
     env_file: env/redis-cache.env
     volumes:
       - netbox-redis-cache-data:/data
-
 volumes:
   netbox-media-files:
     driver: local
