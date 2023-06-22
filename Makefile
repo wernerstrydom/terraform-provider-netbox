@@ -8,3 +8,6 @@ output/terraform-provider-netbox: $(sources) Makefile go.mod
 
 clean:
 	rm -rf output
+	rm -rf examples
+	rm -rf docs
+	rm -rf internal

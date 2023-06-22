@@ -2,6 +2,6 @@
 data "netbox_tenant_groups" "this" {
 }
 
-output "tenant groups" {
+output "tenant_groups" {
   value = data.netbox_tenant_groups.this.ids
 }

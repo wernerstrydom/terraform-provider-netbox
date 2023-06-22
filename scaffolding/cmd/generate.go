@@ -1,6 +1,8 @@
 package cmd
 
 import (
+    "path/filepath"
+
     "github.com/spf13/cobra"
 
     "terraform-provider-netbox/scaffolding/generator"
@@ -14,8 +16,13 @@ var generateCmd = &cobra.Command{
         if err != nil {
             return err
         }
-        return generator.Generate(outputPath)
 
+        outputPath, err = filepath.Abs(outputPath)
+        if err != nil {
+            return err
+        }
+
+        return generator.Generate(outputPath)
     },
 }
 

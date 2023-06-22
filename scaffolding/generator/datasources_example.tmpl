@@ -3,6 +3,6 @@
 data "netbox_{{ $resource }}" "this" {
 }
 
-output "{{ .Resource.Plural }}" {
+output "{{ snakeCase .Resource.Plural }}" {
   value = data.netbox_{{ $resource }}.this.ids
 }
