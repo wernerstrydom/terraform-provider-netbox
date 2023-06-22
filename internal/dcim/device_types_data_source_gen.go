@@ -1,0 +1,131 @@
+package dcim
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/netbox-community/go-netbox/v3/netbox/client"
+	"github.com/netbox-community/go-netbox/v3/netbox/client/dcim"
+	"github.com/netbox-community/go-netbox/v3/netbox/models"
+)
+
+// do
+type deviceTypesDataSourceModel struct {
+	IDs types.Set `tfsdk:"ids"`
+}
+
+// Ensure the implementation satisfies the expected interfaces.
+var (
+	_ datasource.DataSource              = &deviceTypesDataSource{}
+	_ datasource.DataSourceWithConfigure = &deviceTypesDataSource{}
+)
+
+// deviceTypeDataSource is the data source implementation.
+type deviceTypesDataSource struct {
+	client *client.NetBoxAPI
+}
+
+// NewDeviceTypesDataSource is a helper function to simplify the provider implementation.
+func NewDeviceTypesDataSource() datasource.DataSource {
+	return &deviceTypesDataSource{}
+}
+
+// Metadata returns the data source type name.
+func (d *deviceTypesDataSource) Metadata(
+	_ context.Context,
+	request datasource.MetadataRequest,
+	response *datasource.MetadataResponse,
+) {
+	response.TypeName = request.ProviderTypeName + "_device_types"
+}
+
+func (d *deviceTypesDataSource) Configure(
+	_ context.Context,
+	request datasource.ConfigureRequest,
+	response *datasource.ConfigureResponse,
+) {
+	if request.ProviderData == nil {
+		return
+	}
+
+	c, ok := request.ProviderData.(*client.NetBoxAPI)
+	if !ok {
+		response.Diagnostics.AddError(
+			"Unexpected Data Source Configure Type",
+			fmt.Sprintf(
+				"Expected *client.NetBoxAPI, got: %T. Please report this issue to the provider developers.",
+				request.ProviderData,
+			),
+		)
+
+		return
+	}
+
+	d.client = c
+}
+
+func (d *deviceTypesDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, response *datasource.SchemaResponse) {
+	response.Schema = schema.Schema{
+		Attributes: map[string]schema.Attribute{
+			"ids": schema.SetAttribute{
+				Computed:    true,
+				ElementType: types.Int64Type,
+				Description: "The IDs of the deviceType.",
+			},
+		},
+	}
+}
+
+func (d *deviceTypesDataSource) Read(
+	ctx context.Context,
+	request datasource.ReadRequest,
+	response *datasource.ReadResponse,
+) {
+	var diags diag.Diagnostics
+	var state deviceTypesDataSourceModel
+	response.Diagnostics.Append(request.Config.Get(ctx, &state)...)
+
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	params := dcim.DcimDeviceTypesListParams{
+		Context: ctx,
+	}
+	var deviceTypes []*models.DeviceType
+
+	output, err := d.client.Dcim.DcimDeviceTypesList(&params, nil)
+	if err != nil {
+		response.Diagnostics.AddError(
+			"Unable to retrieve sites",
+			fmt.Sprintf("Unable to retrieve sites: %s", err),
+		)
+		return
+	}
+
+	deviceTypes = append(deviceTypes, output.Payload.Results...)
+	// TODO Handle Paging
+
+	result := make([]attr.Value, len(deviceTypes))
+	if len(deviceTypes) > 0 {
+		for i, deviceType := range deviceTypes {
+			result[i] = types.Int64Value(deviceType.ID)
+		}
+	}
+	state.IDs, diags = types.SetValue(types.Int64Type, result)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	diags = response.State.Set(ctx, state)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+}

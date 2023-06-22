@@ -42,7 +42,7 @@ output "slug" {
 - `name` (String) The name of the tenant group.
 - `slug` (String) A unique slug identifier for the tenant group.
 
-### Read-Only
+### Optional
 
 - `id` (String) The unique numeric ID of the tenant group.
 

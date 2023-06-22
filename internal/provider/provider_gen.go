@@ -168,6 +168,8 @@ func (n *netboxProvider) Configure(
 func (n *netboxProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 
+		dcim.NewDeviceTypeDataSource,
+		dcim.NewDeviceTypesDataSource,
 		dcim.NewManufacturerDataSource,
 		dcim.NewManufacturersDataSource,
 		dcim.NewSiteDataSource,
@@ -188,6 +190,7 @@ func (n *netboxProvider) DataSources(_ context.Context) []func() datasource.Data
 func (n *netboxProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 
+		dcim.NewDeviceTypeResource,
 		dcim.NewManufacturerResource,
 		dcim.NewSiteResource,
 

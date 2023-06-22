@@ -45,9 +45,6 @@ output "slug" {
 ### Optional
 
 - `group_id` (Number) The tenant group this tenant belongs to.
-
-### Read-Only
-
 - `id` (String) The unique numeric ID of the tenant.
 
 ## Import

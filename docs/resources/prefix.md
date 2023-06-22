@@ -37,13 +37,10 @@ output "prefix" {
 
 ### Optional
 
+- `id` (String) The unique numeric ID of the prefix.
 - `role_id` (Number) The role to which this prefix is assigned.
 - `site_id` (Number) The site to which this prefix is assigned.
 - `tenant_id` (Number) The tenant to which this prefix is assigned.
-
-### Read-Only
-
-- `id` (String) The unique numeric ID of the prefix.
 
 ## Import
 

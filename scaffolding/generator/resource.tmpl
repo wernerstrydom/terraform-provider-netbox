@@ -77,7 +77,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Schema(
         {{- range $name, $attribute := .Resource.Attributes }}
             "{{ snakeCase $attribute.Name }}": schema.StringAttribute{
                 {{ if $attribute.IsKey }}Computed:    true,{{end}}
-                {{ if $attribute.IsRequired }}Required:    true,{{ end }}
+                {{ if $attribute.IsRequired }}Required:{{else}}Optional:{{end}}    true,
                 Description: "{{ $attribute.Description }}",
             },{{ end }}
         {{- range $name, $association := .Resource.Associations }}
@@ -104,9 +104,9 @@ func (p *{{ camelCase .Resource.Name }}Resource) Create(
     params := {{ snakeCase .ServicePackage }}.{{ pascalCase .ServicePackage }}{{ pascalCase .Resource.Plural }}CreateParams{
         Data: &models.{{ .Resource.WriteableModel }}{
         {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
-            {{ pascalCase $attribute.Name }}: state.{{ pascalCase $attribute.Name }}.ValueStringPointer(),{{ end }}{{ end }}
+            {{ pascalCase $attribute.Name }}: state.{{ pascalCase $attribute.Name }}.ValueString{{if $attribute.IsNullable }}Pointer{{end}}(),{{ end }}{{ end }}
         {{- range $name, $association := .Resource.Associations }}
-            {{ pascalCase $association.Name }}: state.{{ pascalCase $association.Name }}ID.ValueInt64Pointer(),{{ end }}
+            {{ pascalCase $association.Name }}: state.{{ pascalCase $association.Name }}ID.ValueInt64{{if $association.IsNullable }}Pointer{{end}}(),{{ end }}
         },
         Context: ctx,
     }
@@ -184,7 +184,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Read(
 
     payload := resp.Payload
     {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
-    state.{{ pascalCase $attribute.Name }} = types.StringPointerValue(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
+    state.{{ pascalCase $attribute.Name }} = types.String{{if $attribute.IsNullable }}Pointer{{end}}Value(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
 
     {{ range $name, $association := .Resource.Associations }}
     var {{ camelCase $association.Name }}ID *int64
@@ -193,7 +193,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Read(
     } else {
         {{ camelCase $association.Name }}ID = &payload.{{ pascalCase $association.Name }}.ID
     }
-    state.{{ pascalCase $association.Name }}ID = types.Int64PointerValue({{ camelCase $association.Name }}ID){{ end }}
+    state.{{ pascalCase $association.Name }}ID = types.Int64{{if $association.IsNullable }}Pointer{{end}}Value({{ camelCase $association.Name }}ID){{ end }}
 
     diags := response.State.Set(ctx, state)
     response.Diagnostics.Append(diags...)
@@ -230,9 +230,9 @@ func (p *{{ camelCase .Resource.Name }}Resource) Update(
     params := &{{ snakeCase .ServicePackage }}.{{ pascalCase .ServicePackage }}{{ pascalCase .Resource.Plural }}UpdateParams{
         Data: &models.{{ .Resource.WriteableModel }}{
                       {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
-                          {{ pascalCase $attribute.Name }}: state.{{ pascalCase $attribute.Name }}.ValueStringPointer(),{{ end }}{{ end }}
+                          {{ pascalCase $attribute.Name }}: state.{{ pascalCase $attribute.Name }}.ValueString{{if $attribute.IsNullable }}Pointer{{end}}(),{{ end }}{{ end }}
                       {{- range $name, $association := .Resource.Associations }}
-                          {{ pascalCase $association.Name }}: state.{{ pascalCase $association.Name }}ID.ValueInt64Pointer(),{{ end }}
+                          {{ pascalCase $association.Name }}: state.{{ pascalCase $association.Name }}ID.ValueInt64{{if $association.IsNullable }}Pointer{{end}}(),{{ end }}
                       },
         ID: id,
         Context: ctx,
@@ -249,7 +249,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Update(
 
     payload := resp.Payload
     {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
-    state.{{ pascalCase $attribute.Name }} = types.StringPointerValue(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
+    state.{{ pascalCase $attribute.Name }} = types.String{{if $attribute.IsNullable }}Pointer{{end}}Value(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
 
     {{ range $name, $association := .Resource.Associations }}
     var {{ camelCase $association.Name }}ID *int64

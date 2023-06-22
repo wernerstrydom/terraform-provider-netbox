@@ -128,7 +128,7 @@ func (d *{{ camelCase .Resource.Name }}DataSource) Read(
 
     payload := resp.Payload
     {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
-    state.{{ pascalCase $attribute.Name }} = types.StringPointerValue(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
+    state.{{ pascalCase $attribute.Name }} = types.String{{if $attribute.IsNullable }}Pointer{{end}}Value(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
 
     {{ range $name, $association := .Resource.Associations }}
     var {{ camelCase $association.Name }}ID *int64

@@ -50,6 +50,7 @@ type Attribute struct {
     MinLength   int    `yaml:"minLength,omitempty"`
     Pattern     string `yaml:"pattern,omitempty"`
     IsKey       bool   `yaml:"key,omitempty"`
+    IsNullable  bool   `yaml:"nullable,omitempty"`
 }
 
 type Association struct {
@@ -58,6 +59,7 @@ type Association struct {
     Type        string `yaml:"type,omitempty"`
     Min         int    `yaml:"min,omitempty"`
     Max         int    `yaml:"max,omitempty"`
+    IsNullable  bool   `yaml:"nullable,omitempty"`
 }
 
 type TemplateData struct {
@@ -69,6 +71,7 @@ type TemplateData struct {
 var funcMap = template.FuncMap{
     "lower":      strings.ToLower,
     "upper":      strings.ToUpper,
+    "title":      func(s string) string { return strings.Title(strcase.ToDelimited(s, ' ')) },
     "pascalCase": strcase.ToCamel,
     "camelCase":  strcase.ToLowerCamel,
     "snakeCase":  strcase.ToSnake,
@@ -103,6 +106,7 @@ func Generate(outputPath string) error {
                                 Description: "The unique numeric ID of the tenant.",
                                 Type:        "int64",
                                 IsKey:       true,
+                                IsNullable:  true,
                             },
                             "name": {
                                 Name:        "Name",
@@ -111,6 +115,7 @@ func Generate(outputPath string) error {
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Tenant",
+                                IsNullable:  true,
                             },
                             "slug": {
                                 Name:        "Slug",
@@ -120,6 +125,7 @@ func Generate(outputPath string) error {
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
                                 Value:       "test-tenant",
+                                IsNullable:  true,
                             },
                         },
                         Associations: map[string]*Association{
@@ -129,6 +135,7 @@ func Generate(outputPath string) error {
                                 Type:        "tenant_group",
                                 Min:         0,
                                 Max:         1,
+                                IsNullable:  true,
                             },
                         },
                     },
@@ -142,6 +149,7 @@ func Generate(outputPath string) error {
                                 Description: "The unique numeric ID of the tenant group.",
                                 Type:        "int64",
                                 IsKey:       true,
+                                IsNullable:  true,
                             },
                             "name": {
                                 Name:        "Name",
@@ -150,6 +158,7 @@ func Generate(outputPath string) error {
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Tenant Group",
+                                IsNullable:  true,
                             },
                             "slug": {
                                 Name:        "Slug",
@@ -159,6 +168,7 @@ func Generate(outputPath string) error {
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
                                 Value:       "test-tenant-group",
+                                IsNullable:  true,
                             },
                         },
                     },
@@ -178,6 +188,7 @@ func Generate(outputPath string) error {
                                 Description: "The unique numeric ID of the manufacturer.",
                                 Type:        "int64",
                                 IsKey:       true,
+                                IsNullable:  true,
                             },
                             "name": {
                                 Name:        "Name",
@@ -186,6 +197,7 @@ func Generate(outputPath string) error {
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Manufacturer",
+                                IsNullable:  true,
                             },
                             "slug": {
                                 Name:        "Slug",
@@ -195,6 +207,58 @@ func Generate(outputPath string) error {
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
                                 Value:       "test-manufacturer",
+                                IsNullable:  true,
+                            },
+                        },
+                    },
+                    "device type": {
+                        Name:        "device type",
+                        Plural:      "device types",
+                        Description: "A device type represents a particular manufacturer's model of device. For example, N9K-C9396PX or PowerEdge R630.",
+                        Attributes: map[string]*Attribute{
+                            "id": {
+                                Name:        "ID",
+                                Description: "The unique numeric ID of the device type.",
+                                Type:        "int64",
+                                IsKey:       true,
+                                IsNullable:  true,
+                            },
+                            "model": {
+                                Name:        "Model",
+                                Description: "The model name of the device type.",
+                                Type:        "string",
+                                MaxLength:   100,
+                                MinLength:   1,
+                                Value:       "Test Device Type",
+                                IsNullable:  true,
+                            },
+                            "part number": {
+                                Name:        "Part Number",
+                                Description: "The part number associated with the device type.",
+                                Type:        "string",
+                                MaxLength:   50,
+                                MinLength:   0,
+                                IsNullable:  false,
+                            },
+                            "slug": {
+                                Name:        "Slug",
+                                Description: "A unique slug identifier for the device type.",
+                                Type:        "string",
+                                MaxLength:   100,
+                                MinLength:   1,
+                                Pattern:     "^[-a-zA-Z0-9_]+$",
+                                Value:       "test-device-type",
+                                IsNullable:  true,
+                            },
+                        },
+                        Associations: map[string]*Association{
+                            "manufacturer": {
+                                Name:        "Manufacturer",
+                                Description: "The device type's manufacturer.",
+                                Type:        "manufacturer",
+                                Min:         1,
+                                Max:         1,
+                                IsNullable:  true,
                             },
                         },
                     },
@@ -208,6 +272,7 @@ func Generate(outputPath string) error {
                                 Description: "The unique numeric ID of the site.",
                                 Type:        "int64",
                                 IsKey:       true,
+                                IsNullable:  true,
                             },
                             "name": {
                                 Name:        "Name",
@@ -216,6 +281,7 @@ func Generate(outputPath string) error {
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Site",
+                                IsNullable:  true,
                             },
                             "slug": {
                                 Name:        "Slug",
@@ -225,6 +291,7 @@ func Generate(outputPath string) error {
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
                                 Value:       "test-site",
+                                IsNullable:  true,
                             },
                         },
                         Associations: map[string]*Association{
@@ -234,6 +301,7 @@ func Generate(outputPath string) error {
                                 Type:        "site",
                                 Min:         0,
                                 Max:         1,
+                                IsNullable:  true,
                             },
                         },
                     },
@@ -255,6 +323,7 @@ func Generate(outputPath string) error {
                                 Type:        "int64",
                                 IsKey:       true,
                                 Value:       "123",
+                                IsNullable:  true,
                             },
                             "prefix": {
                                 Name:        "Prefix",
@@ -264,6 +333,7 @@ func Generate(outputPath string) error {
                                 MinLength:   1,
                                 Pattern:     "^[0-9a-fA-F.:]+/[0-9]+$",
                                 Value:       "10.0.0.0/24",
+                                IsNullable:  true,
                             },
                         },
                         Associations: map[string]*Association{
@@ -273,6 +343,7 @@ func Generate(outputPath string) error {
                                 Type:        "site",
                                 Min:         0,
                                 Max:         1,
+                                IsNullable:  true,
                             },
                             "tenant": {
                                 Name:        "Tenant",
@@ -280,6 +351,7 @@ func Generate(outputPath string) error {
                                 Type:        "tenant",
                                 Min:         0,
                                 Max:         1,
+                                IsNullable:  true,
                             },
                             "role": {
                                 Name:        "Role",
@@ -287,6 +359,7 @@ func Generate(outputPath string) error {
                                 Type:        "role",
                                 Min:         0,
                                 Max:         1,
+                                IsNullable:  true,
                             },
                         },
                     },
@@ -300,6 +373,7 @@ func Generate(outputPath string) error {
                                 Description: "The unique numeric ID of the role.",
                                 Type:        "int64",
                                 IsKey:       true,
+                                IsNullable:  true,
                             },
                             "name": {
                                 Name:        "Name",
@@ -308,6 +382,7 @@ func Generate(outputPath string) error {
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Role",
+                                IsNullable:  true,
                             },
                             "slug": {
                                 Name:        "Slug",
@@ -317,6 +392,7 @@ func Generate(outputPath string) error {
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
                                 Value:       "test-role",
+                                IsNullable:  true,
                             },
                         },
                     },
@@ -351,12 +427,33 @@ func Generate(outputPath string) error {
     }
 
     err = generateProvider(c, outputPath)
+    if err != nil {
+        return fmt.Errorf("error generating provider: %s", err)
+    }
     err = generateInternals(c, outputPath)
+    if err != nil {
+        return fmt.Errorf("error generating internals: %s", err)
+    }
     err = generateDataSources(c, outputPath)
+    if err != nil {
+        return fmt.Errorf("error generating data sources: %s", err)
+    }
     err = generateDataSource(c, outputPath)
+    if err != nil {
+        return fmt.Errorf("error generating data source: %s", err)
+    }
     err = generateResources(c, outputPath)
+    if err != nil {
+        return fmt.Errorf("error generating resources: %s", err)
+    }
     err = generateExamples(c, outputPath)
+    if err != nil {
+        return fmt.Errorf("error generating examples: %s", err)
+    }
     err = generateDocumentation(c, outputPath)
+    if err != nil {
+        return fmt.Errorf("error generating documentation: %s", err)
+    }
 
     return nil
 }

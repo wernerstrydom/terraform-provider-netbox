@@ -3,6 +3,49 @@ services:
         name: dcim
         description: Data Center Infrastructure Management
         resources:
+            device type:
+                name: device type
+                plural: device types
+                description: A device type represents a particular manufacturer's model of device. For example, N9K-C9396PX or PowerEdge R630.
+                attributes:
+                    id:
+                        name: ID
+                        description: The unique numeric ID of the device type.
+                        type: int64
+                        key: true
+                        nullable: true
+                    model:
+                        name: Model
+                        description: The model name of the device type.
+                        value: Test Device Type
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                        nullable: true
+                    part number:
+                        name: Part Number
+                        description: The part number associated with the device type.
+                        type: string
+                        maxLength: 50
+                    slug:
+                        name: Slug
+                        description: A unique slug identifier for the device type.
+                        value: test-device-type
+                        type: string
+                        maxLength: 100
+                        minLength: 1
+                        pattern: ^[-a-zA-Z0-9_]+$
+                        nullable: true
+                associations:
+                    manufacturer:
+                        name: Manufacturer
+                        description: The device type's manufacturer.
+                        type: manufacturer
+                        min: 1
+                        max: 1
+                        nullable: true
+                writeableModel: WritableDeviceType
+                readableModel: DeviceType
             manufacturer:
                 name: manufacturer
                 plural: manufacturers
@@ -13,6 +56,7 @@ services:
                         description: The unique numeric ID of the manufacturer.
                         type: int64
                         key: true
+                        nullable: true
                     name:
                         name: Name
                         description: The name of the manufacturer.
@@ -20,6 +64,7 @@ services:
                         type: string
                         maxLength: 100
                         minLength: 1
+                        nullable: true
                     slug:
                         name: Slug
                         description: A unique slug identifier for the manufacturer.
@@ -28,6 +73,7 @@ services:
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
+                        nullable: true
                 writeableModel: Manufacturer
                 readableModel: Manufacturer
             site:
@@ -40,6 +86,7 @@ services:
                         description: The unique numeric ID of the site.
                         type: int64
                         key: true
+                        nullable: true
                     name:
                         name: Name
                         description: The name of the site.
@@ -47,6 +94,7 @@ services:
                         type: string
                         maxLength: 100
                         minLength: 1
+                        nullable: true
                     slug:
                         name: Slug
                         description: A unique slug identifier for the site.
@@ -55,12 +103,14 @@ services:
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
+                        nullable: true
                 associations:
                     tenant:
                         name: Tenant
                         description: The tenant to which this site is assigned.
                         type: site
                         max: 1
+                        nullable: true
                 writeableModel: WritableSite
                 readableModel: Site
     ipam:
@@ -78,6 +128,7 @@ services:
                         value: "123"
                         type: int64
                         key: true
+                        nullable: true
                     prefix:
                         name: Prefix
                         description: The prefix address in CIDR notation.
@@ -86,22 +137,26 @@ services:
                         maxLength: 43
                         minLength: 1
                         pattern: ^[0-9a-fA-F.:]+/[0-9]+$
+                        nullable: true
                 associations:
                     role:
                         name: Role
                         description: The role to which this prefix is assigned.
                         type: role
                         max: 1
+                        nullable: true
                     site:
                         name: Site
                         description: The site to which this prefix is assigned.
                         type: site
                         max: 1
+                        nullable: true
                     tenant:
                         name: Tenant
                         description: The tenant to which this prefix is assigned.
                         type: tenant
                         max: 1
+                        nullable: true
                 writeableModel: WritablePrefix
                 readableModel: Prefix
             role:
@@ -114,6 +169,7 @@ services:
                         description: The unique numeric ID of the role.
                         type: int64
                         key: true
+                        nullable: true
                     name:
                         name: Name
                         description: The name of the role.
@@ -121,6 +177,7 @@ services:
                         type: string
                         maxLength: 100
                         minLength: 1
+                        nullable: true
                     slug:
                         name: Slug
                         description: A unique slug identifier for the role.
@@ -129,6 +186,7 @@ services:
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
+                        nullable: true
                 writeableModel: Role
                 readableModel: Role
     tenancy:
@@ -145,6 +203,7 @@ services:
                         description: The unique numeric ID of the tenant.
                         type: int64
                         key: true
+                        nullable: true
                     name:
                         name: Name
                         description: The name of the tenant.
@@ -152,6 +211,7 @@ services:
                         type: string
                         maxLength: 100
                         minLength: 1
+                        nullable: true
                     slug:
                         name: Slug
                         description: A unique slug identifier for the tenant.
@@ -160,12 +220,14 @@ services:
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
+                        nullable: true
                 associations:
                     group:
                         name: Group
                         description: The tenant group this tenant belongs to.
                         type: tenant_group
                         max: 1
+                        nullable: true
                 writeableModel: WritableTenant
                 readableModel: Tenant
             tenant_group:
@@ -178,6 +240,7 @@ services:
                         description: The unique numeric ID of the tenant group.
                         type: int64
                         key: true
+                        nullable: true
                     name:
                         name: Name
                         description: The name of the tenant group.
@@ -185,6 +248,7 @@ services:
                         type: string
                         maxLength: 100
                         minLength: 1
+                        nullable: true
                     slug:
                         name: Slug
                         description: A unique slug identifier for the tenant group.
@@ -193,5 +257,6 @@ services:
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
+                        nullable: true
                 writeableModel: WritableTenantGroup
                 readableModel: TenantGroup

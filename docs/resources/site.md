@@ -44,11 +44,8 @@ output "slug" {
 
 ### Optional
 
-- `tenant_id` (Number) The tenant to which this site is assigned.
-
-### Read-Only
-
 - `id` (String) The unique numeric ID of the site.
+- `tenant_id` (Number) The tenant to which this site is assigned.
 
 ## Import
 

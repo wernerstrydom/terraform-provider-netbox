@@ -1,4 +1,4 @@
-package tenancy
+package dcim
 
 import (
 	"context"
@@ -10,33 +10,35 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/netbox-community/go-netbox/v3/netbox/client"
-	"github.com/netbox-community/go-netbox/v3/netbox/client/tenancy"
+	"github.com/netbox-community/go-netbox/v3/netbox/client/dcim"
 	"github.com/netbox-community/go-netbox/v3/netbox/models"
 )
 
-type tenantGroupResourceModel struct {
-	ID   types.String `tfsdk:"id"`
-	Name types.String `tfsdk:"name"`
-	Slug types.String `tfsdk:"slug"`
+type deviceTypeResourceModel struct {
+	ID             types.String `tfsdk:"id"`
+	Model          types.String `tfsdk:"model"`
+	PartNumber     types.String `tfsdk:"part_number"`
+	Slug           types.String `tfsdk:"slug"`
+	ManufacturerID types.Int64  `tfsdk:"manufacturer_id"`
 }
 
 // Ensure the implementation satisfies the expected interfaces.
 var (
-	_ resource.Resource                = &tenantGroupResource{}
-	_ resource.ResourceWithConfigure   = &tenantGroupResource{}
-	_ resource.ResourceWithImportState = &tenantGroupResource{}
+	_ resource.Resource                = &deviceTypeResource{}
+	_ resource.ResourceWithConfigure   = &deviceTypeResource{}
+	_ resource.ResourceWithImportState = &deviceTypeResource{}
 )
 
-type tenantGroupResource struct {
+type deviceTypeResource struct {
 	client *client.NetBoxAPI
 }
 
-// NewTenantGroupResource is a helper function to simplify the provider implementation.
-func NewTenantGroupResource() resource.Resource {
-	return &tenantGroupResource{}
+// NewDeviceTypeResource is a helper function to simplify the provider implementation.
+func NewDeviceTypeResource() resource.Resource {
+	return &deviceTypeResource{}
 }
 
-func (p *tenantGroupResource) Configure(
+func (p *deviceTypeResource) Configure(
 	_ context.Context,
 	request resource.ConfigureRequest,
 	response *resource.ConfigureResponse,
@@ -57,15 +59,15 @@ func (p *tenantGroupResource) Configure(
 	p.client = c
 }
 
-func (p *tenantGroupResource) Metadata(
+func (p *deviceTypeResource) Metadata(
 	_ context.Context,
 	request resource.MetadataRequest,
 	response *resource.MetadataResponse,
 ) {
-	response.TypeName = request.ProviderTypeName + "_tenant_group"
+	response.TypeName = request.ProviderTypeName + "_device_type"
 }
 
-func (p *tenantGroupResource) Schema(
+func (p *deviceTypeResource) Schema(
 	_ context.Context,
 	_ resource.SchemaRequest,
 	response *resource.SchemaResponse,
@@ -75,46 +77,57 @@ func (p *tenantGroupResource) Schema(
 			"id": schema.StringAttribute{
 				Computed:    true,
 				Optional:    true,
-				Description: "The unique numeric ID of the tenant group.",
+				Description: "The unique numeric ID of the device type.",
 			},
-			"name": schema.StringAttribute{
+			"model": schema.StringAttribute{
 
 				Required:    true,
-				Description: "The name of the tenant group.",
+				Description: "The model name of the device type.",
+			},
+			"part_number": schema.StringAttribute{
+
+				Optional:    true,
+				Description: "The part number associated with the device type.",
 			},
 			"slug": schema.StringAttribute{
 
 				Required:    true,
-				Description: "A unique slug identifier for the tenant group.",
+				Description: "A unique slug identifier for the device type.",
+			},
+			"manufacturer_id": schema.Int64Attribute{
+				Description: "The device type's manufacturer.",
+				Optional:    true,
 			},
 		},
 	}
 }
 
-func (p *tenantGroupResource) Create(
+func (p *deviceTypeResource) Create(
 	ctx context.Context,
 	request resource.CreateRequest,
 	response *resource.CreateResponse,
 ) {
-	var state tenantGroupResourceModel
+	var state deviceTypeResourceModel
 	diags := request.Plan.Get(ctx, &state)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
 	}
 
-	params := tenancy.TenancyTenantGroupsCreateParams{
-		Data: &models.WritableTenantGroup{
-			Name: state.Name.ValueStringPointer(),
-			Slug: state.Slug.ValueStringPointer(),
+	params := dcim.DcimDeviceTypesCreateParams{
+		Data: &models.WritableDeviceType{
+			Model:        state.Model.ValueStringPointer(),
+			PartNumber:   state.PartNumber.ValueString(),
+			Slug:         state.Slug.ValueStringPointer(),
+			Manufacturer: state.ManufacturerID.ValueInt64Pointer(),
 		},
 		Context: ctx,
 	}
 
-	resp, err := p.client.Tenancy.TenancyTenantGroupsCreate(&params, nil)
+	resp, err := p.client.Dcim.DcimDeviceTypesCreate(&params, nil)
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Error creating tenantGroups",
+			"Error creating deviceTypes",
 			err.Error(),
 		)
 		return
@@ -122,6 +135,14 @@ func (p *tenantGroupResource) Create(
 
 	payload := resp.Payload
 	state.ID = types.StringValue(fmt.Sprintf("%d", payload.ID))
+
+	var manufacturerID *int64
+	if payload.Manufacturer == nil {
+		manufacturerID = nil
+	} else {
+		manufacturerID = &payload.Manufacturer.ID
+	}
+	state.ManufacturerID = types.Int64PointerValue(manufacturerID)
 
 	diags = response.State.Set(ctx, &state)
 	response.Diagnostics.Append(diags...)
@@ -131,13 +152,13 @@ func (p *tenantGroupResource) Create(
 	}
 }
 
-func (p *tenantGroupResource) Read(
+func (p *deviceTypeResource) Read(
 	ctx context.Context,
 	request resource.ReadRequest,
 	response *resource.ReadResponse,
 ) {
 
-	var state tenantGroupResourceModel
+	var state deviceTypeResourceModel
 	response.Diagnostics.Append(request.State.Get(ctx, &state)...)
 
 	if response.Diagnostics.HasError() {
@@ -157,12 +178,12 @@ func (p *tenantGroupResource) Read(
 		return
 	}
 
-	params := &tenancy.TenancyTenantGroupsReadParams{
+	params := &dcim.DcimDeviceTypesReadParams{
 		ID:      id,
 		Context: ctx,
 	}
 
-	resp, err := p.client.Tenancy.TenancyTenantGroupsRead(params, nil)
+	resp, err := p.client.Dcim.DcimDeviceTypesRead(params, nil)
 	if err != nil {
 		// TODO: Check for 404 and remove state if not found. We don't want to fail the plan if the resource is deleted outside of Terraform.
 		response.Diagnostics.AddError(
@@ -173,8 +194,17 @@ func (p *tenantGroupResource) Read(
 	}
 
 	payload := resp.Payload
-	state.Name = types.StringPointerValue(payload.Name)
+	state.Model = types.StringPointerValue(payload.Model)
+	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
+
+	var manufacturerID *int64
+	if payload.Manufacturer == nil {
+		manufacturerID = nil
+	} else {
+		manufacturerID = &payload.Manufacturer.ID
+	}
+	state.ManufacturerID = types.Int64PointerValue(manufacturerID)
 
 	diags := response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)
@@ -183,12 +213,12 @@ func (p *tenantGroupResource) Read(
 	}
 }
 
-func (p *tenantGroupResource) Update(
+func (p *deviceTypeResource) Update(
 	ctx context.Context,
 	request resource.UpdateRequest,
 	response *resource.UpdateResponse,
 ) {
-	var state tenantGroupResourceModel
+	var state deviceTypeResourceModel
 	response.Diagnostics.Append(request.State.Get(ctx, &state)...)
 
 	if response.Diagnostics.HasError() {
@@ -208,16 +238,18 @@ func (p *tenantGroupResource) Update(
 		return
 	}
 
-	params := &tenancy.TenancyTenantGroupsUpdateParams{
-		Data: &models.WritableTenantGroup{
-			Name: state.Name.ValueStringPointer(),
-			Slug: state.Slug.ValueStringPointer(),
+	params := &dcim.DcimDeviceTypesUpdateParams{
+		Data: &models.WritableDeviceType{
+			Model:        state.Model.ValueStringPointer(),
+			PartNumber:   state.PartNumber.ValueString(),
+			Slug:         state.Slug.ValueStringPointer(),
+			Manufacturer: state.ManufacturerID.ValueInt64Pointer(),
 		},
 		ID:      id,
 		Context: ctx,
 	}
 
-	resp, err := p.client.Tenancy.TenancyTenantGroupsUpdate(params, nil)
+	resp, err := p.client.Dcim.DcimDeviceTypesUpdate(params, nil)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Unable to update site",
@@ -227,8 +259,17 @@ func (p *tenantGroupResource) Update(
 	}
 
 	payload := resp.Payload
-	state.Name = types.StringPointerValue(payload.Name)
+	state.Model = types.StringPointerValue(payload.Model)
+	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
+
+	var manufacturerID *int64
+	if payload.Manufacturer == nil {
+		manufacturerID = nil
+	} else {
+		manufacturerID = &payload.Manufacturer.ID
+	}
+	state.ManufacturerID = types.Int64PointerValue(manufacturerID)
 
 	diags := response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)
@@ -237,12 +278,12 @@ func (p *tenantGroupResource) Update(
 	}
 }
 
-func (p *tenantGroupResource) Delete(
+func (p *deviceTypeResource) Delete(
 	ctx context.Context,
 	request resource.DeleteRequest,
 	response *resource.DeleteResponse,
 ) {
-	var state tenantGroupResourceModel
+	var state deviceTypeResourceModel
 	response.Diagnostics.Append(request.State.Get(ctx, &state)...)
 
 	if response.Diagnostics.HasError() {
@@ -262,12 +303,12 @@ func (p *tenantGroupResource) Delete(
 		return
 	}
 
-	params := &tenancy.TenancyTenantGroupsDeleteParams{
+	params := &dcim.DcimDeviceTypesDeleteParams{
 		ID:      id,
 		Context: ctx,
 	}
 
-	_, err = p.client.Tenancy.TenancyTenantGroupsDelete(params, nil)
+	_, err = p.client.Dcim.DcimDeviceTypesDelete(params, nil)
 	if err != nil {
 		// TODO Check for 404 and return, since we don't want to fail on a 404
 		response.Diagnostics.AddError(
@@ -278,7 +319,7 @@ func (p *tenantGroupResource) Delete(
 	}
 }
 
-func (p *tenantGroupResource) ImportState(
+func (p *deviceTypeResource) ImportState(
 	ctx context.Context,
 	request resource.ImportStateRequest,
 	response *resource.ImportStateResponse,

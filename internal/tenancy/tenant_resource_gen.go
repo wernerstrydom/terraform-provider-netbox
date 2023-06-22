@@ -74,8 +74,8 @@ func (p *tenantResource) Schema(
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Computed: true,
-
+				Computed:    true,
+				Optional:    true,
 				Description: "The unique numeric ID of the tenant.",
 			},
 			"name": schema.StringAttribute{
