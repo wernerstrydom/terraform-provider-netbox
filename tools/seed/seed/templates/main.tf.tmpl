@@ -1,0 +1,16 @@
+{{- range $manufacturer, $devices := . }}
+
+resource "netbox_manufacturer" "{{  $manufacturer | sanitize | snakeCase | id }}" {
+  name = "{{ $manufacturer }}"
+  slug = "{{ $manufacturer | sanitize | kebabCase}}"
+}
+
+{{- range $device := $devices }}
+
+resource "netbox_device_type" "{{ $device.Slug | sanitize | snakeCase | id }}" {
+  model = "{{ $device.Model }}"
+  slug  = "{{ $device.Slug }}"
+  manufacturer_id = netbox_manufacturer.{{ $manufacturer | sanitize | snakeCase | id }}.id
+}
+{{- end -}}
+{{- end -}}

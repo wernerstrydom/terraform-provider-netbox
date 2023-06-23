@@ -214,5 +214,7 @@ dist/
 *.hcl
 /tools/scaffolding/generated/
 
-tools/seed/devicetype-library
-/tools/seed/devicetype-library/
+/tools/seed/generated/
+/tools/scaffolding/generated/
+
+
