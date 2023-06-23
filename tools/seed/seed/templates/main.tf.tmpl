@@ -8,9 +8,11 @@ resource "netbox_manufacturer" "{{  $manufacturer | sanitize | snakeCase | id }}
 {{- range $device := $devices }}
 
 resource "netbox_device_type" "{{ $device.Slug | sanitize | snakeCase | id }}" {
-  model = "{{ $device.Model }}"
-  slug  = "{{ $device.Slug }}"
-  manufacturer_id = netbox_manufacturer.{{ $manufacturer | sanitize | snakeCase | id }}.id
+  model             = "{{ $device.Model }}"
+  slug              = "{{ $device.Slug }}"
+  {{- if $device.PartNumber}}
+  part_number       = "{{ $device.PartNumber }}"{{ end }}
+  manufacturer_id   = netbox_manufacturer.{{ $manufacturer | sanitize | snakeCase | id }}.id
 }
 {{- end -}}
 {{- end -}}
