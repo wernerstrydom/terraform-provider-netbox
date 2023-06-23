@@ -212,4 +212,7 @@ Temporary Items
 dist/
 
 *.hcl
-/scaffolding/generated/
+/tools/scaffolding/generated/
+
+tools/seed/devicetype-library
+/tools/seed/devicetype-library/

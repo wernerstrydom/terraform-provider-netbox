@@ -1,7 +1,7 @@
 #!/bin/sh
 
-pushd scaffolding
-go build -o ../output/scaffolding .
+pushd tools/scaffolding
+go build -o ../../output/scaffolding .
 popd
 
 pushd output

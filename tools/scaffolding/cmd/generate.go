@@ -5,7 +5,7 @@ import (
 
     "github.com/spf13/cobra"
 
-    "terraform-provider-netbox/scaffolding/generator"
+    "terraform-provider-netbox/tools/scaffolding/generator"
 )
 
 // generateCmd represents the generate command
