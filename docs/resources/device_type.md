@@ -19,18 +19,8 @@ resource "netbox_device_type" "this" {
 }
 
 
-output "description" {
-    value = netbox_device_type.this.description
-}
-
-
 output "id" {
     value = netbox_device_type.this.id
-}
-
-
-output "is_full_depth" {
-    value = netbox_device_type.this.is_full_depth
 }
 
 
@@ -49,6 +39,11 @@ output "slug" {
 }
 
 
+output "description" {
+    value = netbox_device_type.this.description
+}
+
+
 output "u_height" {
     value = netbox_device_type.this.u_height
 }
@@ -56,6 +51,11 @@ output "u_height" {
 
 output "weight" {
     value = netbox_device_type.this.weight
+}
+
+
+output "is_full_depth" {
+    value = netbox_device_type.this.is_full_depth
 }
 ```
 

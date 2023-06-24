@@ -19,11 +19,6 @@ resource "netbox_site" "this" {
 }
 
 
-output "description" {
-    value = netbox_site.this.description
-}
-
-
 output "id" {
     value = netbox_site.this.id
 }
@@ -36,6 +31,11 @@ output "name" {
 
 output "slug" {
     value = netbox_site.this.slug
+}
+
+
+output "description" {
+    value = netbox_site.this.description
 }
 ```
 
