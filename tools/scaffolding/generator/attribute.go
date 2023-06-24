@@ -6,6 +6,8 @@ import (
     "terraform-provider-netbox/tools/ptr"
 )
 
+
+
 type Attribute interface {
     Name() string
     Description() string
