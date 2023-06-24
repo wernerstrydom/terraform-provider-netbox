@@ -2,8 +2,6 @@ package generator
 
 import (
     "fmt"
-
-    "gopkg.in/yaml.v3"
 )
 
 type AttributeType int
@@ -16,41 +14,51 @@ const (
     AttributeTypeBool
 )
 
-func (a *AttributeType) String() string {
-    switch *a {
-    case AttributeTypeString:
-        return "string"
-    case AttributeTypeInt:
-        return "int"
-    case AttributeTypeInt64:
-        return "int64"
-    case AttributeTypeFloat64:
-        return "float64"
-    case AttributeTypeBool:
-        return "bool"
-    default:
-        panic(fmt.Sprintf("unknown attribute type: %d", a))
-    }
+var AttributeTypes = []AttributeType{
+    AttributeTypeString,
+    AttributeTypeInt,
+    AttributeTypeInt64,
+    AttributeTypeFloat64,
+    AttributeTypeBool,
 }
 
-func (a *AttributeType) MarshalYAML() (interface{}, error) {
-    return a.String(), nil
+var AttributeTypeMap = map[string]AttributeType{
+    "string":  AttributeTypeString,
+    "int":     AttributeTypeInt,
+    "int64":   AttributeTypeInt64,
+    "float64": AttributeTypeFloat64,
+    "bool":    AttributeTypeBool,
 }
 
-func (a *AttributeType) UnmarshalYAML(value *yaml.Node) error {
-    switch value.Value {
-    case "string":
-        *a = AttributeTypeString
-    case "int":
-        *a = AttributeTypeInt
-    case "int64":
-        *a = AttributeTypeInt64
-    case "float64":
-        *a = AttributeTypeFloat64
-    case "bool":
-        *a = AttributeTypeBool
-    default:
-        return fmt.Errorf("unknown attribute type: %s", value.Value)
+var AttributeTypeStringMap = map[AttributeType]string{
+    AttributeTypeString:  "string",
+    AttributeTypeInt:     "int",
+    AttributeTypeInt64:   "int64",
+    AttributeTypeFloat64: "float64",
+    AttributeTypeBool:    "bool",
+}
+
+func ParseAttributeType(s string) (AttributeType, error) {
+    t, ok := AttributeTypeMap[s]
+    if !ok {
+        return 0, fmt.Errorf("unknown attribute type: %s", s)
     }
-    return nil
+    return t, nil
+}
+
+func (a AttributeType) String() string {
+    s, ok := AttributeTypeStringMap[a]
+    if !ok {
+        return ""
+    }
+    return s
+}
+
+func (e AttributeType) MarshalText() ([]byte, error) {
+    return []byte(e.String()), nil
+}
+
+func (e *AttributeType) UnmarshalText(text []byte) (err error) {
+    *e, err = ParseAttributeType(string(text))
+    return
 }

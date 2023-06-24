@@ -25,7 +25,7 @@ func init() {
 }
 
 var c = Configuration{
-    Services: map[string]Service{
+    services: map[string]Service{
         "tenancy": {
             Name:        "tenancy",
             Description: "Tenancy provides a framework for logically isolating objects within NetBox.",
@@ -412,14 +412,14 @@ var c = Configuration{
 func Generate(outputPath string) error {
 
     c.resourceMap = make(map[string]*Resource)
-    for _, service := range c.Services {
+    for _, service := range c.services {
         for _, resource := range service.Resources {
             c.resourceMap[resource.Name] = resource
         }
     }
 
     // update writable models
-    for _, service := range c.Services {
+    for _, service := range c.services {
         for _, resource := range service.Resources {
             switch resource.Name {
             case "role", "manufacturer":
@@ -431,7 +431,7 @@ func Generate(outputPath string) error {
         }
     }
 
-    err := Save(c)
+    err := c.Save("config.yaml")
     if err != nil {
         return err
     }
@@ -560,7 +560,7 @@ func generate(configuration Configuration, outputPath string) error {
 
             } else {
                 // the output path should be a template, so we need to render it
-                for serviceKey, service := range configuration.Services {
+                for serviceKey, service := range configuration.services {
                     for _, resource := range service.Resources {
                         data := TemplateData{
                             ServicePackage: serviceKey,
