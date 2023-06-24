@@ -36,22 +36,25 @@ func TestAttributeList_Serialization(t *testing.T) {
         {
             name: "single",
             l: AttributeList{
-                &attribute{
-                    name:          "foo",
-                    attributeType: AttributeTypeString,
+                &StringAttribute{
+                    name: "foo",
                 },
             },
         },
         {
             name: "multiple",
             l: AttributeList{
-                &attribute{
-                    name:          "foo",
-                    attributeType: AttributeTypeString,
+                &StringAttribute{
+                    name: "foo",
                 },
-                &attribute{
-                    name:          "bar",
-                    attributeType: AttributeTypeInt64,
+                &Int64Attribute{
+                    name: "bar",
+                },
+                &BoolAttribute{
+                    name: "baz",
+                },
+                &Float64Attribute{
+                    name: "qux",
                 },
             },
         },

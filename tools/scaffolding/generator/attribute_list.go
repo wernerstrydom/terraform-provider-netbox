@@ -45,25 +45,25 @@ func (l *AttributeList) UnmarshalYAML(value *yaml.Node) error {
         var a Attribute
         switch data.Type {
         case AttributeTypeString:
-            var c attribute
+            var c StringAttribute
             if err := v.Decode(&c); err != nil {
                 return err
             }
             a = &c
         case AttributeTypeInt64:
-            var c attribute
+            var c Int64Attribute
             if err := v.Decode(&c); err != nil {
                 return err
             }
             a = &c
         case AttributeTypeFloat64:
-            var c attribute
+            var c Float64Attribute
             if err := v.Decode(&c); err != nil {
                 return err
             }
             a = &c
         case AttributeTypeBool:
-            var c attribute
+            var c BoolAttribute
             if err := v.Decode(&c); err != nil {
                 return err
             }
@@ -77,13 +77,13 @@ func (l *AttributeList) UnmarshalYAML(value *yaml.Node) error {
     return nil
 }
 
-func (l *AttributeList) MarshalYAML() (interface{}, error) {
-    var data []*attribute
-    for _, v := range *l {
-        data = append(data, v.(*attribute))
-    }
-    return data, nil
-}
+// func (l *AttributeList) MarshalYAML() (interface{}, error) {
+//     var data []*attribute
+//     for _, v := range *l {
+//         data = append(data, v.(*attribute))
+//     }
+//     return data, nil
+// }
 
 func (l *AttributeList) String() string {
     // serialize l to yaml and return the string
