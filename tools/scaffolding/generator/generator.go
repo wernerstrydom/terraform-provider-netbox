@@ -13,140 +13,10 @@ import (
     "text/template"
 
     "github.com/iancoleman/strcase"
-    "gopkg.in/yaml.v3"
 )
 
 //go:embed templates/*/*
 var templates embed.FS
-
-type AttributeType int
-
-const (
-    AttributeTypeString AttributeType = iota
-    AttributeTypeInt
-    AttributeTypeInt64
-    AttributeTypeFloat64
-    AttributeTypeBool
-)
-
-func (a *AttributeType) String() string {
-    switch *a {
-    case AttributeTypeString:
-        return "string"
-    case AttributeTypeInt:
-        return "int"
-    case AttributeTypeInt64:
-        return "int64"
-    case AttributeTypeFloat64:
-        return "float64"
-    case AttributeTypeBool:
-        return "bool"
-    default:
-        panic(fmt.Sprintf("unknown attribute type: %d", a))
-    }
-}
-
-// MarshalYAML marshals the attribute type to YAML.
-func (a *AttributeType) MarshalYAML() (interface{}, error) {
-    return a.String(), nil
-}
-
-// UnmarshalYAML unmarshals the attribute type from YAML.
-func (a *AttributeType) UnmarshalYAML(value *yaml.Node) error {
-    switch value.Value {
-    case "string":
-        *a = AttributeTypeString
-    case "int":
-        *a = AttributeTypeInt
-    case "int64":
-        *a = AttributeTypeInt64
-    case "float64":
-        *a = AttributeTypeFloat64
-    case "bool":
-        *a = AttributeTypeBool
-    default:
-        return fmt.Errorf("unknown attribute type: %s", value.Value)
-    }
-    return nil
-}
-
-type Configuration struct {
-    Services    map[string]Service `yaml:"services,omitempty"`
-    resourceMap map[string]*Resource
-}
-
-type Service struct {
-    Name        string               `yaml:"name,omitempty"`
-    Description string               `yaml:"description,omitempty"`
-    Resources   map[string]*Resource `yaml:"resources,omitempty"`
-}
-
-type Resource struct {
-    Name           string                  `yaml:"name,omitempty"`
-    Plural         string                  `yaml:"plural,omitempty"`
-    Description    string                  `yaml:"description,omitempty"`
-    Attributes     map[string]*Attribute   `yaml:"attributes,omitempty"`
-    Associations   map[string]*Association `yaml:"associations,omitempty"`
-    WriteableModel string                  `yaml:"writeableModel,omitempty"`
-    ReadableModel  string                  `yaml:"readableModel,omitempty"`
-}
-
-type Attribute struct {
-    Name         string        `yaml:"name,omitempty"`
-    Description  string        `yaml:"description,omitempty"`
-    Value        string        `yaml:"value,omitempty"`
-    Type         AttributeType `yaml:"type"`
-    ReadOnly     bool          `yaml:"readonly,omitempty"`
-    MaxLength    int           `yaml:"maxLength,omitempty"`
-    MinLength    int           `yaml:"minLength,omitempty"`
-    Pattern      string        `yaml:"pattern,omitempty"`
-    IsKey        bool          `yaml:"key,omitempty"`
-    IsNullable   bool          `yaml:"nullable,omitempty"`
-    DefaultValue any           `yaml:"default,omitempty"`
-}
-
-type Association struct {
-    Name        string `yaml:"name,omitempty"`
-    Description string `yaml:"description,omitempty"`
-    Type        string `yaml:"type,omitempty"`
-    Min         int    `yaml:"min,omitempty"`
-    Max         int    `yaml:"max,omitempty"`
-    IsNullable  bool   `yaml:"nullable,omitempty"`
-}
-
-type TemplateData struct {
-    ServicePackage string
-    Resource       *Resource
-    Configuration  *Configuration
-}
-
-var funcMap = template.FuncMap{
-    "lower":      strings.ToLower,
-    "upper":      strings.ToUpper,
-    "title":      func(s string) string { return strings.Title(strcase.ToDelimited(s, ' ')) },
-    "pascalCase": strcase.ToCamel,
-    "camelCase":  strcase.ToLowerCamel,
-    "snakeCase":  strcase.ToSnake,
-    "kebabCase":  strcase.ToKebab,
-    "delimited":  strcase.ToDelimited,
-    "type": func(a *Attribute) string {
-        switch a.Type {
-        case AttributeTypeString:
-            return "String"
-        case AttributeTypeInt:
-            return "Int"
-        case AttributeTypeInt64:
-            return "Int64"
-        case AttributeTypeFloat64:
-            return "Float64"
-        case AttributeTypeBool:
-            return "Bool"
-        default:
-            panic(fmt.Sprintf("unknown attribute type: %d", a.Type))
-        }
-    },
-
-}
 
 func init() {
     strcase.ConfigureAcronym("API", "api")
@@ -154,395 +24,392 @@ func init() {
     strcase.ConfigureAcronym("ID", "ID")
 }
 
-func (a Attribute) IsRequired() bool {
-    return !a.ReadOnly && !a.IsKey && a.MinLength > 0
-}
-
-func Generate(outputPath string) error {
-    c := Configuration{
-        Services: map[string]Service{
-            "tenancy": {
-                Name:        "tenancy",
-                Description: "Tenancy provides a framework for logically isolating objects within NetBox.",
-                Resources: map[string]*Resource{
-                    "tenant": {
-                        Name:        "tenant",
-                        Plural:      "tenants",
-                        Description: "A tenant represents a discrete grouping of resources used for administrative purposes.",
-                        Attributes: map[string]*Attribute{
-                            "id": {
-                                Name:        "ID",
-                                Description: "The unique numeric ID of the tenant.",
-                                Type:        AttributeTypeString,
-                                IsKey:       true,
-                                IsNullable:  true,
-                            },
-                            "name": {
-                                Name:        "Name",
-                                Description: "The name of the tenant.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Value:       "Test Tenant",
-                                IsNullable:  true,
-                            },
-                            "slug": {
-                                Name:        "Slug",
-                                Description: "A unique slug identifier for the tenant.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Pattern:     "^[-a-zA-Z0-9_]+$",
-                                Value:       "test-tenant",
-                                IsNullable:  true,
-                            },
-                            "description": {
-                                Name:         "Description",
-                                Description:  "A brief description of the tenant.",
-                                Type:         AttributeTypeString,
-                                MaxLength:    200,
-                                IsNullable:   false,
-                                DefaultValue: "",
-                            },
+var c = Configuration{
+    Services: map[string]Service{
+        "tenancy": {
+            Name:        "tenancy",
+            Description: "Tenancy provides a framework for logically isolating objects within NetBox.",
+            Resources: map[string]*Resource{
+                "tenant": {
+                    Name:        "tenant",
+                    Plural:      "tenants",
+                    Description: "A tenant represents a discrete grouping of resources used for administrative purposes.",
+                    Attributes: map[string]*Attribute{
+                        "id": {
+                            Name:        "ID",
+                            Description: "The unique numeric ID of the tenant.",
+                            Type:        AttributeTypeString,
+                            IsKey:       true,
+                            IsNullable:  true,
                         },
-                        Associations: map[string]*Association{
-                            "group": {
-                                Name:        "Group",
-                                Description: "The tenant group this tenant belongs to.",
-                                Type:        "tenant_group",
-                                Min:         0,
-                                Max:         1,
-                                IsNullable:  true,
-                            },
+                        "name": {
+                            Name:        "Name",
+                            Description: "The name of the tenant.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Value:       "Test Tenant",
+                            IsNullable:  true,
+                        },
+                        "slug": {
+                            Name:        "Slug",
+                            Description: "A unique slug identifier for the tenant.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Pattern:     "^[-a-zA-Z0-9_]+$",
+                            Value:       "test-tenant",
+                            IsNullable:  true,
+                        },
+                        "description": {
+                            Name:         "Description",
+                            Description:  "A brief description of the tenant.",
+                            Type:         AttributeTypeString,
+                            MaxLength:    200,
+                            IsNullable:   false,
+                            DefaultValue: "",
                         },
                     },
-                    "tenant_group": {
-                        Name:        "tenant group",
-                        Plural:      "tenant groups",
-                        Description: "A tenant group represents a collection of tenants.",
-                        Attributes: map[string]*Attribute{
-                            "id": {
-                                Name:        "ID",
-                                Description: "The unique numeric ID of the tenant group.",
-                                Type:        AttributeTypeString,
-                                IsKey:       true,
-                                IsNullable:  true,
-                            },
-                            "name": {
-                                Name:        "Name",
-                                Description: "The name of the tenant group.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Value:       "Test Tenant Group",
-                                IsNullable:  true,
-                            },
-                            "slug": {
-                                Name:        "Slug",
-                                Description: "A unique slug identifier for the tenant group.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Pattern:     "^[-a-zA-Z0-9_]+$",
-                                Value:       "test-tenant-group",
-                                IsNullable:  true,
-                            },
-                            "description": {
-                                Name:         "Description",
-                                Description:  "A brief description of the tenant group.",
-                                Type:         AttributeTypeString,
-                                MaxLength:    200,
-                                IsNullable:   false,
-                                DefaultValue: "",
-                            },
+                    Associations: map[string]*Association{
+                        "group": {
+                            Name:        "Group",
+                            Description: "The tenant group this tenant belongs to.",
+                            Type:        "tenant_group",
+                            Min:         0,
+                            Max:         1,
+                            IsNullable:  true,
                         },
                     },
                 },
-            },
-            "dcim": {
-                Name:        "dcim",
-                Description: "Data Center Infrastructure Management",
-                Resources: map[string]*Resource{
-                    "manufacturer": {
-                        Name:        "manufacturer",
-                        Plural:      "manufacturers",
-                        Description: "A manufacturer represents a company which produces hardware devices; for example, Juniper or Dell.",
-                        Attributes: map[string]*Attribute{
-                            "id": {
-                                Name:        "ID",
-                                Description: "The unique numeric ID of the manufacturer.",
-                                Type:        AttributeTypeString,
-                                IsKey:       true,
-                                IsNullable:  true,
-                            },
-                            "name": {
-                                Name:        "Name",
-                                Description: "The name of the manufacturer.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Value:       "Test Manufacturer",
-                                IsNullable:  true,
-                            },
-                            "slug": {
-                                Name:        "Slug",
-                                Description: "A unique slug identifier for the manufacturer.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Pattern:     "^[-a-zA-Z0-9_]+$",
-                                Value:       "test-manufacturer",
-                                IsNullable:  true,
-                            },
-                            "description": {
-                                Name:         "Description",
-                                Description:  "A brief description of the manufacturer.",
-                                Type:         AttributeTypeString,
-                                MaxLength:    200,
-                                IsNullable:   false,
-                                DefaultValue: "",
-                            },
+                "tenant_group": {
+                    Name:        "tenant group",
+                    Plural:      "tenant groups",
+                    Description: "A tenant group represents a collection of tenants.",
+                    Attributes: map[string]*Attribute{
+                        "id": {
+                            Name:        "ID",
+                            Description: "The unique numeric ID of the tenant group.",
+                            Type:        AttributeTypeString,
+                            IsKey:       true,
+                            IsNullable:  true,
                         },
-                    },
-                    "device type": {
-                        Name:        "device type",
-                        Plural:      "device types",
-                        Description: "A device type represents a particular manufacturer's model of device. For example, N9K-C9396PX or PowerEdge R630.",
-                        Attributes: map[string]*Attribute{
-                            "id": {
-                                Name:        "ID",
-                                Description: "The unique numeric ID of the device type.",
-                                Type:        AttributeTypeString,
-                                IsKey:       true,
-                                IsNullable:  true,
-                            },
-                            "model": {
-                                Name:        "Model",
-                                Description: "The model name of the device type.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Value:       "Test Device Type",
-                                IsNullable:  true,
-                            },
-                            "part number": {
-                                Name:        "Part Number",
-                                Description: "The part number associated with the device type.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   50,
-                                MinLength:   0,
-                                IsNullable:  false,
-                            },
-                            "slug": {
-                                Name:        "Slug",
-                                Description: "A unique slug identifier for the device type.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Pattern:     "^[-a-zA-Z0-9_]+$",
-                                Value:       "test-device-type",
-                                IsNullable:  true,
-                            },
-                            "description": {
-                                Name:         "Description",
-                                Description:  "A brief description of the device type.",
-                                Type:         AttributeTypeString,
-                                MaxLength:    200,
-                                IsNullable:   false,
-                                DefaultValue: "",
-                            },
-                            "uheight": {
-                                Name:        "U Height",
-                                Description: "The height of the device type, in rack units.",
-                                Type:        AttributeTypeFloat64,
-                                IsNullable:  true,
-                            },
-                            "weight": {
-                                Name:        "Weight",
-                                Description: "The weight of the device type.",
-                                Type:        AttributeTypeFloat64,
-                                IsNullable:  true,
-                            },
-                            "is full depth": {
-                                Name:        "Is Full Depth",
-                                Description: "Indicates whether this device type consumes the full depth of its parent rack.",
-                                Type:        AttributeTypeBool,
-                                IsNullable:  false,
-                            },
-
+                        "name": {
+                            Name:        "Name",
+                            Description: "The name of the tenant group.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Value:       "Test Tenant Group",
+                            IsNullable:  true,
                         },
-                        Associations: map[string]*Association{
-                            "manufacturer": {
-                                Name:        "Manufacturer",
-                                Description: "The device type's manufacturer.",
-                                Type:        "manufacturer",
-                                Min:         1,
-                                Max:         1,
-                                IsNullable:  true,
-                            },
+                        "slug": {
+                            Name:        "Slug",
+                            Description: "A unique slug identifier for the tenant group.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Pattern:     "^[-a-zA-Z0-9_]+$",
+                            Value:       "test-tenant-group",
+                            IsNullable:  true,
                         },
-                    },
-                    "site": {
-                        Name:        "site",
-                        Plural:      "sites",
-                        Description: "A site represents a logical grouping of devices, typically by physical location or purpose. For example, a site might be a data center, an office building, or a distributed network of servers.",
-                        Attributes: map[string]*Attribute{
-                            "id": {
-                                Name:        "ID",
-                                Description: "The unique numeric ID of the site.",
-                                Type:        AttributeTypeString,
-                                IsKey:       true,
-                                IsNullable:  true,
-                            },
-                            "name": {
-                                Name:        "Name",
-                                Description: "The name of the site.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Value:       "Test Site",
-                                IsNullable:  true,
-                            },
-                            "slug": {
-                                Name:        "Slug",
-                                Description: "A unique slug identifier for the site.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Pattern:     "^[-a-zA-Z0-9_]+$",
-                                Value:       "test-site",
-                                IsNullable:  true,
-                            },
-                            "description": {
-                                Name:         "Description",
-                                Description:  "A brief description of the site.",
-                                Type:         AttributeTypeString,
-                                MaxLength:    200,
-                                IsNullable:   false,
-                                DefaultValue: "",
-                            },
-                        },
-                        Associations: map[string]*Association{
-                            "tenant": {
-                                Name:        "Tenant",
-                                Description: "The tenant to which this site is assigned.",
-                                Type:        "site",
-                                Min:         0,
-                                Max:         1,
-                                IsNullable:  true,
-                            },
-                        },
-                    },
-                },
-            },
-            "ipam": {
-                Name:        "ipam",
-                Description: "IP Address Management",
-                Resources: map[string]*Resource{
-                    "prefix": {
-                        Name:        "prefix",
-                        Plural:      "prefixes",
-                        Description: "A prefix represents an assignable range of IP addresses",
-                        Attributes: map[string]*Attribute{
-                            "id": {
-                                Name:        "ID",
-                                Description: "The unique numeric ID of the prefix.",
-                                Type:        AttributeTypeString,
-                                IsKey:       true,
-                                Value:       "123",
-                                IsNullable:  true,
-                            },
-                            "prefix": {
-                                Name:        "Prefix",
-                                Description: "The prefix address in CIDR notation.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   43,
-                                MinLength:   1,
-                                Pattern:     "^[0-9a-fA-F.:]+/[0-9]+$",
-                                Value:       "10.0.0.0/24",
-                                IsNullable:  true,
-                            },
-                            "description": {
-                                Name:         "Description",
-                                Description:  "A brief description of the prefix.",
-                                Type:         AttributeTypeString,
-                                MaxLength:    200,
-                                IsNullable:   false,
-                                DefaultValue: "",
-                            },
-                        },
-                        Associations: map[string]*Association{
-                            "site": {
-                                Name:        "Site",
-                                Description: "The site to which this prefix is assigned.",
-                                Type:        "site",
-                                Min:         0,
-                                Max:         1,
-                                IsNullable:  true,
-                            },
-                            "tenant": {
-                                Name:        "Tenant",
-                                Description: "The tenant to which this prefix is assigned.",
-                                Type:        "tenant",
-                                Min:         0,
-                                Max:         1,
-                                IsNullable:  true,
-                            },
-                            "role": {
-                                Name:        "Role",
-                                Description: "The role to which this prefix is assigned.",
-                                Type:        "role",
-                                Min:         0,
-                                Max:         1,
-                                IsNullable:  true,
-                            },
-                        },
-                    },
-                    "role": {
-                        Name:        "role",
-                        Plural:      "roles",
-                        Description: "A role indicates the function of a prefix or VLAN. For example, you might define Data, Voice, and Security roles. A role can be assigned to multiple prefixes and VLANs.",
-                        Attributes: map[string]*Attribute{
-                            "id": {
-                                Name:        "ID",
-                                Description: "The unique numeric ID of the role.",
-                                Type:        AttributeTypeString,
-                                IsKey:       true,
-                                IsNullable:  true,
-                            },
-                            "name": {
-                                Name:        "Name",
-                                Description: "The name of the role.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Value:       "Test Role",
-                                IsNullable:  true,
-                            },
-                            "slug": {
-                                Name:        "Slug",
-                                Description: "A unique slug identifier for the role.",
-                                Type:        AttributeTypeString,
-                                MaxLength:   100,
-                                MinLength:   1,
-                                Pattern:     "^[-a-zA-Z0-9_]+$",
-                                Value:       "test-role",
-                                IsNullable:  true,
-                            },
-                            "description": {
-                                Name:         "Description",
-                                Description:  "A brief description of the role.",
-                                Type:         AttributeTypeString,
-                                MaxLength:    200,
-                                IsNullable:   false,
-                                DefaultValue: "",
-                            },
+                        "description": {
+                            Name:         "Description",
+                            Description:  "A brief description of the tenant group.",
+                            Type:         AttributeTypeString,
+                            MaxLength:    200,
+                            IsNullable:   false,
+                            DefaultValue: "",
                         },
                     },
                 },
             },
         },
-    }
+        "dcim": {
+            Name:        "dcim",
+            Description: "Data Center Infrastructure Management",
+            Resources: map[string]*Resource{
+                "manufacturer": {
+                    Name:        "manufacturer",
+                    Plural:      "manufacturers",
+                    Description: "A manufacturer represents a company which produces hardware devices; for example, Juniper or Dell.",
+                    Attributes: map[string]*Attribute{
+                        "id": {
+                            Name:        "ID",
+                            Description: "The unique numeric ID of the manufacturer.",
+                            Type:        AttributeTypeString,
+                            IsKey:       true,
+                            IsNullable:  true,
+                        },
+                        "name": {
+                            Name:        "Name",
+                            Description: "The name of the manufacturer.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Value:       "Test Manufacturer",
+                            IsNullable:  true,
+                        },
+                        "slug": {
+                            Name:        "Slug",
+                            Description: "A unique slug identifier for the manufacturer.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Pattern:     "^[-a-zA-Z0-9_]+$",
+                            Value:       "test-manufacturer",
+                            IsNullable:  true,
+                        },
+                        "description": {
+                            Name:         "Description",
+                            Description:  "A brief description of the manufacturer.",
+                            Type:         AttributeTypeString,
+                            MaxLength:    200,
+                            IsNullable:   false,
+                            DefaultValue: "",
+                        },
+                    },
+                },
+                "device type": {
+                    Name:        "device type",
+                    Plural:      "device types",
+                    Description: "A device type represents a particular manufacturer's model of device. For example, N9K-C9396PX or PowerEdge R630.",
+                    Attributes: map[string]*Attribute{
+                        "id": {
+                            Name:        "ID",
+                            Description: "The unique numeric ID of the device type.",
+                            Type:        AttributeTypeString,
+                            IsKey:       true,
+                            IsNullable:  true,
+                        },
+                        "model": {
+                            Name:        "Model",
+                            Description: "The model name of the device type.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Value:       "Test Device Type",
+                            IsNullable:  true,
+                        },
+                        "part number": {
+                            Name:        "Part Number",
+                            Description: "The part number associated with the device type.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   50,
+                            MinLength:   0,
+                            IsNullable:  false,
+                        },
+                        "slug": {
+                            Name:        "Slug",
+                            Description: "A unique slug identifier for the device type.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Pattern:     "^[-a-zA-Z0-9_]+$",
+                            Value:       "test-device-type",
+                            IsNullable:  true,
+                        },
+                        "description": {
+                            Name:         "Description",
+                            Description:  "A brief description of the device type.",
+                            Type:         AttributeTypeString,
+                            MaxLength:    200,
+                            IsNullable:   false,
+                            DefaultValue: "",
+                        },
+                        "uheight": {
+                            Name:        "U Height",
+                            Description: "The height of the device type, in rack units.",
+                            Type:        AttributeTypeFloat64,
+                            IsNullable:  true,
+                        },
+                        "weight": {
+                            Name:        "Weight",
+                            Description: "The weight of the device type.",
+                            Type:        AttributeTypeFloat64,
+                            IsNullable:  true,
+                        },
+                        "is full depth": {
+                            Name:        "Is Full Depth",
+                            Description: "Indicates whether this device type consumes the full depth of its parent rack.",
+                            Type:        AttributeTypeBool,
+                            IsNullable:  false,
+                        },
+
+                    },
+                    Associations: map[string]*Association{
+                        "manufacturer": {
+                            Name:        "Manufacturer",
+                            Description: "The device type's manufacturer.",
+                            Type:        "manufacturer",
+                            Min:         1,
+                            Max:         1,
+                            IsNullable:  true,
+                        },
+                    },
+                },
+                "site": {
+                    Name:        "site",
+                    Plural:      "sites",
+                    Description: "A site represents a logical grouping of devices, typically by physical location or purpose. For example, a site might be a data center, an office building, or a distributed network of servers.",
+                    Attributes: map[string]*Attribute{
+                        "id": {
+                            Name:        "ID",
+                            Description: "The unique numeric ID of the site.",
+                            Type:        AttributeTypeString,
+                            IsKey:       true,
+                            IsNullable:  true,
+                        },
+                        "name": {
+                            Name:        "Name",
+                            Description: "The name of the site.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Value:       "Test Site",
+                            IsNullable:  true,
+                        },
+                        "slug": {
+                            Name:        "Slug",
+                            Description: "A unique slug identifier for the site.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Pattern:     "^[-a-zA-Z0-9_]+$",
+                            Value:       "test-site",
+                            IsNullable:  true,
+                        },
+                        "description": {
+                            Name:         "Description",
+                            Description:  "A brief description of the site.",
+                            Type:         AttributeTypeString,
+                            MaxLength:    200,
+                            IsNullable:   false,
+                            DefaultValue: "",
+                        },
+                    },
+                    Associations: map[string]*Association{
+                        "tenant": {
+                            Name:        "Tenant",
+                            Description: "The tenant to which this site is assigned.",
+                            Type:        "site",
+                            Min:         0,
+                            Max:         1,
+                            IsNullable:  true,
+                        },
+                    },
+                },
+            },
+        },
+        "ipam": {
+            Name:        "ipam",
+            Description: "IP Address Management",
+            Resources: map[string]*Resource{
+                "prefix": {
+                    Name:        "prefix",
+                    Plural:      "prefixes",
+                    Description: "A prefix represents an assignable range of IP addresses",
+                    Attributes: map[string]*Attribute{
+                        "id": {
+                            Name:        "ID",
+                            Description: "The unique numeric ID of the prefix.",
+                            Type:        AttributeTypeString,
+                            IsKey:       true,
+                            Value:       "123",
+                            IsNullable:  true,
+                        },
+                        "prefix": {
+                            Name:        "Prefix",
+                            Description: "The prefix address in CIDR notation.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   43,
+                            MinLength:   1,
+                            Pattern:     "^[0-9a-fA-F.:]+/[0-9]+$",
+                            Value:       "10.0.0.0/24",
+                            IsNullable:  true,
+                        },
+                        "description": {
+                            Name:         "Description",
+                            Description:  "A brief description of the prefix.",
+                            Type:         AttributeTypeString,
+                            MaxLength:    200,
+                            IsNullable:   false,
+                            DefaultValue: "",
+                        },
+                    },
+                    Associations: map[string]*Association{
+                        "site": {
+                            Name:        "Site",
+                            Description: "The site to which this prefix is assigned.",
+                            Type:        "site",
+                            Min:         0,
+                            Max:         1,
+                            IsNullable:  true,
+                        },
+                        "tenant": {
+                            Name:        "Tenant",
+                            Description: "The tenant to which this prefix is assigned.",
+                            Type:        "tenant",
+                            Min:         0,
+                            Max:         1,
+                            IsNullable:  true,
+                        },
+                        "role": {
+                            Name:        "Role",
+                            Description: "The role to which this prefix is assigned.",
+                            Type:        "role",
+                            Min:         0,
+                            Max:         1,
+                            IsNullable:  true,
+                        },
+                    },
+                },
+                "role": {
+                    Name:        "role",
+                    Plural:      "roles",
+                    Description: "A role indicates the function of a prefix or VLAN. For example, you might define Data, Voice, and Security roles. A role can be assigned to multiple prefixes and VLANs.",
+                    Attributes: map[string]*Attribute{
+                        "id": {
+                            Name:        "ID",
+                            Description: "The unique numeric ID of the role.",
+                            Type:        AttributeTypeString,
+                            IsKey:       true,
+                            IsNullable:  true,
+                        },
+                        "name": {
+                            Name:        "Name",
+                            Description: "The name of the role.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Value:       "Test Role",
+                            IsNullable:  true,
+                        },
+                        "slug": {
+                            Name:        "Slug",
+                            Description: "A unique slug identifier for the role.",
+                            Type:        AttributeTypeString,
+                            MaxLength:   100,
+                            MinLength:   1,
+                            Pattern:     "^[-a-zA-Z0-9_]+$",
+                            Value:       "test-role",
+                            IsNullable:  true,
+                        },
+                        "description": {
+                            Name:         "Description",
+                            Description:  "A brief description of the role.",
+                            Type:         AttributeTypeString,
+                            MaxLength:    200,
+                            IsNullable:   false,
+                            DefaultValue: "",
+                        },
+                    },
+                },
+            },
+        },
+    },
+}
+
+func Generate(outputPath string) error {
 
     c.resourceMap = make(map[string]*Resource)
     for _, service := range c.Services {
@@ -574,20 +441,6 @@ func Generate(outputPath string) error {
         return fmt.Errorf("error generating: %s", err)
     }
 
-    return nil
-}
-
-func Save(c Configuration) error {
-    fout, err := os.Create("config.yaml")
-    if err != nil {
-        return err
-    }
-    defer fout.Close()
-
-    err = yaml.NewEncoder(fout).Encode(c)
-    if err != nil {
-        return err
-    }
     return nil
 }
 
