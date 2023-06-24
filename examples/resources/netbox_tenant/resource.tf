@@ -1,6 +1,6 @@
 resource "netbox_tenant" "this" {
-  name = "Test Tenant"
-  slug = "test-tenant"
+  name = "name1"
+  slug = "name-1"
 }
 
 

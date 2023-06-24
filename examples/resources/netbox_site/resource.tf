@@ -1,6 +1,6 @@
 resource "netbox_site" "this" {
-  name = "Test Site"
-  slug = "test-site"
+  name = "name1"
+  slug = "name-1"
 }
 
 

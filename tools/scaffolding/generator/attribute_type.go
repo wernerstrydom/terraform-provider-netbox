@@ -13,6 +13,9 @@ const (
     AttributeTypeFloat64
     AttributeTypeBool
     AttributeTypeId
+    AttributeTypeName
+    AttributeTypeSlug
+    AttributeTypeDescription
 )
 
 var AttributeTypes = []AttributeType{
@@ -22,24 +25,33 @@ var AttributeTypes = []AttributeType{
     AttributeTypeFloat64,
     AttributeTypeBool,
     AttributeTypeId,
+    AttributeTypeName,
+    AttributeTypeSlug,
+    AttributeTypeDescription,
 }
 
 var AttributeTypeMap = map[string]AttributeType{
-    "string":  AttributeTypeString,
-    "int":     AttributeTypeInt,
-    "int64":   AttributeTypeInt64,
-    "float64": AttributeTypeFloat64,
-    "bool":    AttributeTypeBool,
-    "id":      AttributeTypeId,
+    "string":      AttributeTypeString,
+    "int":         AttributeTypeInt,
+    "int64":       AttributeTypeInt64,
+    "float64":     AttributeTypeFloat64,
+    "bool":        AttributeTypeBool,
+    "id":          AttributeTypeId,
+    "name":        AttributeTypeName,
+    "slug":        AttributeTypeSlug,
+    "description": AttributeTypeDescription,
 }
 
 var AttributeTypeStringMap = map[AttributeType]string{
-    AttributeTypeString:  "string",
-    AttributeTypeInt:     "int",
-    AttributeTypeInt64:   "int64",
-    AttributeTypeFloat64: "float64",
-    AttributeTypeBool:    "bool",
-    AttributeTypeId:      "string",
+    AttributeTypeString:      "string",
+    AttributeTypeInt:         "int",
+    AttributeTypeInt64:       "int64",
+    AttributeTypeFloat64:     "float64",
+    AttributeTypeBool:        "bool",
+    AttributeTypeId:          "id",
+    AttributeTypeName:        "name",
+    AttributeTypeSlug:        "slug",
+    AttributeTypeDescription: "description",
 }
 
 func ParseAttributeType(s string) (AttributeType, error) {

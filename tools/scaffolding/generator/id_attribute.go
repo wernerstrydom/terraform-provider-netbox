@@ -44,8 +44,10 @@ func (a *IdAttribute) IsReadOnly() bool {
 
 func (a *IdAttribute) MarshalYAML() (interface{}, error) {
     var data struct {
-        Description string `yaml:"description,omitempty"`
+        Type        AttributeType `yaml:"type"`
+        Description string        `yaml:"description,omitempty"`
     }
+    data.Type = AttributeTypeId
     data.Description = a.description
     return data, nil
 }

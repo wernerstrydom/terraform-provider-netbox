@@ -1,6 +1,6 @@
 resource "netbox_device_type" "this" {
   model         = "Test Device Type"
-  slug          = "test-device-type"
+  slug          = "name-1"
   is_full_depth = "false"
 }
 

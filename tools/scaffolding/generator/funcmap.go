@@ -31,6 +31,12 @@ var funcMap = template.FuncMap{
             return "Bool"
         case AttributeTypeId:
             return "String"
+        case AttributeTypeName:
+            return "String"
+        case AttributeTypeSlug:
+            return "String"
+        case AttributeTypeDescription:
+            return "String"
         default:
             panic(fmt.Sprintf("unknown attribute type: %d", a.Type()))
         }

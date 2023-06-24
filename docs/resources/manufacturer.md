@@ -14,8 +14,8 @@ description: |-
 
 ```terraform
 resource "netbox_manufacturer" "this" {
-  name = "Test Manufacturer"
-  slug = "test-manufacturer"
+  name = "name1"
+  slug = "name-1"
 }
 
 

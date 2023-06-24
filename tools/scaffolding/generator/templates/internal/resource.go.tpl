@@ -95,7 +95,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Schema(
                 {{ if $attribute.IsRequired }}Required:{{else}}Optional:{{end}}    true,
                 Description: "{{ $attribute.Description }}",
                 PlanModifiers: []planmodifier.{{ type $attribute }}{
-                    {{ $attribute.Type }}planmodifier.UseStateForUnknown(),
+                    {{ $attribute | type | lower }}planmodifier.UseStateForUnknown(),
                 },
             },{{ end }}
         {{- range $name, $association := .Resource.Associations }}

@@ -37,35 +37,17 @@ var c = Configuration{
                     Plural:      "tenants",
                     Description: "A tenant represents a discrete grouping of resources used for administrative purposes.",
                     Attributes: []Attribute{
-                        &StringAttribute{
-                            name:        "ID",
+                        &IdAttribute{
                             description: "The unique numeric ID of the tenant.",
-                            isKey:       true,
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:        "Name",
+                        &NameAttribute{
                             description: "The name of the tenant.",
-                            maxLength:   100,
-                            minLength:   1,
-                            value:       "Test Tenant",
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:        "Slug",
+                        &SlugAttribute{
                             description: "A unique slug identifier for the tenant.",
-                            maxLength:   100,
-                            minLength:   1,
-                            pattern:     "^[-a-zA-Z0-9_]+$",
-                            value:       "test-tenant",
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:         "Description",
-                            description:  "A brief description of the tenant.",
-                            maxLength:    200,
-                            isNullable:   false,
-                            defaultValue: ptr.String(""),
+                        &DescriptionAttribute{
+                            description: "A brief description of the tenant.",
                         },
                     },
                     Associations: []Association{
@@ -84,35 +66,17 @@ var c = Configuration{
                     Plural:      "tenant groups",
                     Description: "A tenant group represents a collection of tenants.",
                     Attributes: []Attribute{
-                        &StringAttribute{
-                            name:        "ID",
+                        &IdAttribute{
                             description: "The unique numeric ID of the tenant group.",
-                            isKey:       true,
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:        "Name",
+                        &NameAttribute{
                             description: "The name of the tenant group.",
-                            maxLength:   100,
-                            minLength:   1,
-                            value:       "Test Tenant Group",
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:        "Slug",
+                        &SlugAttribute{
                             description: "A unique slug identifier for the tenant group.",
-                            maxLength:   100,
-                            minLength:   1,
-                            pattern:     "^[-a-zA-Z0-9_]+$",
-                            value:       "test-tenant-group",
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:         "Description",
-                            description:  "A brief description of the tenant group.",
-                            maxLength:    200,
-                            isNullable:   false,
-                            defaultValue: ptr.String(""),
+                        &DescriptionAttribute{
+                            description: "A brief description of the tenant group.",
                         },
                     },
                 },
@@ -130,29 +94,14 @@ var c = Configuration{
                         &IdAttribute{
                             description: "The unique numeric ID of the manufacturer.",
                         },
-                        &StringAttribute{
-                            name:        "Name",
+                        &NameAttribute{
                             description: "The name of the manufacturer.",
-                            maxLength:   100,
-                            minLength:   1,
-                            value:       "Test Manufacturer",
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:        "Slug",
+                        &SlugAttribute{
                             description: "A unique slug identifier for the manufacturer.",
-                            maxLength:   100,
-                            minLength:   1,
-                            pattern:     "^[-a-zA-Z0-9_]+$",
-                            value:       "test-manufacturer",
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:         "Description",
-                            description:  "A brief description of the manufacturer.",
-                            maxLength:    200,
-                            isNullable:   false,
-                            defaultValue: ptr.String(""),
+                        &DescriptionAttribute{
+                            description: "A brief description of the manufacturer.",
                         },
                     },
                 },
@@ -179,21 +128,11 @@ var c = Configuration{
                             minLength:   0,
                             isNullable:  false,
                         },
-                        &StringAttribute{
-                            name:        "Slug",
+                        &SlugAttribute{
                             description: "A unique slug identifier for the device type.",
-                            maxLength:   100,
-                            minLength:   1,
-                            pattern:     "^[-a-zA-Z0-9_]+$",
-                            value:       "test-device-type",
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:         "Description",
-                            description:  "A brief description of the device type.",
-                            maxLength:    200,
-                            isNullable:   false,
-                            defaultValue: ptr.String(""),
+                        &DescriptionAttribute{
+                            description: "A brief description of the device type.",
                         },
                         &Float64Attribute{
                             name:        "U Height",
@@ -230,29 +169,14 @@ var c = Configuration{
                         &IdAttribute{
                             description: "The unique numeric ID of the site.",
                         },
-                        &StringAttribute{
-                            name:        "Name",
+                        &NameAttribute{
                             description: "The name of the site.",
-                            maxLength:   100,
-                            minLength:   1,
-                            value:       "Test Site",
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:        "Slug",
+                        &SlugAttribute{
                             description: "A unique slug identifier for the site.",
-                            maxLength:   100,
-                            minLength:   1,
-                            pattern:     "^[-a-zA-Z0-9_]+$",
-                            value:       "test-site",
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:         "Description",
-                            description:  "A brief description of the site.",
-                            maxLength:    200,
-                            isNullable:   false,
-                            defaultValue: ptr.String(""),
+                        &DescriptionAttribute{
+                            description: "A brief description of the site.",
                         },
                     },
                     Associations: []Association{
@@ -332,22 +256,11 @@ var c = Configuration{
                         &IdAttribute{
                             description: "The unique numeric ID of the role.",
                         },
-                        &StringAttribute{
-                            name:        "Name",
+                        &NameAttribute{
                             description: "The name of the role.",
-                            maxLength:   100,
-                            minLength:   1,
-                            value:       "Test Role",
-                            isNullable:  true,
                         },
-                        &StringAttribute{
-                            name:        "Slug",
+                        &SlugAttribute{
                             description: "A unique slug identifier for the role.",
-                            maxLength:   100,
-                            minLength:   1,
-                            pattern:     "^[-a-zA-Z0-9_]+$",
-                            value:       "test-role",
-                            isNullable:  true,
                         },
                         &StringAttribute{
                             name:         "Description",

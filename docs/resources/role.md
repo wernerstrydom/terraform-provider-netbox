@@ -14,8 +14,8 @@ description: |-
 
 ```terraform
 resource "netbox_role" "this" {
-  name = "Test Role"
-  slug = "test-role"
+  name = "name1"
+  slug = "name-1"
 }
 
 
