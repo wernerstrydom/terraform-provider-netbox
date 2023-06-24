@@ -14,9 +14,8 @@ description: |-
 
 ```terraform
 resource "netbox_device_type" "this" {
-  model         = "Test Device Type"
-  slug          = "name-1"
-  is_full_depth = "false"
+  model = "Test Device Type"
+  slug  = "name-1"
 }
 
 
@@ -65,7 +64,6 @@ output "is_full_depth" {
 
 ### Required
 
-- `is_full_depth` (Boolean) Indicates whether this device type consumes the full depth of its parent rack.
 - `model` (String) The model name of the device type.
 - `slug` (String) A unique slug identifier for the device type.
 
@@ -73,6 +71,7 @@ output "is_full_depth" {
 
 - `description` (String) A brief description of the device type.
 - `id` (String) The unique numeric ID of the device type.
+- `is_full_depth` (Boolean) Indicates whether this device type consumes the full depth of its parent rack.
 - `manufacturer_id` (Number) The device type's manufacturer.
 - `part_number` (String) The part number associated with the device type.
 - `u_height` (Number) The height of the device type, in rack units.
