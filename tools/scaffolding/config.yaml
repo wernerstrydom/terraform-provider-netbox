@@ -77,11 +77,7 @@ services:
         plural: manufacturers
         description: A manufacturer represents a company which produces hardware devices; for example, Juniper or Dell.
         attributes:
-          - name: ID
-            description: The unique numeric ID of the manufacturer.
-            type: string
-            key: true
-            nullable: true
+          - description: The unique numeric ID of the manufacturer.
           - name: Name
             description: The name of the manufacturer.
             value: Test Manufacturer
@@ -108,11 +104,7 @@ services:
         plural: device types
         description: A device type represents a particular manufacturer's model of device. For example, N9K-C9396PX or PowerEdge R630.
         attributes:
-          - name: ID
-            description: The unique numeric ID of the device type.
-            type: string
-            key: true
-            nullable: true
+          - description: The unique numeric ID of the device type.
           - name: Model
             description: The model name of the device type.
             value: Test Device Type
@@ -161,11 +153,7 @@ services:
         plural: sites
         description: A site represents a logical grouping of devices, typically by physical location or purpose. For example, a site might be a data center, an office building, or a distributed network of servers.
         attributes:
-          - name: ID
-            description: The unique numeric ID of the site.
-            type: string
-            key: true
-            nullable: true
+          - description: The unique numeric ID of the site.
           - name: Name
             description: The name of the site.
             value: Test Site
@@ -201,12 +189,7 @@ services:
         plural: prefixes
         description: A prefix represents an assignable range of IP addresses
         attributes:
-          - name: ID
-            description: The unique numeric ID of the prefix.
-            value: "123"
-            type: string
-            key: true
-            nullable: true
+          - description: The unique numeric ID of the prefix.
           - name: Prefix
             description: The prefix address in CIDR notation.
             value: 10.0.0.0/24
@@ -242,11 +225,7 @@ services:
         plural: roles
         description: A role indicates the function of a prefix or VLAN. For example, you might define Data, Voice, and Security roles. A role can be assigned to multiple prefixes and VLANs.
         attributes:
-          - name: ID
-            description: The unique numeric ID of the role.
-            type: string
-            key: true
-            nullable: true
+          - description: The unique numeric ID of the role.
           - name: Name
             description: The name of the role.
             value: Test Role
