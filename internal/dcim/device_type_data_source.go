@@ -13,12 +13,15 @@ import (
 )
 
 type deviceTypeDataSourceModel struct {
-	Description    types.String `tfsdk:"description"`
-	ID             types.String `tfsdk:"id"`
-	Model          types.String `tfsdk:"model"`
-	PartNumber     types.String `tfsdk:"part_number"`
-	Slug           types.String `tfsdk:"slug"`
-	ManufacturerID types.Int64  `tfsdk:"manufacturer_id"`
+	Description    types.String  `tfsdk:"description"`
+	ID             types.String  `tfsdk:"id"`
+	IsFullDepth    types.Bool    `tfsdk:"is_full_depth"`
+	Model          types.String  `tfsdk:"model"`
+	PartNumber     types.String  `tfsdk:"part_number"`
+	Slug           types.String  `tfsdk:"slug"`
+	UHeight        types.Float64 `tfsdk:"u_height"`
+	Weight         types.Float64 `tfsdk:"weight"`
+	ManufacturerID types.Int64   `tfsdk:"manufacturer_id"`
 }
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -82,6 +85,10 @@ func (d *deviceTypeDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 				Required:    true,
 				Description: "The unique numeric ID of the device type.",
 			},
+			"is_full_depth": schema.BoolAttribute{
+				Computed:    true,
+				Description: "Indicates whether this device type consumes the full depth of its parent rack.",
+			},
 			"model": schema.StringAttribute{
 				Computed:    true,
 				Description: "The model name of the device type.",
@@ -93,6 +100,14 @@ func (d *deviceTypeDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 			"slug": schema.StringAttribute{
 				Computed:    true,
 				Description: "A unique slug identifier for the device type.",
+			},
+			"u_height": schema.Float64Attribute{
+				Computed:    true,
+				Description: "The height of the device type, in rack units.",
+			},
+			"weight": schema.Float64Attribute{
+				Computed:    true,
+				Description: "The weight of the device type.",
 			},
 			"manufacturer_id": schema.Int64Attribute{
 				Description: "The device type's manufacturer.",
@@ -144,9 +159,12 @@ func (d *deviceTypeDataSource) Read(
 
 	payload := resp.Payload
 	state.Description = types.StringValue(payload.Description)
+	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 	state.Model = types.StringPointerValue(payload.Model)
 	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.UHeight = types.Float64PointerValue(payload.UHeight)
+	state.Weight = types.Float64PointerValue(payload.Weight)
 
 	var manufacturerID *int64
 	if payload.Manufacturer == nil {

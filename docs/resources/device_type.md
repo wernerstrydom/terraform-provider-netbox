@@ -29,6 +29,11 @@ output "id" {
 }
 
 
+output "is_full_depth" {
+    value = netbox_device_type.this.is_full_depth
+}
+
+
 output "model" {
     value = netbox_device_type.this.model
 }
@@ -41,6 +46,16 @@ output "part_number" {
 
 output "slug" {
     value = netbox_device_type.this.slug
+}
+
+
+output "u_height" {
+    value = netbox_device_type.this.u_height
+}
+
+
+output "weight" {
+    value = netbox_device_type.this.weight
 }
 ```
 
@@ -56,8 +71,11 @@ output "slug" {
 
 - `description` (String) A brief description of the device type.
 - `id` (String) The unique numeric ID of the device type.
+- `is_full_depth` (Boolean) Indicates whether this device type consumes the full depth of its parent rack.
 - `manufacturer_id` (Number) The device type's manufacturer.
 - `part_number` (String) The part number associated with the device type.
+- `u_height` (Number) The height of the device type, in rack units.
+- `weight` (Number) The weight of the device type.
 
 ## Import
 

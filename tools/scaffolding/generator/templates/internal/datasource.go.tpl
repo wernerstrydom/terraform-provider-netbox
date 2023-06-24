@@ -14,7 +14,7 @@ import (
 
 type {{ camelCase .Resource.Name }}DataSourceModel struct {
 {{ range $name, $attribute := .Resource.Attributes }}
-    {{ pascalCase $attribute.Name }} types.String `tfsdk:"{{ snakeCase $attribute.Name }}"`{{ end }}
+    {{ pascalCase $attribute.Name }} types.{{ type $attribute }} `tfsdk:"{{ snakeCase $attribute.Name }}"`{{ end }}
 {{- range $name, $association := .Resource.Associations }}
     {{ pascalCase $association.Name }}ID types.Int64 `tfsdk:"{{ snakeCase $association.Name }}_id"`{{ end }}
 }
@@ -73,7 +73,7 @@ func (d *{{ camelCase .Resource.Name }}DataSource) Schema(_ context.Context, _ d
     response.Schema = schema.Schema{
         Attributes: map[string]schema.Attribute{
         {{- range $name, $attribute := .Resource.Attributes }}
-            "{{ snakeCase $attribute.Name }}": schema.StringAttribute{
+            "{{ snakeCase $attribute.Name }}": schema.{{ type $attribute }}Attribute{
                 {{ if eq $attribute.Name "ID" }}Required:    true,{{else}}Computed:    true,{{ end }}
                 Description: "{{ $attribute.Description }}",
             },{{ end }}
@@ -128,7 +128,7 @@ func (d *{{ camelCase .Resource.Name }}DataSource) Read(
 
     payload := resp.Payload
     {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
-    state.{{ pascalCase $attribute.Name }} = types.String{{if $attribute.IsNullable }}Pointer{{end}}Value(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
+    state.{{ pascalCase $attribute.Name }} = types.{{ type $attribute }}{{if $attribute.IsNullable }}Pointer{{end}}Value(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
 
     {{ range $name, $association := .Resource.Associations }}
     var {{ camelCase $association.Name }}ID *int64

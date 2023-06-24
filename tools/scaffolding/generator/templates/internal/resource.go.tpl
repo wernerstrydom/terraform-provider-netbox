@@ -31,7 +31,7 @@ var (
 
 type {{ camelCase .Resource.Name }}ResourceModel struct {
 {{ range $name, $attribute := .Resource.Attributes }}
-    {{ pascalCase $attribute.Name }} types.String `tfsdk:"{{ snakeCase $attribute.Name }}"`{{ end }}
+    {{ pascalCase $attribute.Name }} types.{{ type $attribute }} `tfsdk:"{{ snakeCase $attribute.Name }}"`{{ end }}
 {{- range $name, $association := .Resource.Associations }}
     {{ pascalCase $association.Name }}ID types.Int64 `tfsdk:"{{ snakeCase $association.Name }}_id"`{{ end }}
 }
@@ -90,12 +90,12 @@ func (p *{{ camelCase .Resource.Name }}Resource) Schema(
     response.Schema = schema.Schema{
         Attributes: map[string]schema.Attribute{
         {{- range $name, $attribute := .Resource.Attributes }}
-            "{{ snakeCase $attribute.Name }}": schema.StringAttribute{
+            "{{ snakeCase $attribute.Name }}": schema.{{ type $attribute }}Attribute{
                 {{ if $attribute.IsKey }}Computed:    true,{{end}}
                 {{ if $attribute.IsRequired }}Required:{{else}}Optional:{{end}}    true,
                 Description: "{{ $attribute.Description }}",
-                PlanModifiers: []planmodifier.String{
-                    stringplanmodifier.UseStateForUnknown(),
+                PlanModifiers: []planmodifier.{{ type $attribute }}{
+                    {{ $attribute.Type }}planmodifier.UseStateForUnknown(),
                 },
             },{{ end }}
         {{- range $name, $association := .Resource.Associations }}
@@ -125,7 +125,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Create(
     params := {{ snakeCase .ServicePackage }}.{{ pascalCase .ServicePackage }}{{ pascalCase .Resource.Plural }}CreateParams{
         Data: &models.{{ .Resource.WriteableModel }}{
         {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
-            {{ pascalCase $attribute.Name }}: state.{{ pascalCase $attribute.Name }}.ValueString{{if $attribute.IsNullable }}Pointer{{end}}(),{{ end }}{{ end }}
+            {{ pascalCase $attribute.Name }}: state.{{ pascalCase $attribute.Name }}.Value{{ type $attribute }}{{if $attribute.IsNullable }}Pointer{{end}}(),{{ end }}{{ end }}
         {{- range $name, $association := .Resource.Associations }}
             {{ pascalCase $association.Name }}: state.{{ pascalCase $association.Name }}ID.ValueInt64{{if $association.IsNullable }}Pointer{{end}}(),{{ end }}
         },
@@ -143,7 +143,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Create(
 
     payload := resp.Payload
     {{- range $name, $attribute := .Resource.Attributes }}{{ if $attribute.IsKey }}
-    state.{{ pascalCase $attribute.Name }} = types.StringValue(fmt.Sprintf("%d", payload.{{ pascalCase $attribute.Name }})){{ end }}{{ end }}
+    state.{{ pascalCase $attribute.Name }} = types.{{ type $attribute }}Value(fmt.Sprintf("%d", payload.{{ pascalCase $attribute.Name }})){{ end }}{{ end }}
 
     {{ range $name, $association := .Resource.Associations }}
     var {{ camelCase $association.Name }}ID *int64
@@ -205,7 +205,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Read(
 
     payload := resp.Payload
     {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
-    state.{{ pascalCase $attribute.Name }} = types.String{{if $attribute.IsNullable }}Pointer{{end}}Value(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
+    state.{{ pascalCase $attribute.Name }} = types.{{ type $attribute }}{{if $attribute.IsNullable }}Pointer{{end}}Value(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
 
     {{ range $name, $association := .Resource.Associations }}
     var {{ camelCase $association.Name }}ID *int64
@@ -251,7 +251,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Update(
     params := &{{ snakeCase .ServicePackage }}.{{ pascalCase .ServicePackage }}{{ pascalCase .Resource.Plural }}UpdateParams{
         Data: &models.{{ .Resource.WriteableModel }}{
                       {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
-                          {{ pascalCase $attribute.Name }}: state.{{ pascalCase $attribute.Name }}.ValueString{{if $attribute.IsNullable }}Pointer{{end}}(),{{ end }}{{ end }}
+                          {{ pascalCase $attribute.Name }}: state.{{ pascalCase $attribute.Name }}.Value{{ type $attribute }}{{if $attribute.IsNullable }}Pointer{{end}}(),{{ end }}{{ end }}
                       {{- range $name, $association := .Resource.Associations }}
                           {{ pascalCase $association.Name }}: state.{{ pascalCase $association.Name }}ID.ValueInt64{{if $association.IsNullable }}Pointer{{end}}(),{{ end }}
                       },
@@ -270,7 +270,7 @@ func (p *{{ camelCase .Resource.Name }}Resource) Update(
 
     payload := resp.Payload
     {{- range $name, $attribute := .Resource.Attributes }}{{ if not $attribute.IsKey }}
-    state.{{ pascalCase $attribute.Name }} = types.String{{if $attribute.IsNullable }}Pointer{{end}}Value(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
+    state.{{ pascalCase $attribute.Name }} = types.{{ type $attribute }}{{if $attribute.IsNullable }}Pointer{{end}}Value(payload.{{ pascalCase $attribute.Name }}){{ end }}{{ end }}
 
     {{ range $name, $association := .Resource.Associations }}
     var {{ camelCase $association.Name }}ID *int64

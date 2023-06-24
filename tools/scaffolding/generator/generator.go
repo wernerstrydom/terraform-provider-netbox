@@ -95,7 +95,7 @@ type Attribute struct {
     Name         string        `yaml:"name,omitempty"`
     Description  string        `yaml:"description,omitempty"`
     Value        string        `yaml:"value,omitempty"`
-    Type         AttributeType `yaml:"type,omitempty"`
+    Type         AttributeType `yaml:"type"`
     ReadOnly     bool          `yaml:"readonly,omitempty"`
     MaxLength    int           `yaml:"maxLength,omitempty"`
     MinLength    int           `yaml:"minLength,omitempty"`
@@ -129,6 +129,23 @@ var funcMap = template.FuncMap{
     "snakeCase":  strcase.ToSnake,
     "kebabCase":  strcase.ToKebab,
     "delimited":  strcase.ToDelimited,
+    "type": func(a *Attribute) string {
+        switch a.Type {
+        case AttributeTypeString:
+            return "String"
+        case AttributeTypeInt:
+            return "Int"
+        case AttributeTypeInt64:
+            return "Int64"
+        case AttributeTypeFloat64:
+            return "Float64"
+        case AttributeTypeBool:
+            return "Bool"
+        default:
+            panic(fmt.Sprintf("unknown attribute type: %d", a.Type))
+        }
+    },
+
 }
 
 func init() {
@@ -156,7 +173,7 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the tenant.",
-                                Type:        AttributeTypeInt64,
+                                Type:        AttributeTypeString,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
@@ -254,7 +271,7 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the manufacturer.",
-                                Type:        AttributeTypeInt64,
+                                Type:        AttributeTypeString,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
@@ -295,7 +312,7 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the device type.",
-                                Type:        AttributeTypeInt64,
+                                Type:        AttributeTypeString,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
@@ -334,24 +351,24 @@ func Generate(outputPath string) error {
                                 IsNullable:   false,
                                 DefaultValue: "",
                             },
-                            // "uheight": {
-                            //     Name:        "U Height",
-                            //     Description: "The height of the device type, in rack units.",
-                            //     Type:        "float64",
-                            //     IsNullable:  true,
-                            // },
-                            // "weight": {
-                            //     Name:        "Weight",
-                            //     Description: "The weight of the device type, in kilograms.",
-                            //     Type:        "float64",
-                            //     IsNullable:  true,
-                            // },
-                            // "is full depth": {
-                            //     Name:        "Is Full Depth",
-                            //     Description: "Indicates whether this device type consumes the full depth of its parent rack.",
-                            //     Type:        "bool",
-                            //     IsNullable:  true,
-                            // },
+                            "uheight": {
+                                Name:        "U Height",
+                                Description: "The height of the device type, in rack units.",
+                                Type:        AttributeTypeFloat64,
+                                IsNullable:  true,
+                            },
+                            "weight": {
+                                Name:        "Weight",
+                                Description: "The weight of the device type.",
+                                Type:        AttributeTypeFloat64,
+                                IsNullable:  true,
+                            },
+                            "is full depth": {
+                                Name:        "Is Full Depth",
+                                Description: "Indicates whether this device type consumes the full depth of its parent rack.",
+                                Type:        AttributeTypeBool,
+                                IsNullable:  false,
+                            },
 
                         },
                         Associations: map[string]*Association{
@@ -373,7 +390,7 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the site.",
-                                Type:        AttributeTypeInt64,
+                                Type:        AttributeTypeString,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
@@ -430,7 +447,7 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the prefix.",
-                                Type:        AttributeTypeInt64,
+                                Type:        AttributeTypeString,
                                 IsKey:       true,
                                 Value:       "123",
                                 IsNullable:  true,
@@ -489,7 +506,7 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the role.",
-                                Type:        AttributeTypeInt64,
+                                Type:        AttributeTypeString,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
@@ -547,14 +564,14 @@ func Generate(outputPath string) error {
         }
     }
 
-    err := generate(c, outputPath)
-    if err != nil {
-        return fmt.Errorf("error generating: %s", err)
-    }
-
-    err = Save(c)
+    err := Save(c)
     if err != nil {
         return err
+    }
+
+    err = generate(c, outputPath)
+    if err != nil {
+        return fmt.Errorf("error generating: %s", err)
     }
 
     return nil
@@ -741,7 +758,7 @@ func generate(configuration Configuration, outputPath string) error {
 }
 
 func renderTemplate(templateBytes []byte, data TemplateData) ([]byte, error) {
-    t := template.Must(template.New("resource").Funcs(FuncMap).Parse(string(templateBytes)))
+    t := template.Must(template.New("resource").Funcs(funcMap).Parse(string(templateBytes)))
     var buf bytes.Buffer
     err := t.Execute(&buf, data)
     if err != nil {
@@ -750,14 +767,8 @@ func renderTemplate(templateBytes []byte, data TemplateData) ([]byte, error) {
     return buf.Bytes(), nil
 }
 
-var FuncMap = template.FuncMap{
-    "snakeCase":  strcase.ToSnake,
-    "pascalCase": strcase.ToCamel,
-    "camelCase":  strcase.ToLowerCamel,
-}
-
 func renderPath(pathTemplate string, data TemplateData) string {
-    t := template.Must(template.New("path").Funcs(FuncMap).Parse(pathTemplate))
+    t := template.Must(template.New("path").Funcs(funcMap).Parse(pathTemplate))
     var buf bytes.Buffer
     err := t.Execute(&buf, data)
     if err != nil {

@@ -30,12 +30,15 @@ var (
 )
 
 type deviceTypeResourceModel struct {
-	Description    types.String `tfsdk:"description"`
-	ID             types.String `tfsdk:"id"`
-	Model          types.String `tfsdk:"model"`
-	PartNumber     types.String `tfsdk:"part_number"`
-	Slug           types.String `tfsdk:"slug"`
-	ManufacturerID types.Int64  `tfsdk:"manufacturer_id"`
+	Description    types.String  `tfsdk:"description"`
+	ID             types.String  `tfsdk:"id"`
+	IsFullDepth    types.Bool    `tfsdk:"is_full_depth"`
+	Model          types.String  `tfsdk:"model"`
+	PartNumber     types.String  `tfsdk:"part_number"`
+	Slug           types.String  `tfsdk:"slug"`
+	UHeight        types.Float64 `tfsdk:"u_height"`
+	Weight         types.Float64 `tfsdk:"weight"`
+	ManufacturerID types.Int64   `tfsdk:"manufacturer_id"`
 }
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -106,6 +109,14 @@ func (p *deviceTypeResource) Schema(
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
+			"is_full_depth": schema.BoolAttribute{
+
+				Optional:    true,
+				Description: "Indicates whether this device type consumes the full depth of its parent rack.",
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
+			},
 			"model": schema.StringAttribute{
 
 				Required:    true,
@@ -128,6 +139,22 @@ func (p *deviceTypeResource) Schema(
 				Description: "A unique slug identifier for the device type.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"u_height": schema.Float64Attribute{
+
+				Optional:    true,
+				Description: "The height of the device type, in rack units.",
+				PlanModifiers: []planmodifier.Float64{
+					float64planmodifier.UseStateForUnknown(),
+				},
+			},
+			"weight": schema.Float64Attribute{
+
+				Optional:    true,
+				Description: "The weight of the device type.",
+				PlanModifiers: []planmodifier.Float64{
+					float64planmodifier.UseStateForUnknown(),
 				},
 			},
 			"manufacturer_id": schema.Int64Attribute{
@@ -156,9 +183,12 @@ func (p *deviceTypeResource) Create(
 	params := dcim.DcimDeviceTypesCreateParams{
 		Data: &models.WritableDeviceType{
 			Description:  state.Description.ValueString(),
+			IsFullDepth:  state.IsFullDepth.ValueBool(),
 			Model:        state.Model.ValueStringPointer(),
 			PartNumber:   state.PartNumber.ValueString(),
 			Slug:         state.Slug.ValueStringPointer(),
+			UHeight:      state.UHeight.ValueFloat64Pointer(),
+			Weight:       state.Weight.ValueFloat64Pointer(),
 			Manufacturer: state.ManufacturerID.ValueInt64Pointer(),
 		},
 		Context: ctx,
@@ -235,9 +265,12 @@ func (p *deviceTypeResource) Read(
 
 	payload := resp.Payload
 	state.Description = types.StringValue(payload.Description)
+	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 	state.Model = types.StringPointerValue(payload.Model)
 	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.UHeight = types.Float64PointerValue(payload.UHeight)
+	state.Weight = types.Float64PointerValue(payload.Weight)
 
 	var manufacturerID *int64
 	if payload.Manufacturer == nil {
@@ -282,9 +315,12 @@ func (p *deviceTypeResource) Update(
 	params := &dcim.DcimDeviceTypesUpdateParams{
 		Data: &models.WritableDeviceType{
 			Description:  state.Description.ValueString(),
+			IsFullDepth:  state.IsFullDepth.ValueBool(),
 			Model:        state.Model.ValueStringPointer(),
 			PartNumber:   state.PartNumber.ValueString(),
 			Slug:         state.Slug.ValueStringPointer(),
+			UHeight:      state.UHeight.ValueFloat64Pointer(),
+			Weight:       state.Weight.ValueFloat64Pointer(),
 			Manufacturer: state.ManufacturerID.ValueInt64Pointer(),
 		},
 		ID:      id,
@@ -302,9 +338,12 @@ func (p *deviceTypeResource) Update(
 
 	payload := resp.Payload
 	state.Description = types.StringValue(payload.Description)
+	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 	state.Model = types.StringPointerValue(payload.Model)
 	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.UHeight = types.Float64PointerValue(payload.UHeight)
+	state.Weight = types.Float64PointerValue(payload.Weight)
 
 	var manufacturerID *int64
 	if payload.Manufacturer == nil {

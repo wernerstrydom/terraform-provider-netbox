@@ -1,24 +1,24 @@
 resource "netbox_role" "this" {
-    name = "Test Role"
-    slug = "test-role"
+  name = "Test Role"
+  slug = "test-role"
 }
 
 
 output "description" {
-    value = netbox_role.this.description
+  value = netbox_role.this.description
 }
 
 
 output "id" {
-    value = netbox_role.this.id
+  value = netbox_role.this.id
 }
 
 
 output "name" {
-    value = netbox_role.this.name
+  value = netbox_role.this.name
 }
 
 
 output "slug" {
-    value = netbox_role.this.slug
+  value = netbox_role.this.slug
 }
