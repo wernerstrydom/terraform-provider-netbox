@@ -11,33 +11,29 @@ services:
                     description:
                         name: Description
                         description: A brief description of the device type.
-                        type: string
                         maxLength: 200
                         default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the device type.
-                        type: int64
+                        type: 2
                         key: true
                         nullable: true
                     model:
                         name: Model
                         description: The model name of the device type.
                         value: Test Device Type
-                        type: string
                         maxLength: 100
                         minLength: 1
                         nullable: true
                     part number:
                         name: Part Number
                         description: The part number associated with the device type.
-                        type: string
                         maxLength: 50
                     slug:
                         name: Slug
                         description: A unique slug identifier for the device type.
                         value: test-device-type
-                        type: string
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
@@ -60,20 +56,18 @@ services:
                     description:
                         name: Description
                         description: A brief description of the manufacturer.
-                        type: string
                         maxLength: 200
                         default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the manufacturer.
-                        type: int64
+                        type: 2
                         key: true
                         nullable: true
                     name:
                         name: Name
                         description: The name of the manufacturer.
                         value: Test Manufacturer
-                        type: string
                         maxLength: 100
                         minLength: 1
                         nullable: true
@@ -81,7 +75,6 @@ services:
                         name: Slug
                         description: A unique slug identifier for the manufacturer.
                         value: test-manufacturer
-                        type: string
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
@@ -96,20 +89,18 @@ services:
                     description:
                         name: Description
                         description: A brief description of the site.
-                        type: string
                         maxLength: 200
                         default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the site.
-                        type: int64
+                        type: 2
                         key: true
                         nullable: true
                     name:
                         name: Name
                         description: The name of the site.
                         value: Test Site
-                        type: string
                         maxLength: 100
                         minLength: 1
                         nullable: true
@@ -117,7 +108,6 @@ services:
                         name: Slug
                         description: A unique slug identifier for the site.
                         value: test-site
-                        type: string
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
@@ -143,21 +133,19 @@ services:
                     description:
                         name: Description
                         description: A brief description of the prefix.
-                        type: string
                         maxLength: 200
                         default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the prefix.
                         value: "123"
-                        type: int64
+                        type: 2
                         key: true
                         nullable: true
                     prefix:
                         name: Prefix
                         description: The prefix address in CIDR notation.
                         value: 10.0.0.0/24
-                        type: string
                         maxLength: 43
                         minLength: 1
                         pattern: ^[0-9a-fA-F.:]+/[0-9]+$
@@ -191,20 +179,18 @@ services:
                     description:
                         name: Description
                         description: A brief description of the role.
-                        type: string
                         maxLength: 200
                         default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the role.
-                        type: int64
+                        type: 2
                         key: true
                         nullable: true
                     name:
                         name: Name
                         description: The name of the role.
                         value: Test Role
-                        type: string
                         maxLength: 100
                         minLength: 1
                         nullable: true
@@ -212,7 +198,6 @@ services:
                         name: Slug
                         description: A unique slug identifier for the role.
                         value: test-role
-                        type: string
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
@@ -231,20 +216,18 @@ services:
                     description:
                         name: Description
                         description: A brief description of the tenant.
-                        type: string
                         maxLength: 200
                         default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the tenant.
-                        type: int64
+                        type: 2
                         key: true
                         nullable: true
                     name:
                         name: Name
                         description: The name of the tenant.
                         value: Test Tenant
-                        type: string
                         maxLength: 100
                         minLength: 1
                         nullable: true
@@ -252,7 +235,6 @@ services:
                         name: Slug
                         description: A unique slug identifier for the tenant.
                         value: test-tenant
-                        type: string
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$
@@ -274,20 +256,17 @@ services:
                     description:
                         name: Description
                         description: A brief description of the tenant group.
-                        type: string
                         maxLength: 200
                         default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the tenant group.
-                        type: int64
                         key: true
                         nullable: true
                     name:
                         name: Name
                         description: The name of the tenant group.
                         value: Test Tenant Group
-                        type: string
                         maxLength: 100
                         minLength: 1
                         nullable: true
@@ -295,7 +274,6 @@ services:
                         name: Slug
                         description: A unique slug identifier for the tenant group.
                         value: test-tenant-group
-                        type: string
                         maxLength: 100
                         minLength: 1
                         pattern: ^[-a-zA-Z0-9_]+$

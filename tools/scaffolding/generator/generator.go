@@ -5,6 +5,7 @@ import (
     "embed"
     _ "embed"
     "fmt"
+    "go/format"
     "io/fs"
     "os"
     "path/filepath"
@@ -18,9 +19,59 @@ import (
 //go:embed templates/*/*
 var templates embed.FS
 
-type Configuration struct {
-    Services map[string]Service `yaml:"services,omitempty"`
+type AttributeType int
 
+const (
+    AttributeTypeString AttributeType = iota
+    AttributeTypeInt
+    AttributeTypeInt64
+    AttributeTypeFloat64
+    AttributeTypeBool
+)
+
+func (a *AttributeType) String() string {
+    switch *a {
+    case AttributeTypeString:
+        return "string"
+    case AttributeTypeInt:
+        return "int"
+    case AttributeTypeInt64:
+        return "int64"
+    case AttributeTypeFloat64:
+        return "float64"
+    case AttributeTypeBool:
+        return "bool"
+    default:
+        panic(fmt.Sprintf("unknown attribute type: %d", a))
+    }
+}
+
+// MarshalYAML marshals the attribute type to YAML.
+func (a *AttributeType) MarshalYAML() (interface{}, error) {
+    return a.String(), nil
+}
+
+// UnmarshalYAML unmarshals the attribute type from YAML.
+func (a *AttributeType) UnmarshalYAML(value *yaml.Node) error {
+    switch value.Value {
+    case "string":
+        *a = AttributeTypeString
+    case "int":
+        *a = AttributeTypeInt
+    case "int64":
+        *a = AttributeTypeInt64
+    case "float64":
+        *a = AttributeTypeFloat64
+    case "bool":
+        *a = AttributeTypeBool
+    default:
+        return fmt.Errorf("unknown attribute type: %s", value.Value)
+    }
+    return nil
+}
+
+type Configuration struct {
+    Services    map[string]Service `yaml:"services,omitempty"`
     resourceMap map[string]*Resource
 }
 
@@ -41,17 +92,17 @@ type Resource struct {
 }
 
 type Attribute struct {
-    Name         string `yaml:"name,omitempty"`
-    Description  string `yaml:"description,omitempty"`
-    Value        string `yaml:"value,omitempty"`
-    Type         string `yaml:"type,omitempty"`
-    ReadOnly     bool   `yaml:"readonly,omitempty"`
-    MaxLength    int    `yaml:"maxLength,omitempty"`
-    MinLength    int    `yaml:"minLength,omitempty"`
-    Pattern      string `yaml:"pattern,omitempty"`
-    IsKey        bool   `yaml:"key,omitempty"`
-    IsNullable   bool   `yaml:"nullable,omitempty"`
-    DefaultValue any    `yaml:"default,omitempty"`
+    Name         string        `yaml:"name,omitempty"`
+    Description  string        `yaml:"description,omitempty"`
+    Value        string        `yaml:"value,omitempty"`
+    Type         AttributeType `yaml:"type,omitempty"`
+    ReadOnly     bool          `yaml:"readonly,omitempty"`
+    MaxLength    int           `yaml:"maxLength,omitempty"`
+    MinLength    int           `yaml:"minLength,omitempty"`
+    Pattern      string        `yaml:"pattern,omitempty"`
+    IsKey        bool          `yaml:"key,omitempty"`
+    IsNullable   bool          `yaml:"nullable,omitempty"`
+    DefaultValue any           `yaml:"default,omitempty"`
 }
 
 type Association struct {
@@ -105,14 +156,14 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the tenant.",
-                                Type:        "int64",
+                                Type:        AttributeTypeInt64,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
                             "name": {
                                 Name:        "Name",
                                 Description: "The name of the tenant.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Tenant",
@@ -121,7 +172,7 @@ func Generate(outputPath string) error {
                             "slug": {
                                 Name:        "Slug",
                                 Description: "A unique slug identifier for the tenant.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
@@ -131,7 +182,7 @@ func Generate(outputPath string) error {
                             "description": {
                                 Name:         "Description",
                                 Description:  "A brief description of the tenant.",
-                                Type:         "string",
+                                Type:         AttributeTypeString,
                                 MaxLength:    200,
                                 IsNullable:   false,
                                 DefaultValue: "",
@@ -156,14 +207,14 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the tenant group.",
-                                Type:        "int64",
+                                Type:        AttributeTypeString,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
                             "name": {
                                 Name:        "Name",
                                 Description: "The name of the tenant group.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Tenant Group",
@@ -172,7 +223,7 @@ func Generate(outputPath string) error {
                             "slug": {
                                 Name:        "Slug",
                                 Description: "A unique slug identifier for the tenant group.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
@@ -182,7 +233,7 @@ func Generate(outputPath string) error {
                             "description": {
                                 Name:         "Description",
                                 Description:  "A brief description of the tenant group.",
-                                Type:         "string",
+                                Type:         AttributeTypeString,
                                 MaxLength:    200,
                                 IsNullable:   false,
                                 DefaultValue: "",
@@ -203,14 +254,14 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the manufacturer.",
-                                Type:        "int64",
+                                Type:        AttributeTypeInt64,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
                             "name": {
                                 Name:        "Name",
                                 Description: "The name of the manufacturer.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Manufacturer",
@@ -219,7 +270,7 @@ func Generate(outputPath string) error {
                             "slug": {
                                 Name:        "Slug",
                                 Description: "A unique slug identifier for the manufacturer.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
@@ -229,7 +280,7 @@ func Generate(outputPath string) error {
                             "description": {
                                 Name:         "Description",
                                 Description:  "A brief description of the manufacturer.",
-                                Type:         "string",
+                                Type:         AttributeTypeString,
                                 MaxLength:    200,
                                 IsNullable:   false,
                                 DefaultValue: "",
@@ -244,14 +295,14 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the device type.",
-                                Type:        "int64",
+                                Type:        AttributeTypeInt64,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
                             "model": {
                                 Name:        "Model",
                                 Description: "The model name of the device type.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Device Type",
@@ -260,7 +311,7 @@ func Generate(outputPath string) error {
                             "part number": {
                                 Name:        "Part Number",
                                 Description: "The part number associated with the device type.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   50,
                                 MinLength:   0,
                                 IsNullable:  false,
@@ -268,7 +319,7 @@ func Generate(outputPath string) error {
                             "slug": {
                                 Name:        "Slug",
                                 Description: "A unique slug identifier for the device type.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
@@ -278,7 +329,7 @@ func Generate(outputPath string) error {
                             "description": {
                                 Name:         "Description",
                                 Description:  "A brief description of the device type.",
-                                Type:         "string",
+                                Type:         AttributeTypeString,
                                 MaxLength:    200,
                                 IsNullable:   false,
                                 DefaultValue: "",
@@ -322,14 +373,14 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the site.",
-                                Type:        "int64",
+                                Type:        AttributeTypeInt64,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
                             "name": {
                                 Name:        "Name",
                                 Description: "The name of the site.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Site",
@@ -338,7 +389,7 @@ func Generate(outputPath string) error {
                             "slug": {
                                 Name:        "Slug",
                                 Description: "A unique slug identifier for the site.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
@@ -348,7 +399,7 @@ func Generate(outputPath string) error {
                             "description": {
                                 Name:         "Description",
                                 Description:  "A brief description of the site.",
-                                Type:         "string",
+                                Type:         AttributeTypeString,
                                 MaxLength:    200,
                                 IsNullable:   false,
                                 DefaultValue: "",
@@ -379,7 +430,7 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the prefix.",
-                                Type:        "int64",
+                                Type:        AttributeTypeInt64,
                                 IsKey:       true,
                                 Value:       "123",
                                 IsNullable:  true,
@@ -387,7 +438,7 @@ func Generate(outputPath string) error {
                             "prefix": {
                                 Name:        "Prefix",
                                 Description: "The prefix address in CIDR notation.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   43,
                                 MinLength:   1,
                                 Pattern:     "^[0-9a-fA-F.:]+/[0-9]+$",
@@ -397,7 +448,7 @@ func Generate(outputPath string) error {
                             "description": {
                                 Name:         "Description",
                                 Description:  "A brief description of the prefix.",
-                                Type:         "string",
+                                Type:         AttributeTypeString,
                                 MaxLength:    200,
                                 IsNullable:   false,
                                 DefaultValue: "",
@@ -438,14 +489,14 @@ func Generate(outputPath string) error {
                             "id": {
                                 Name:        "ID",
                                 Description: "The unique numeric ID of the role.",
-                                Type:        "int64",
+                                Type:        AttributeTypeInt64,
                                 IsKey:       true,
                                 IsNullable:  true,
                             },
                             "name": {
                                 Name:        "Name",
                                 Description: "The name of the role.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Value:       "Test Role",
@@ -454,7 +505,7 @@ func Generate(outputPath string) error {
                             "slug": {
                                 Name:        "Slug",
                                 Description: "A unique slug identifier for the role.",
-                                Type:        "string",
+                                Type:        AttributeTypeString,
                                 MaxLength:   100,
                                 MinLength:   1,
                                 Pattern:     "^[-a-zA-Z0-9_]+$",
@@ -464,7 +515,7 @@ func Generate(outputPath string) error {
                             "description": {
                                 Name:         "Description",
                                 Description:  "A brief description of the role.",
-                                Type:         "string",
+                                Type:         AttributeTypeString,
                                 MaxLength:    200,
                                 IsNullable:   false,
                                 DefaultValue: "",
@@ -635,6 +686,8 @@ func generate(configuration Configuration, outputPath string) error {
                     return err
                 }
 
+                fmt.Println("generated ", outputPath)
+
             } else {
                 // the output path should be a template, so we need to render it
                 for serviceKey, service := range configuration.Services {
@@ -663,15 +716,23 @@ func generate(configuration Configuration, outputPath string) error {
                             }
                             outputPath = strings.TrimSuffix(outputPath, ".tpl")
                         }
+
+                        if filepath.Ext(outputPath) == ".go" {
+                            contents, err = format.Source(contents)
+                            if err != nil {
+                                return err
+                            }
+                        }
+
                         err = os.WriteFile(outputPath, contents, 0644)
                         if err != nil {
                             return err
                         }
+
+                        fmt.Println("generated ", outputPath)
                     }
                 }
             }
-
-            fmt.Println(path)
 
             return nil
         },
