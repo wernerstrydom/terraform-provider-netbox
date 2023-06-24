@@ -12,6 +12,8 @@ resource "netbox_device_type" "{{ $device.Slug | sanitize | snakeCase | id }}" {
   slug              = "{{ $device.Slug }}"
   {{- if $device.PartNumber}}
   part_number       = "{{ $device.PartNumber }}"{{ end }}
+  is_full_depth     = {{ $device.IsFullDepth }}
+  u_height          = {{ $device.UHeight }}
   manufacturer_id   = netbox_manufacturer.{{ $manufacturer | sanitize | snakeCase | id }}.id
 }
 {{- end -}}
