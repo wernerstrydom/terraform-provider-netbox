@@ -4,6 +4,11 @@ resource "netbox_manufacturer" "this" {
 }
 
 
+output "description" {
+  value = netbox_manufacturer.this.description
+}
+
+
 output "id" {
   value = netbox_manufacturer.this.id
 }

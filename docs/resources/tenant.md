@@ -19,6 +19,11 @@ resource "netbox_tenant" "this" {
 }
 
 
+output "description" {
+    value = netbox_tenant.this.description
+}
+
+
 output "id" {
     value = netbox_tenant.this.id
 }
@@ -44,14 +49,6 @@ output "slug" {
 
 ### Optional
 
+- `description` (String) A brief description of the tenant.
 - `group_id` (Number) The tenant group this tenant belongs to.
 - `id` (String) The unique numeric ID of the tenant.
-
-## Import
-
-Import is supported using the following syntax:
-
-```shell
-# Tenant can be imported by id
-terraform import netbox_tenant.this 123
-```

@@ -8,6 +8,11 @@ services:
                 plural: device types
                 description: A device type represents a particular manufacturer's model of device. For example, N9K-C9396PX or PowerEdge R630.
                 attributes:
+                    description:
+                        name: Description
+                        description: A brief description of the device type.
+                        type: string
+                        maxLength: 200
                     id:
                         name: ID
                         description: The unique numeric ID of the device type.
@@ -51,6 +56,11 @@ services:
                 plural: manufacturers
                 description: A manufacturer represents a company which produces hardware devices; for example, Juniper or Dell.
                 attributes:
+                    description:
+                        name: Description
+                        description: A brief description of the manufacturer.
+                        type: string
+                        maxLength: 200
                     id:
                         name: ID
                         description: The unique numeric ID of the manufacturer.
@@ -81,6 +91,11 @@ services:
                 plural: sites
                 description: A site represents a logical grouping of devices, typically by physical location or purpose. For example, a site might be a data center, an office building, or a distributed network of servers.
                 attributes:
+                    description:
+                        name: Description
+                        description: A brief description of the site.
+                        type: string
+                        maxLength: 200
                     id:
                         name: ID
                         description: The unique numeric ID of the site.
@@ -122,6 +137,11 @@ services:
                 plural: prefixes
                 description: A prefix represents an assignable range of IP addresses
                 attributes:
+                    description:
+                        name: Description
+                        description: A brief description of the prefix.
+                        type: string
+                        maxLength: 200
                     id:
                         name: ID
                         description: The unique numeric ID of the prefix.
@@ -164,6 +184,11 @@ services:
                 plural: roles
                 description: A role indicates the function of a prefix or VLAN. For example, you might define Data, Voice, and Security roles. A role can be assigned to multiple prefixes and VLANs.
                 attributes:
+                    description:
+                        name: Description
+                        description: A brief description of the role.
+                        type: string
+                        maxLength: 200
                     id:
                         name: ID
                         description: The unique numeric ID of the role.
@@ -198,6 +223,11 @@ services:
                 plural: tenants
                 description: A tenant represents a discrete grouping of resources used for administrative purposes.
                 attributes:
+                    description:
+                        name: Description
+                        description: A brief description of the tenant.
+                        type: string
+                        maxLength: 200
                     id:
                         name: ID
                         description: The unique numeric ID of the tenant.
@@ -235,6 +265,11 @@ services:
                 plural: tenant groups
                 description: A tenant group represents a collection of tenants.
                 attributes:
+                    description:
+                        name: Description
+                        description: A brief description of the tenant group.
+                        type: string
+                        maxLength: 200
                     id:
                         name: ID
                         description: The unique numeric ID of the tenant group.

@@ -3,6 +3,11 @@ resource "netbox_prefix" "this" {
 }
 
 
+output "description" {
+  value = netbox_prefix.this.description
+}
+
+
 output "id" {
   value = netbox_prefix.this.id
 }

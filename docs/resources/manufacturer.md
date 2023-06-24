@@ -19,6 +19,11 @@ resource "netbox_manufacturer" "this" {
 }
 
 
+output "description" {
+    value = netbox_manufacturer.this.description
+}
+
+
 output "id" {
     value = netbox_manufacturer.this.id
 }
@@ -44,13 +49,5 @@ output "slug" {
 
 ### Optional
 
+- `description` (String) A brief description of the manufacturer.
 - `id` (String) The unique numeric ID of the manufacturer.
-
-## Import
-
-Import is supported using the following syntax:
-
-```shell
-# Manufacturer can be imported by id
-terraform import netbox_manufacturer.this 123
-```

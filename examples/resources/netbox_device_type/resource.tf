@@ -4,6 +4,11 @@ resource "netbox_device_type" "this" {
 }
 
 
+output "description" {
+  value = netbox_device_type.this.description
+}
+
+
 output "id" {
   value = netbox_device_type.this.id
 }

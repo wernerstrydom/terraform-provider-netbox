@@ -4,6 +4,11 @@ resource "netbox_tenant_group" "this" {
 }
 
 
+output "description" {
+  value = netbox_tenant_group.this.description
+}
+
+
 output "id" {
   value = netbox_tenant_group.this.id
 }

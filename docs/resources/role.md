@@ -19,6 +19,11 @@ resource "netbox_role" "this" {
 }
 
 
+output "description" {
+    value = netbox_role.this.description
+}
+
+
 output "id" {
     value = netbox_role.this.id
 }
@@ -44,13 +49,5 @@ output "slug" {
 
 ### Optional
 
+- `description` (String) A brief description of the role.
 - `id` (String) The unique numeric ID of the role.
-
-## Import
-
-Import is supported using the following syntax:
-
-```shell
-# Role can be imported by id
-terraform import netbox_role.this 123
-```

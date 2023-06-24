@@ -19,6 +19,11 @@ resource "netbox_device_type" "this" {
 }
 
 
+output "description" {
+    value = netbox_device_type.this.description
+}
+
+
 output "id" {
     value = netbox_device_type.this.id
 }
@@ -49,15 +54,7 @@ output "slug" {
 
 ### Optional
 
+- `description` (String) A brief description of the device type.
 - `id` (String) The unique numeric ID of the device type.
 - `manufacturer_id` (Number) The device type's manufacturer.
 - `part_number` (String) The part number associated with the device type.
-
-## Import
-
-Import is supported using the following syntax:
-
-```shell
-# DeviceType can be imported by id
-terraform import netbox_device_type.this 123
-```

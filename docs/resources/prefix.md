@@ -18,6 +18,11 @@ resource "netbox_prefix" "this" {
 }
 
 
+output "description" {
+    value = netbox_prefix.this.description
+}
+
+
 output "id" {
     value = netbox_prefix.this.id
 }
@@ -37,16 +42,8 @@ output "prefix" {
 
 ### Optional
 
+- `description` (String) A brief description of the prefix.
 - `id` (String) The unique numeric ID of the prefix.
 - `role_id` (Number) The role to which this prefix is assigned.
 - `site_id` (Number) The site to which this prefix is assigned.
 - `tenant_id` (Number) The tenant to which this prefix is assigned.
-
-## Import
-
-Import is supported using the following syntax:
-
-```shell
-# Prefix can be imported by id
-terraform import netbox_prefix.this 123
-```

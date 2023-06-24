@@ -19,6 +19,11 @@ resource "netbox_site" "this" {
 }
 
 
+output "description" {
+    value = netbox_site.this.description
+}
+
+
 output "id" {
     value = netbox_site.this.id
 }
@@ -44,14 +49,6 @@ output "slug" {
 
 ### Optional
 
+- `description` (String) A brief description of the site.
 - `id` (String) The unique numeric ID of the site.
 - `tenant_id` (Number) The tenant to which this site is assigned.
-
-## Import
-
-Import is supported using the following syntax:
-
-```shell
-# Site can be imported by id
-terraform import netbox_site.this 123
-```
