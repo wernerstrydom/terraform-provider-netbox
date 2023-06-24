@@ -151,7 +151,7 @@ func (p *deviceTypeResource) Schema(
 			},
 			"is_full_depth": schema.BoolAttribute{
 
-				Optional:    true,
+				Required:    true,
 				Description: "Indicates whether this device type consumes the full depth of its parent rack.",
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.UseStateForUnknown(),

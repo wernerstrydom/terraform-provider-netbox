@@ -1,7 +1,7 @@
 package generator
 
 type TemplateData struct {
-    ServicePackage string
-    Resource       *Resource
-    Configuration  *Configuration
+	ServicePackage string
+	Resource       *Resource
+	Configuration  *Configuration
 }
