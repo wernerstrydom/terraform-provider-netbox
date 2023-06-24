@@ -55,7 +55,7 @@ func (c *Resource) UnmarshalYAML(value *yaml.Node) error {
         Name           *string       `yaml:"name,omitempty"`
         Plural         *string       `yaml:"plural,omitempty"`
         Description    *string       `yaml:"description,omitempty"`
-        Attributes     []Attribute   `yaml:"attributes,omitempty"`
+        Attributes     []attribute   `yaml:"attributes,omitempty"`
         Associations   []Association `yaml:"associations,omitempty"`
         WriteableModel *string       `yaml:"writeableModel,omitempty"`
         ReadableModel  *string       `yaml:"readableModel,omitempty"`
@@ -74,7 +74,10 @@ func (c *Resource) UnmarshalYAML(value *yaml.Node) error {
         c.Description = *data.Description
     }
     if data.Attributes != nil {
-        c.Attributes = data.Attributes
+        c.Attributes = make([]Attribute, len(data.Attributes))
+        for i, a := range data.Attributes {
+            c.Attributes[i] = &a
+        }
     }
     if data.Associations != nil {
         c.Associations = data.Associations

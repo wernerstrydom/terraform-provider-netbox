@@ -17,8 +17,8 @@ var funcMap = template.FuncMap{
     "snakeCase":  strcase.ToSnake,
     "kebabCase":  strcase.ToKebab,
     "delimited":  strcase.ToDelimited,
-    "type": func(a *Attribute) string {
-        switch a.Type {
+    "type": func(a *attribute) string {
+        switch a.attributeType {
         case AttributeTypeString:
             return "String"
         case AttributeTypeInt:
@@ -30,7 +30,7 @@ var funcMap = template.FuncMap{
         case AttributeTypeBool:
             return "Bool"
         default:
-            panic(fmt.Sprintf("unknown attribute type: %d", a.Type))
+            panic(fmt.Sprintf("unknown attribute type: %d", a.attributeType))
         }
     },
 
