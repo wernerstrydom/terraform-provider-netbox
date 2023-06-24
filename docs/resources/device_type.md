@@ -14,48 +14,49 @@ description: |-
 
 ```terraform
 resource "netbox_device_type" "this" {
-    model = "Test Device Type"
-    slug = "test-device-type"
+  model         = "Test Device Type"
+  slug          = "test-device-type"
+  is_full_depth = "false"
 }
 
 
 output "id" {
-    value = netbox_device_type.this.id
+  value = netbox_device_type.this.id
 }
 
 
 output "model" {
-    value = netbox_device_type.this.model
+  value = netbox_device_type.this.model
 }
 
 
 output "part_number" {
-    value = netbox_device_type.this.part_number
+  value = netbox_device_type.this.part_number
 }
 
 
 output "slug" {
-    value = netbox_device_type.this.slug
+  value = netbox_device_type.this.slug
 }
 
 
 output "description" {
-    value = netbox_device_type.this.description
+  value = netbox_device_type.this.description
 }
 
 
 output "u_height" {
-    value = netbox_device_type.this.u_height
+  value = netbox_device_type.this.u_height
 }
 
 
 output "weight" {
-    value = netbox_device_type.this.weight
+  value = netbox_device_type.this.weight
 }
 
 
 output "is_full_depth" {
-    value = netbox_device_type.this.is_full_depth
+  value = netbox_device_type.this.is_full_depth
 }
 ```
 
@@ -64,6 +65,7 @@ output "is_full_depth" {
 
 ### Required
 
+- `is_full_depth` (Boolean) Indicates whether this device type consumes the full depth of its parent rack.
 - `model` (String) The model name of the device type.
 - `slug` (String) A unique slug identifier for the device type.
 
@@ -71,7 +73,6 @@ output "is_full_depth" {
 
 - `description` (String) A brief description of the device type.
 - `id` (String) The unique numeric ID of the device type.
-- `is_full_depth` (Boolean) Indicates whether this device type consumes the full depth of its parent rack.
 - `manufacturer_id` (Number) The device type's manufacturer.
 - `part_number` (String) The part number associated with the device type.
 - `u_height` (Number) The height of the device type, in rack units.

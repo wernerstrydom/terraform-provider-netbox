@@ -10,6 +10,12 @@ import (
     "terraform-provider-netbox/internal/provider"
 )
 
+// generates the code for the provider
+//go:generate go run ./tools/scaffolding generate -o .
+
+// generates the example code to seed Netbox with device data
+//go:generate go run ./tools/seed -o .
+
 // Formats terraform files
 //go:generate terraform fmt -recursive ./examples/
 
