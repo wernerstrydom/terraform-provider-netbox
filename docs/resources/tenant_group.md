@@ -51,3 +51,12 @@ output "slug" {
 
 - `description` (String) A brief description of the tenant group.
 - `id` (String) The unique numeric ID of the tenant group.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# TenantGroup can be imported by id
+terraform import netbox_tenant_group.this 123
+```

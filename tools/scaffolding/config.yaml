@@ -13,6 +13,7 @@ services:
                         description: A brief description of the device type.
                         type: string
                         maxLength: 200
+                        default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the device type.
@@ -61,6 +62,7 @@ services:
                         description: A brief description of the manufacturer.
                         type: string
                         maxLength: 200
+                        default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the manufacturer.
@@ -96,6 +98,7 @@ services:
                         description: A brief description of the site.
                         type: string
                         maxLength: 200
+                        default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the site.
@@ -142,6 +145,7 @@ services:
                         description: A brief description of the prefix.
                         type: string
                         maxLength: 200
+                        default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the prefix.
@@ -189,6 +193,7 @@ services:
                         description: A brief description of the role.
                         type: string
                         maxLength: 200
+                        default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the role.
@@ -228,6 +233,7 @@ services:
                         description: A brief description of the tenant.
                         type: string
                         maxLength: 200
+                        default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the tenant.
@@ -270,6 +276,7 @@ services:
                         description: A brief description of the tenant group.
                         type: string
                         maxLength: 200
+                        default: ""
                     id:
                         name: ID
                         description: The unique numeric ID of the tenant group.

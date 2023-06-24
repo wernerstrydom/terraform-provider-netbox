@@ -47,3 +47,12 @@ output "prefix" {
 - `role_id` (Number) The role to which this prefix is assigned.
 - `site_id` (Number) The site to which this prefix is assigned.
 - `tenant_id` (Number) The tenant to which this prefix is assigned.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# Prefix can be imported by id
+terraform import netbox_prefix.this 123
+```
