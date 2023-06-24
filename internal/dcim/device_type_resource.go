@@ -30,15 +30,15 @@ var (
 )
 
 type deviceTypeResourceModel struct {
-	ID             types.String `tfsdk:"id"`
-	Model          types.String `tfsdk:"model"`
-	PartNumber     types.String `tfsdk:"part_number"`
-	Slug           types.String `tfsdk:"slug"`
-	Description    types.String `tfsdk:"description"`
-	UHeight        types.Bool   `tfsdk:"u_height"`
-	Weight         types.Bool   `tfsdk:"weight"`
-	IsFullDepth    types.Bool   `tfsdk:"is_full_depth"`
-	ManufacturerID types.Int64  `tfsdk:"manufacturer_id"`
+	ID             types.String  `tfsdk:"id"`
+	Model          types.String  `tfsdk:"model"`
+	PartNumber     types.String  `tfsdk:"part_number"`
+	Slug           types.String  `tfsdk:"slug"`
+	Description    types.String  `tfsdk:"description"`
+	UHeight        types.Float64 `tfsdk:"u_height"`
+	Weight         types.Float64 `tfsdk:"weight"`
+	IsFullDepth    types.Bool    `tfsdk:"is_full_depth"`
+	ManufacturerID types.Int64   `tfsdk:"manufacturer_id"`
 }
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -133,20 +133,20 @@ func (p *deviceTypeResource) Schema(
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"u_height": schema.BoolAttribute{
+			"u_height": schema.Float64Attribute{
 
 				Optional:    true,
 				Description: "The height of the device type, in rack units.",
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Float64{
+					float64planmodifier.UseStateForUnknown(),
 				},
 			},
-			"weight": schema.BoolAttribute{
+			"weight": schema.Float64Attribute{
 
 				Optional:    true,
 				Description: "The weight of the device type.",
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Float64{
+					float64planmodifier.UseStateForUnknown(),
 				},
 			},
 			"is_full_depth": schema.BoolAttribute{
@@ -186,8 +186,8 @@ func (p *deviceTypeResource) Create(
 			PartNumber:   state.PartNumber.ValueString(),
 			Slug:         state.Slug.ValueStringPointer(),
 			Description:  state.Description.ValueString(),
-			UHeight:      state.UHeight.ValueBoolPointer(),
-			Weight:       state.Weight.ValueBoolPointer(),
+			UHeight:      state.UHeight.ValueFloat64Pointer(),
+			Weight:       state.Weight.ValueFloat64Pointer(),
 			IsFullDepth:  state.IsFullDepth.ValueBool(),
 			Manufacturer: state.ManufacturerID.ValueInt64Pointer(),
 		},
@@ -268,8 +268,8 @@ func (p *deviceTypeResource) Read(
 	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
 	state.Description = types.StringValue(payload.Description)
-	state.UHeight = types.BoolPointerValue(payload.UHeight)
-	state.Weight = types.BoolPointerValue(payload.Weight)
+	state.UHeight = types.Float64PointerValue(payload.UHeight)
+	state.Weight = types.Float64PointerValue(payload.Weight)
 	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 
 	var manufacturerID *int64
@@ -318,8 +318,8 @@ func (p *deviceTypeResource) Update(
 			PartNumber:   state.PartNumber.ValueString(),
 			Slug:         state.Slug.ValueStringPointer(),
 			Description:  state.Description.ValueString(),
-			UHeight:      state.UHeight.ValueBoolPointer(),
-			Weight:       state.Weight.ValueBoolPointer(),
+			UHeight:      state.UHeight.ValueFloat64Pointer(),
+			Weight:       state.Weight.ValueFloat64Pointer(),
 			IsFullDepth:  state.IsFullDepth.ValueBool(),
 			Manufacturer: state.ManufacturerID.ValueInt64Pointer(),
 		},
@@ -341,8 +341,8 @@ func (p *deviceTypeResource) Update(
 	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
 	state.Description = types.StringValue(payload.Description)
-	state.UHeight = types.BoolPointerValue(payload.UHeight)
-	state.Weight = types.BoolPointerValue(payload.Weight)
+	state.UHeight = types.Float64PointerValue(payload.UHeight)
+	state.Weight = types.Float64PointerValue(payload.Weight)
 	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 
 	var manufacturerID *int64

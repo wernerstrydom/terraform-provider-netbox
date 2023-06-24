@@ -13,15 +13,15 @@ import (
 )
 
 type deviceTypeDataSourceModel struct {
-	ID             types.String `tfsdk:"id"`
-	Model          types.String `tfsdk:"model"`
-	PartNumber     types.String `tfsdk:"part_number"`
-	Slug           types.String `tfsdk:"slug"`
-	Description    types.String `tfsdk:"description"`
-	UHeight        types.Bool   `tfsdk:"u_height"`
-	Weight         types.Bool   `tfsdk:"weight"`
-	IsFullDepth    types.Bool   `tfsdk:"is_full_depth"`
-	ManufacturerID types.Int64  `tfsdk:"manufacturer_id"`
+	ID             types.String  `tfsdk:"id"`
+	Model          types.String  `tfsdk:"model"`
+	PartNumber     types.String  `tfsdk:"part_number"`
+	Slug           types.String  `tfsdk:"slug"`
+	Description    types.String  `tfsdk:"description"`
+	UHeight        types.Float64 `tfsdk:"u_height"`
+	Weight         types.Float64 `tfsdk:"weight"`
+	IsFullDepth    types.Bool    `tfsdk:"is_full_depth"`
+	ManufacturerID types.Int64   `tfsdk:"manufacturer_id"`
 }
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -97,11 +97,11 @@ func (d *deviceTypeDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 				Computed:    true,
 				Description: "A brief description of the device type.",
 			},
-			"u_height": schema.BoolAttribute{
+			"u_height": schema.Float64Attribute{
 				Computed:    true,
 				Description: "The height of the device type, in rack units.",
 			},
-			"weight": schema.BoolAttribute{
+			"weight": schema.Float64Attribute{
 				Computed:    true,
 				Description: "The weight of the device type.",
 			},
@@ -162,8 +162,8 @@ func (d *deviceTypeDataSource) Read(
 	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
 	state.Description = types.StringValue(payload.Description)
-	state.UHeight = types.BoolPointerValue(payload.UHeight)
-	state.Weight = types.BoolPointerValue(payload.Weight)
+	state.UHeight = types.Float64PointerValue(payload.UHeight)
+	state.Weight = types.Float64PointerValue(payload.Weight)
 	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 
 	var manufacturerID *int64
