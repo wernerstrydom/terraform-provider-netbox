@@ -68,7 +68,7 @@ var FuncMap = template.FuncMap{
     },
 }
 
-func Seed() error {
+func Seed(xPath string) error {
 
     // get the temporary directory, and create a temporary directory for the backup
     // if it doesn't exist
@@ -145,7 +145,7 @@ func Seed() error {
 
     // create the examples/device-library directory where we'll generate all the
     // device types
-    examplesPath := filepath.Join("generated", "examples", "device-library")
+    examplesPath := filepath.Join(xPath, "examples", "device-library")
     err = os.MkdirAll(examplesPath, 0755)
     if err != nil {
         return err

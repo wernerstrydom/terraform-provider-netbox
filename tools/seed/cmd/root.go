@@ -39,7 +39,11 @@ var rootCmd = &cobra.Command{
     Use:   "seed",
     Short: "A brief description of your application",
     RunE: func(cmd *cobra.Command, args []string) error {
-        return seed.Seed()
+        outputPath, err := cmd.Flags().GetString("output")
+        if err != nil {
+            return err
+        }
+        return seed.Seed(outputPath)
     },
 }
 
@@ -52,16 +56,8 @@ func Execute() {
 
 func init() {
     cobra.OnInitialize(initConfig)
-
-    // Here you will define your flags and configuration settings.
-    // Cobra supports persistent flags, which, if defined here,
-    // will be global for your application.
-
     rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.seed.yaml)")
-
-    // Cobra also supports local flags, which will only run
-    // when this action is called directly.
-    rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+    rootCmd.Flags().StringP("output", "o", "generated", "The path to the generated files")
 }
 
 // initConfig reads in config file and ENV variables if set.
