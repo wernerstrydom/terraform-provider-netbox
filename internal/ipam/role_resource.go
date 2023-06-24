@@ -30,10 +30,10 @@ var (
 )
 
 type roleResourceModel struct {
-	Description types.String `tfsdk:"description"`
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
 	Slug        types.String `tfsdk:"slug"`
+	Description types.String `tfsdk:"description"`
 }
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -88,14 +88,6 @@ func (p *roleResource) Schema(
 ) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-
-				Optional:    true,
-				Description: "A brief description of the role.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
 			"id": schema.StringAttribute{
 				Computed:    true,
 				Optional:    true,
@@ -120,6 +112,14 @@ func (p *roleResource) Schema(
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
+			"description": schema.StringAttribute{
+
+				Optional:    true,
+				Description: "A brief description of the role.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
 		},
 	}
 }
@@ -138,9 +138,9 @@ func (p *roleResource) Create(
 
 	params := ipam.IpamRolesCreateParams{
 		Data: &models.Role{
-			Description: state.Description.ValueString(),
 			Name:        state.Name.ValueStringPointer(),
 			Slug:        state.Slug.ValueStringPointer(),
+			Description: state.Description.ValueString(),
 		},
 		Context: ctx,
 	}
@@ -207,9 +207,9 @@ func (p *roleResource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Name = types.StringPointerValue(payload.Name)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 
 	diags := response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)
@@ -245,9 +245,9 @@ func (p *roleResource) Update(
 
 	params := &ipam.IpamRolesUpdateParams{
 		Data: &models.Role{
-			Description: state.Description.ValueString(),
 			Name:        state.Name.ValueStringPointer(),
 			Slug:        state.Slug.ValueStringPointer(),
+			Description: state.Description.ValueString(),
 		},
 		ID:      id,
 		Context: ctx,
@@ -263,9 +263,9 @@ func (p *roleResource) Update(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Name = types.StringPointerValue(payload.Name)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 
 	diags := response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)

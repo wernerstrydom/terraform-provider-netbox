@@ -13,10 +13,10 @@ import (
 )
 
 type siteDataSourceModel struct {
-	Description types.String `tfsdk:"description"`
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
 	Slug        types.String `tfsdk:"slug"`
+	Description types.String `tfsdk:"description"`
 	TenantID    types.Int64  `tfsdk:"tenant_id"`
 }
 
@@ -73,10 +73,6 @@ func (d *siteDataSource) Configure(
 func (d *siteDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, response *datasource.SchemaResponse) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-				Computed:    true,
-				Description: "A brief description of the site.",
-			},
 			"id": schema.StringAttribute{
 				Required:    true,
 				Description: "The unique numeric ID of the site.",
@@ -88,6 +84,10 @@ func (d *siteDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 			"slug": schema.StringAttribute{
 				Computed:    true,
 				Description: "A unique slug identifier for the site.",
+			},
+			"description": schema.StringAttribute{
+				Computed:    true,
+				Description: "A brief description of the site.",
 			},
 			"tenant_id": schema.Int64Attribute{
 				Description: "The tenant to which this site is assigned.",
@@ -138,9 +138,9 @@ func (d *siteDataSource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Name = types.StringPointerValue(payload.Name)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 
 	var tenantID *int64
 	if payload.Tenant == nil {

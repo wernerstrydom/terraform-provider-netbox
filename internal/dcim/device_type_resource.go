@@ -30,14 +30,14 @@ var (
 )
 
 type deviceTypeResourceModel struct {
-	Description    types.String  `tfsdk:"description"`
 	ID             types.String  `tfsdk:"id"`
-	IsFullDepth    types.Bool    `tfsdk:"is_full_depth"`
 	Model          types.String  `tfsdk:"model"`
 	PartNumber     types.String  `tfsdk:"part_number"`
 	Slug           types.String  `tfsdk:"slug"`
+	Description    types.String  `tfsdk:"description"`
 	UHeight        types.Float64 `tfsdk:"u_height"`
 	Weight         types.Float64 `tfsdk:"weight"`
+	IsFullDepth    types.Bool    `tfsdk:"is_full_depth"`
 	ManufacturerID types.Int64   `tfsdk:"manufacturer_id"`
 }
 
@@ -93,28 +93,12 @@ func (p *deviceTypeResource) Schema(
 ) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-
-				Optional:    true,
-				Description: "A brief description of the device type.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
 			"id": schema.StringAttribute{
 				Computed:    true,
 				Optional:    true,
 				Description: "The unique numeric ID of the device type.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"is_full_depth": schema.BoolAttribute{
-
-				Optional:    true,
-				Description: "Indicates whether this device type consumes the full depth of its parent rack.",
-				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"model": schema.StringAttribute{
@@ -141,6 +125,14 @@ func (p *deviceTypeResource) Schema(
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
+			"description": schema.StringAttribute{
+
+				Optional:    true,
+				Description: "A brief description of the device type.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
 			"u_height": schema.Float64Attribute{
 
 				Optional:    true,
@@ -155,6 +147,14 @@ func (p *deviceTypeResource) Schema(
 				Description: "The weight of the device type.",
 				PlanModifiers: []planmodifier.Float64{
 					float64planmodifier.UseStateForUnknown(),
+				},
+			},
+			"is_full_depth": schema.BoolAttribute{
+
+				Optional:    true,
+				Description: "Indicates whether this device type consumes the full depth of its parent rack.",
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"manufacturer_id": schema.Int64Attribute{
@@ -182,13 +182,13 @@ func (p *deviceTypeResource) Create(
 
 	params := dcim.DcimDeviceTypesCreateParams{
 		Data: &models.WritableDeviceType{
-			Description:  state.Description.ValueString(),
-			IsFullDepth:  state.IsFullDepth.ValueBool(),
 			Model:        state.Model.ValueStringPointer(),
 			PartNumber:   state.PartNumber.ValueString(),
 			Slug:         state.Slug.ValueStringPointer(),
+			Description:  state.Description.ValueString(),
 			UHeight:      state.UHeight.ValueFloat64Pointer(),
 			Weight:       state.Weight.ValueFloat64Pointer(),
+			IsFullDepth:  state.IsFullDepth.ValueBool(),
 			Manufacturer: state.ManufacturerID.ValueInt64Pointer(),
 		},
 		Context: ctx,
@@ -264,13 +264,13 @@ func (p *deviceTypeResource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
-	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 	state.Model = types.StringPointerValue(payload.Model)
 	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 	state.UHeight = types.Float64PointerValue(payload.UHeight)
 	state.Weight = types.Float64PointerValue(payload.Weight)
+	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 
 	var manufacturerID *int64
 	if payload.Manufacturer == nil {
@@ -314,13 +314,13 @@ func (p *deviceTypeResource) Update(
 
 	params := &dcim.DcimDeviceTypesUpdateParams{
 		Data: &models.WritableDeviceType{
-			Description:  state.Description.ValueString(),
-			IsFullDepth:  state.IsFullDepth.ValueBool(),
 			Model:        state.Model.ValueStringPointer(),
 			PartNumber:   state.PartNumber.ValueString(),
 			Slug:         state.Slug.ValueStringPointer(),
+			Description:  state.Description.ValueString(),
 			UHeight:      state.UHeight.ValueFloat64Pointer(),
 			Weight:       state.Weight.ValueFloat64Pointer(),
+			IsFullDepth:  state.IsFullDepth.ValueBool(),
 			Manufacturer: state.ManufacturerID.ValueInt64Pointer(),
 		},
 		ID:      id,
@@ -337,13 +337,13 @@ func (p *deviceTypeResource) Update(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
-	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 	state.Model = types.StringPointerValue(payload.Model)
 	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 	state.UHeight = types.Float64PointerValue(payload.UHeight)
 	state.Weight = types.Float64PointerValue(payload.Weight)
+	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 
 	var manufacturerID *int64
 	if payload.Manufacturer == nil {

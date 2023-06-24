@@ -30,10 +30,10 @@ var (
 )
 
 type siteResourceModel struct {
-	Description types.String `tfsdk:"description"`
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
 	Slug        types.String `tfsdk:"slug"`
+	Description types.String `tfsdk:"description"`
 	TenantID    types.Int64  `tfsdk:"tenant_id"`
 }
 
@@ -89,14 +89,6 @@ func (p *siteResource) Schema(
 ) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-
-				Optional:    true,
-				Description: "A brief description of the site.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
 			"id": schema.StringAttribute{
 				Computed:    true,
 				Optional:    true,
@@ -117,6 +109,14 @@ func (p *siteResource) Schema(
 
 				Required:    true,
 				Description: "A unique slug identifier for the site.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"description": schema.StringAttribute{
+
+				Optional:    true,
+				Description: "A brief description of the site.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -146,9 +146,9 @@ func (p *siteResource) Create(
 
 	params := dcim.DcimSitesCreateParams{
 		Data: &models.WritableSite{
-			Description: state.Description.ValueString(),
 			Name:        state.Name.ValueStringPointer(),
 			Slug:        state.Slug.ValueStringPointer(),
+			Description: state.Description.ValueString(),
 			Tenant:      state.TenantID.ValueInt64Pointer(),
 		},
 		Context: ctx,
@@ -224,9 +224,9 @@ func (p *siteResource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Name = types.StringPointerValue(payload.Name)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 
 	var tenantID *int64
 	if payload.Tenant == nil {
@@ -270,9 +270,9 @@ func (p *siteResource) Update(
 
 	params := &dcim.DcimSitesUpdateParams{
 		Data: &models.WritableSite{
-			Description: state.Description.ValueString(),
 			Name:        state.Name.ValueStringPointer(),
 			Slug:        state.Slug.ValueStringPointer(),
+			Description: state.Description.ValueString(),
 			Tenant:      state.TenantID.ValueInt64Pointer(),
 		},
 		ID:      id,
@@ -289,9 +289,9 @@ func (p *siteResource) Update(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Name = types.StringPointerValue(payload.Name)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 
 	var tenantID *int64
 	if payload.Tenant == nil {

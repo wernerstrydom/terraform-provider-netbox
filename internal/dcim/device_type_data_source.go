@@ -13,14 +13,14 @@ import (
 )
 
 type deviceTypeDataSourceModel struct {
-	Description    types.String  `tfsdk:"description"`
 	ID             types.String  `tfsdk:"id"`
-	IsFullDepth    types.Bool    `tfsdk:"is_full_depth"`
 	Model          types.String  `tfsdk:"model"`
 	PartNumber     types.String  `tfsdk:"part_number"`
 	Slug           types.String  `tfsdk:"slug"`
+	Description    types.String  `tfsdk:"description"`
 	UHeight        types.Float64 `tfsdk:"u_height"`
 	Weight         types.Float64 `tfsdk:"weight"`
+	IsFullDepth    types.Bool    `tfsdk:"is_full_depth"`
 	ManufacturerID types.Int64   `tfsdk:"manufacturer_id"`
 }
 
@@ -77,17 +77,9 @@ func (d *deviceTypeDataSource) Configure(
 func (d *deviceTypeDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, response *datasource.SchemaResponse) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-				Computed:    true,
-				Description: "A brief description of the device type.",
-			},
 			"id": schema.StringAttribute{
 				Required:    true,
 				Description: "The unique numeric ID of the device type.",
-			},
-			"is_full_depth": schema.BoolAttribute{
-				Computed:    true,
-				Description: "Indicates whether this device type consumes the full depth of its parent rack.",
 			},
 			"model": schema.StringAttribute{
 				Computed:    true,
@@ -101,6 +93,10 @@ func (d *deviceTypeDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 				Computed:    true,
 				Description: "A unique slug identifier for the device type.",
 			},
+			"description": schema.StringAttribute{
+				Computed:    true,
+				Description: "A brief description of the device type.",
+			},
 			"u_height": schema.Float64Attribute{
 				Computed:    true,
 				Description: "The height of the device type, in rack units.",
@@ -108,6 +104,10 @@ func (d *deviceTypeDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 			"weight": schema.Float64Attribute{
 				Computed:    true,
 				Description: "The weight of the device type.",
+			},
+			"is_full_depth": schema.BoolAttribute{
+				Computed:    true,
+				Description: "Indicates whether this device type consumes the full depth of its parent rack.",
 			},
 			"manufacturer_id": schema.Int64Attribute{
 				Description: "The device type's manufacturer.",
@@ -158,13 +158,13 @@ func (d *deviceTypeDataSource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
-	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 	state.Model = types.StringPointerValue(payload.Model)
 	state.PartNumber = types.StringValue(payload.PartNumber)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 	state.UHeight = types.Float64PointerValue(payload.UHeight)
 	state.Weight = types.Float64PointerValue(payload.Weight)
+	state.IsFullDepth = types.BoolValue(payload.IsFullDepth)
 
 	var manufacturerID *int64
 	if payload.Manufacturer == nil {

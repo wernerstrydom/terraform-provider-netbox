@@ -7,24 +7,24 @@ import (
 )
 
 type Resource struct {
-    Name           string                  `yaml:"name,omitempty"`
-    Plural         string                  `yaml:"plural,omitempty"`
-    Description    string                  `yaml:"description,omitempty"`
-    Attributes     map[string]*Attribute   `yaml:"attributes,omitempty"`
-    Associations   map[string]*Association `yaml:"associations,omitempty"`
-    WriteableModel string                  `yaml:"writeableModel,omitempty"`
-    ReadableModel  string                  `yaml:"readableModel,omitempty"`
+    Name           string        `yaml:"name,omitempty"`
+    Plural         string        `yaml:"plural,omitempty"`
+    Description    string        `yaml:"description,omitempty"`
+    Attributes     []Attribute   `yaml:"attributes,omitempty"`
+    Associations   []Association `yaml:"associations,omitempty"`
+    WriteableModel string        `yaml:"writeableModel,omitempty"`
+    ReadableModel  string        `yaml:"readableModel,omitempty"`
 }
 
 func (c *Resource) MarshalYAML() (interface{}, error) {
     var data struct {
-        Name           *string                 `yaml:"name,omitempty"`
-        Plural         *string                 `yaml:"plural,omitempty"`
-        Description    *string                 `yaml:"description,omitempty"`
-        Attributes     map[string]*Attribute   `yaml:"attributes,omitempty"`
-        Associations   map[string]*Association `yaml:"associations,omitempty"`
-        WriteableModel *string                 `yaml:"writeableModel,omitempty"`
-        ReadableModel  *string                 `yaml:"readableModel,omitempty"`
+        Name           *string       `yaml:"name,omitempty"`
+        Plural         *string       `yaml:"plural,omitempty"`
+        Description    *string       `yaml:"description,omitempty"`
+        Attributes     []Attribute   `yaml:"attributes,omitempty"`
+        Associations   []Association `yaml:"associations,omitempty"`
+        WriteableModel *string       `yaml:"writeableModel,omitempty"`
+        ReadableModel  *string       `yaml:"readableModel,omitempty"`
     }
     if c.Name != "" {
         data.Name = ptr.String(c.Name)
@@ -52,13 +52,13 @@ func (c *Resource) MarshalYAML() (interface{}, error) {
 
 func (c *Resource) UnmarshalYAML(value *yaml.Node) error {
     var data struct {
-        Name           *string                 `yaml:"name,omitempty"`
-        Plural         *string                 `yaml:"plural,omitempty"`
-        Description    *string                 `yaml:"description,omitempty"`
-        Attributes     map[string]*Attribute   `yaml:"attributes,omitempty"`
-        Associations   map[string]*Association `yaml:"associations,omitempty"`
-        WriteableModel *string                 `yaml:"writeableModel,omitempty"`
-        ReadableModel  *string                 `yaml:"readableModel,omitempty"`
+        Name           *string       `yaml:"name,omitempty"`
+        Plural         *string       `yaml:"plural,omitempty"`
+        Description    *string       `yaml:"description,omitempty"`
+        Attributes     []Attribute   `yaml:"attributes,omitempty"`
+        Associations   []Association `yaml:"associations,omitempty"`
+        WriteableModel *string       `yaml:"writeableModel,omitempty"`
+        ReadableModel  *string       `yaml:"readableModel,omitempty"`
     }
     err := value.Decode(&data)
     if err != nil {

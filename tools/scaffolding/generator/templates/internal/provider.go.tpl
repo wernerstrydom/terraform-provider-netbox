@@ -15,8 +15,8 @@ import (
 
     "github.com/netbox-community/go-netbox/v3/netbox"
 
-    {{ range $serviceName, $services := .Configuration.Services }}
-    "terraform-provider-netbox/internal/{{ $serviceName }}"{{ end }}
+    {{ range .Configuration.Services }}
+    "terraform-provider-netbox/internal/{{ snakeCase .Name }}"{{ end }}
 )
 
 var (
@@ -166,19 +166,19 @@ func (n *netboxProvider) Configure(
 
 func (n *netboxProvider) DataSources(_ context.Context) []func() datasource.DataSource {
     return []func() datasource.DataSource{
-    {{ range $serviceName, $services := .Configuration.Services }}
-       {{ range $resourceName, $resource := $services.Resources }}
-            {{ $serviceName }}.New{{ pascalCase $resource.Name }}DataSource,
-            {{ $serviceName }}.New{{ pascalCase $resource.Plural }}DataSource,{{ end }}
+    {{ range $service := .Configuration.Services }}
+       {{ range $resource := $service.Resources }}
+            {{ snakeCase $service.Name }}.New{{ pascalCase $resource.Name }}DataSource,
+            {{ snakeCase $service.Name }}.New{{ pascalCase $resource.Plural }}DataSource,{{ end }}
     {{ end }}
     }
 }
 
 func (n *netboxProvider) Resources(_ context.Context) []func() resource.Resource {
     return []func() resource.Resource{
-        {{ range $serviceName, $services := .Configuration.Services }}
-           {{ range $resourceName, $resource := $services.Resources }}
-                {{ $serviceName }}.New{{ pascalCase $resource.Name }}Resource,{{ end }}
+        {{ range $service := .Configuration.Services }}
+           {{ range $resource := $service.Resources }}
+                {{ snakeCase $service.Name }}.New{{ pascalCase $resource.Name }}Resource,{{ end }}
         {{ end }}
     }
 }

@@ -3,10 +3,6 @@ data "netbox_role" "this" {
   id = "4"
 }
 
-output "description" {
-  value = data.netbox_role.this.description
-}
-
 output "id" {
   value = data.netbox_role.this.id
 }
@@ -17,4 +13,8 @@ output "name" {
 
 output "slug" {
   value = data.netbox_role.this.slug
+}
+
+output "description" {
+  value = data.netbox_role.this.description
 }

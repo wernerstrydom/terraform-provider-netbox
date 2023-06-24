@@ -7,16 +7,16 @@ import (
 )
 
 type Service struct {
-    Name        string               `yaml:"name,omitempty"`
-    Description string               `yaml:"description,omitempty"`
-    Resources   map[string]*Resource `yaml:"resources,omitempty"`
+    Name        string     `yaml:"name,omitempty"`
+    Description string     `yaml:"description,omitempty"`
+    Resources   []Resource `yaml:"resources,omitempty"`
 }
 
 func (c *Service) MarshalYAML() (interface{}, error) {
     var data struct {
-        Name        *string              `yaml:"name,omitempty"`
-        Description *string              `yaml:"description,omitempty"`
-        Resources   map[string]*Resource `yaml:"resources,omitempty"`
+        Name        *string    `yaml:"name,omitempty"`
+        Description *string    `yaml:"description,omitempty"`
+        Resources   []Resource `yaml:"resources,omitempty"`
     }
     if c.Name != "" {
         data.Name = ptr.String(c.Name)
@@ -32,9 +32,9 @@ func (c *Service) MarshalYAML() (interface{}, error) {
 
 func (c *Service) UnmarshalYAML(value *yaml.Node) error {
     var data struct {
-        Name        *string              `yaml:"name,omitempty"`
-        Description *string              `yaml:"description,omitempty"`
-        Resources   map[string]*Resource `yaml:"resources,omitempty"`
+        Name        *string    `yaml:"name,omitempty"`
+        Description *string    `yaml:"description,omitempty"`
+        Resources   []Resource `yaml:"resources,omitempty"`
     }
     err := value.Decode(&data)
     if err != nil {

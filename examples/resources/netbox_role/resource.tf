@@ -4,11 +4,6 @@ resource "netbox_role" "this" {
 }
 
 
-output "description" {
-    value = netbox_role.this.description
-}
-
-
 output "id" {
     value = netbox_role.this.id
 }
@@ -21,4 +16,9 @@ output "name" {
 
 output "slug" {
     value = netbox_role.this.slug
+}
+
+
+output "description" {
+    value = netbox_role.this.description
 }

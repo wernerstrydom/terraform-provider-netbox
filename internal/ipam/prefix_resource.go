@@ -30,12 +30,12 @@ var (
 )
 
 type prefixResourceModel struct {
-	Description types.String `tfsdk:"description"`
 	ID          types.String `tfsdk:"id"`
 	Prefix      types.String `tfsdk:"prefix"`
-	RoleID      types.Int64  `tfsdk:"role_id"`
+	Description types.String `tfsdk:"description"`
 	SiteID      types.Int64  `tfsdk:"site_id"`
 	TenantID    types.Int64  `tfsdk:"tenant_id"`
+	RoleID      types.Int64  `tfsdk:"role_id"`
 }
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -90,14 +90,6 @@ func (p *prefixResource) Schema(
 ) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-
-				Optional:    true,
-				Description: "A brief description of the prefix.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
 			"id": schema.StringAttribute{
 				Computed:    true,
 				Optional:    true,
@@ -114,11 +106,12 @@ func (p *prefixResource) Schema(
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
-			"role_id": schema.Int64Attribute{
-				Description: "The role to which this prefix is assigned.",
+			"description": schema.StringAttribute{
+
 				Optional:    true,
-				PlanModifiers: []planmodifier.Int64{
-					int64planmodifier.UseStateForUnknown(),
+				Description: "A brief description of the prefix.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"site_id": schema.Int64Attribute{
@@ -130,6 +123,13 @@ func (p *prefixResource) Schema(
 			},
 			"tenant_id": schema.Int64Attribute{
 				Description: "The tenant to which this prefix is assigned.",
+				Optional:    true,
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
+				},
+			},
+			"role_id": schema.Int64Attribute{
+				Description: "The role to which this prefix is assigned.",
 				Optional:    true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
@@ -153,11 +153,11 @@ func (p *prefixResource) Create(
 
 	params := ipam.IpamPrefixesCreateParams{
 		Data: &models.WritablePrefix{
-			Description: state.Description.ValueString(),
 			Prefix:      state.Prefix.ValueStringPointer(),
-			Role:        state.RoleID.ValueInt64Pointer(),
+			Description: state.Description.ValueString(),
 			Site:        state.SiteID.ValueInt64Pointer(),
 			Tenant:      state.TenantID.ValueInt64Pointer(),
+			Role:        state.RoleID.ValueInt64Pointer(),
 		},
 		Context: ctx,
 	}
@@ -174,13 +174,6 @@ func (p *prefixResource) Create(
 	payload := resp.Payload
 	state.ID = types.StringValue(fmt.Sprintf("%d", payload.ID))
 
-	var roleID *int64
-	if payload.Role == nil {
-		roleID = nil
-	} else {
-		roleID = &payload.Role.ID
-	}
-	state.RoleID = types.Int64PointerValue(roleID)
 	var siteID *int64
 	if payload.Site == nil {
 		siteID = nil
@@ -195,6 +188,13 @@ func (p *prefixResource) Create(
 		tenantID = &payload.Tenant.ID
 	}
 	state.TenantID = types.Int64PointerValue(tenantID)
+	var roleID *int64
+	if payload.Role == nil {
+		roleID = nil
+	} else {
+		roleID = &payload.Role.ID
+	}
+	state.RoleID = types.Int64PointerValue(roleID)
 
 	diags = response.State.Set(ctx, &state)
 	response.Diagnostics.Append(diags...)
@@ -246,16 +246,9 @@ func (p *prefixResource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Prefix = types.StringPointerValue(payload.Prefix)
+	state.Description = types.StringValue(payload.Description)
 
-	var roleID *int64
-	if payload.Role == nil {
-		roleID = nil
-	} else {
-		roleID = &payload.Role.ID
-	}
-	state.RoleID = types.Int64PointerValue(roleID)
 	var siteID *int64
 	if payload.Site == nil {
 		siteID = nil
@@ -270,6 +263,13 @@ func (p *prefixResource) Read(
 		tenantID = &payload.Tenant.ID
 	}
 	state.TenantID = types.Int64PointerValue(tenantID)
+	var roleID *int64
+	if payload.Role == nil {
+		roleID = nil
+	} else {
+		roleID = &payload.Role.ID
+	}
+	state.RoleID = types.Int64PointerValue(roleID)
 
 	diags := response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)
@@ -305,11 +305,11 @@ func (p *prefixResource) Update(
 
 	params := &ipam.IpamPrefixesUpdateParams{
 		Data: &models.WritablePrefix{
-			Description: state.Description.ValueString(),
 			Prefix:      state.Prefix.ValueStringPointer(),
-			Role:        state.RoleID.ValueInt64Pointer(),
+			Description: state.Description.ValueString(),
 			Site:        state.SiteID.ValueInt64Pointer(),
 			Tenant:      state.TenantID.ValueInt64Pointer(),
+			Role:        state.RoleID.ValueInt64Pointer(),
 		},
 		ID:      id,
 		Context: ctx,
@@ -325,16 +325,8 @@ func (p *prefixResource) Update(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Prefix = types.StringPointerValue(payload.Prefix)
-
-	var roleID *int64
-	if payload.Role == nil {
-		roleID = nil
-	} else {
-		roleID = &payload.Role.ID
-	}
-	state.RoleID = types.Int64PointerValue(roleID)
+	state.Description = types.StringValue(payload.Description)
 
 	var siteID *int64
 	if payload.Site == nil {
@@ -351,6 +343,14 @@ func (p *prefixResource) Update(
 		tenantID = &payload.Tenant.ID
 	}
 	state.TenantID = types.Int64PointerValue(tenantID)
+
+	var roleID *int64
+	if payload.Role == nil {
+		roleID = nil
+	} else {
+		roleID = &payload.Role.ID
+	}
+	state.RoleID = types.Int64PointerValue(roleID)
 
 	diags := response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)

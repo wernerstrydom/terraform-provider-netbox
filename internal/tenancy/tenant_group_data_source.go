@@ -13,10 +13,10 @@ import (
 )
 
 type tenantGroupDataSourceModel struct {
-	Description types.String `tfsdk:"description"`
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
 	Slug        types.String `tfsdk:"slug"`
+	Description types.String `tfsdk:"description"`
 }
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -72,10 +72,6 @@ func (d *tenantGroupDataSource) Configure(
 func (d *tenantGroupDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, response *datasource.SchemaResponse) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-				Computed:    true,
-				Description: "A brief description of the tenant group.",
-			},
 			"id": schema.StringAttribute{
 				Required:    true,
 				Description: "The unique numeric ID of the tenant group.",
@@ -87,6 +83,10 @@ func (d *tenantGroupDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 			"slug": schema.StringAttribute{
 				Computed:    true,
 				Description: "A unique slug identifier for the tenant group.",
+			},
+			"description": schema.StringAttribute{
+				Computed:    true,
+				Description: "A brief description of the tenant group.",
 			},
 		},
 	}
@@ -133,9 +133,9 @@ func (d *tenantGroupDataSource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Name = types.StringPointerValue(payload.Name)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 
 	diags := response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)

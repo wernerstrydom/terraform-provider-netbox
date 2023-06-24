@@ -13,12 +13,12 @@ import (
 )
 
 type prefixDataSourceModel struct {
-	Description types.String `tfsdk:"description"`
 	ID          types.String `tfsdk:"id"`
 	Prefix      types.String `tfsdk:"prefix"`
-	RoleID      types.Int64  `tfsdk:"role_id"`
+	Description types.String `tfsdk:"description"`
 	SiteID      types.Int64  `tfsdk:"site_id"`
 	TenantID    types.Int64  `tfsdk:"tenant_id"`
+	RoleID      types.Int64  `tfsdk:"role_id"`
 }
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -74,10 +74,6 @@ func (d *prefixDataSource) Configure(
 func (d *prefixDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, response *datasource.SchemaResponse) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-				Computed:    true,
-				Description: "A brief description of the prefix.",
-			},
 			"id": schema.StringAttribute{
 				Required:    true,
 				Description: "The unique numeric ID of the prefix.",
@@ -86,9 +82,9 @@ func (d *prefixDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				Computed:    true,
 				Description: "The prefix address in CIDR notation.",
 			},
-			"role_id": schema.Int64Attribute{
-				Description: "The role to which this prefix is assigned.",
+			"description": schema.StringAttribute{
 				Computed:    true,
+				Description: "A brief description of the prefix.",
 			},
 			"site_id": schema.Int64Attribute{
 				Description: "The site to which this prefix is assigned.",
@@ -96,6 +92,10 @@ func (d *prefixDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 			},
 			"tenant_id": schema.Int64Attribute{
 				Description: "The tenant to which this prefix is assigned.",
+				Computed:    true,
+			},
+			"role_id": schema.Int64Attribute{
+				Description: "The role to which this prefix is assigned.",
 				Computed:    true,
 			},
 		},
@@ -143,16 +143,8 @@ func (d *prefixDataSource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Prefix = types.StringPointerValue(payload.Prefix)
-
-	var roleID *int64
-	if payload.Role == nil {
-		roleID = nil
-	} else {
-		roleID = &payload.Role.ID
-	}
-	state.RoleID = types.Int64PointerValue(roleID)
+	state.Description = types.StringValue(payload.Description)
 
 	var siteID *int64
 	if payload.Site == nil {
@@ -169,6 +161,14 @@ func (d *prefixDataSource) Read(
 		tenantID = &payload.Tenant.ID
 	}
 	state.TenantID = types.Int64PointerValue(tenantID)
+
+	var roleID *int64
+	if payload.Role == nil {
+		roleID = nil
+	} else {
+		roleID = &payload.Role.ID
+	}
+	state.RoleID = types.Int64PointerValue(roleID)
 
 	diags := response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)

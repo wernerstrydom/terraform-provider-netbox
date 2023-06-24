@@ -7,11 +7,11 @@ import (
 )
 
 type Configuration struct {
-    services    map[string]Service `yaml:"services,omitempty"`
+    services    []Service `yaml:"services,omitempty"`
     resourceMap map[string]*Resource
 }
 
-func (c *Configuration) Services() map[string]Service {
+func (c *Configuration) Services() []Service {
     return c.services
 }
 
@@ -33,7 +33,7 @@ func (c *Configuration) Save(path string) error {
 
 func (c *Configuration) MarshalYAML() (interface{}, error) {
     type data struct {
-        Services map[string]Service `yaml:"services,omitempty"`
+        Services []Service `yaml:"services,omitempty"`
     }
     return data{
         Services: c.services,
@@ -42,7 +42,7 @@ func (c *Configuration) MarshalYAML() (interface{}, error) {
 
 func (c *Configuration) UnmarshalYAML(value *yaml.Node) error {
     var data struct {
-        Services map[string]Service `yaml:"services,omitempty"`
+        Services []Service `yaml:"services,omitempty"`
     }
     err := value.Decode(&data)
     if err != nil {

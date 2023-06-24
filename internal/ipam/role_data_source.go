@@ -13,10 +13,10 @@ import (
 )
 
 type roleDataSourceModel struct {
-	Description types.String `tfsdk:"description"`
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
 	Slug        types.String `tfsdk:"slug"`
+	Description types.String `tfsdk:"description"`
 }
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -72,10 +72,6 @@ func (d *roleDataSource) Configure(
 func (d *roleDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, response *datasource.SchemaResponse) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-				Computed:    true,
-				Description: "A brief description of the role.",
-			},
 			"id": schema.StringAttribute{
 				Required:    true,
 				Description: "The unique numeric ID of the role.",
@@ -87,6 +83,10 @@ func (d *roleDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 			"slug": schema.StringAttribute{
 				Computed:    true,
 				Description: "A unique slug identifier for the role.",
+			},
+			"description": schema.StringAttribute{
+				Computed:    true,
+				Description: "A brief description of the role.",
 			},
 		},
 	}
@@ -133,9 +133,9 @@ func (d *roleDataSource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Name = types.StringPointerValue(payload.Name)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 
 	diags := response.State.Set(ctx, state)
 	response.Diagnostics.Append(diags...)

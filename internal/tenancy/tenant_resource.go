@@ -30,10 +30,10 @@ var (
 )
 
 type tenantResourceModel struct {
-	Description types.String `tfsdk:"description"`
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
 	Slug        types.String `tfsdk:"slug"`
+	Description types.String `tfsdk:"description"`
 	GroupID     types.Int64  `tfsdk:"group_id"`
 }
 
@@ -89,14 +89,6 @@ func (p *tenantResource) Schema(
 ) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-
-				Optional:    true,
-				Description: "A brief description of the tenant.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
 			"id": schema.StringAttribute{
 				Computed:    true,
 				Optional:    true,
@@ -117,6 +109,14 @@ func (p *tenantResource) Schema(
 
 				Required:    true,
 				Description: "A unique slug identifier for the tenant.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"description": schema.StringAttribute{
+
+				Optional:    true,
+				Description: "A brief description of the tenant.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -146,9 +146,9 @@ func (p *tenantResource) Create(
 
 	params := tenancy.TenancyTenantsCreateParams{
 		Data: &models.WritableTenant{
-			Description: state.Description.ValueString(),
 			Name:        state.Name.ValueStringPointer(),
 			Slug:        state.Slug.ValueStringPointer(),
+			Description: state.Description.ValueString(),
 			Group:       state.GroupID.ValueInt64Pointer(),
 		},
 		Context: ctx,
@@ -224,9 +224,9 @@ func (p *tenantResource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Name = types.StringPointerValue(payload.Name)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 
 	var groupID *int64
 	if payload.Group == nil {
@@ -270,9 +270,9 @@ func (p *tenantResource) Update(
 
 	params := &tenancy.TenancyTenantsUpdateParams{
 		Data: &models.WritableTenant{
-			Description: state.Description.ValueString(),
 			Name:        state.Name.ValueStringPointer(),
 			Slug:        state.Slug.ValueStringPointer(),
+			Description: state.Description.ValueString(),
 			Group:       state.GroupID.ValueInt64Pointer(),
 		},
 		ID:      id,
@@ -289,9 +289,9 @@ func (p *tenantResource) Update(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Name = types.StringPointerValue(payload.Name)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 
 	var groupID *int64
 	if payload.Group == nil {

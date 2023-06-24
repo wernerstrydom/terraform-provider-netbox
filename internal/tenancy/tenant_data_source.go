@@ -13,10 +13,10 @@ import (
 )
 
 type tenantDataSourceModel struct {
-	Description types.String `tfsdk:"description"`
 	ID          types.String `tfsdk:"id"`
 	Name        types.String `tfsdk:"name"`
 	Slug        types.String `tfsdk:"slug"`
+	Description types.String `tfsdk:"description"`
 	GroupID     types.Int64  `tfsdk:"group_id"`
 }
 
@@ -73,10 +73,6 @@ func (d *tenantDataSource) Configure(
 func (d *tenantDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, response *datasource.SchemaResponse) {
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"description": schema.StringAttribute{
-				Computed:    true,
-				Description: "A brief description of the tenant.",
-			},
 			"id": schema.StringAttribute{
 				Required:    true,
 				Description: "The unique numeric ID of the tenant.",
@@ -88,6 +84,10 @@ func (d *tenantDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 			"slug": schema.StringAttribute{
 				Computed:    true,
 				Description: "A unique slug identifier for the tenant.",
+			},
+			"description": schema.StringAttribute{
+				Computed:    true,
+				Description: "A brief description of the tenant.",
 			},
 			"group_id": schema.Int64Attribute{
 				Description: "The tenant group this tenant belongs to.",
@@ -138,9 +138,9 @@ func (d *tenantDataSource) Read(
 	}
 
 	payload := resp.Payload
-	state.Description = types.StringValue(payload.Description)
 	state.Name = types.StringPointerValue(payload.Name)
 	state.Slug = types.StringPointerValue(payload.Slug)
+	state.Description = types.StringValue(payload.Description)
 
 	var groupID *int64
 	if payload.Group == nil {

@@ -4,11 +4,6 @@ resource "netbox_tenant" "this" {
 }
 
 
-output "description" {
-    value = netbox_tenant.this.description
-}
-
-
 output "id" {
     value = netbox_tenant.this.id
 }
@@ -21,4 +16,9 @@ output "name" {
 
 output "slug" {
     value = netbox_tenant.this.slug
+}
+
+
+output "description" {
+    value = netbox_tenant.this.description
 }

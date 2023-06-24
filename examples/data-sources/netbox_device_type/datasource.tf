@@ -3,16 +3,8 @@ data "netbox_device_type" "this" {
   id = "4"
 }
 
-output "description" {
-  value = data.netbox_device_type.this.description
-}
-
 output "id" {
   value = data.netbox_device_type.this.id
-}
-
-output "is_full_depth" {
-  value = data.netbox_device_type.this.is_full_depth
 }
 
 output "model" {
@@ -27,10 +19,18 @@ output "slug" {
   value = data.netbox_device_type.this.slug
 }
 
+output "description" {
+  value = data.netbox_device_type.this.description
+}
+
 output "u_height" {
   value = data.netbox_device_type.this.u_height
 }
 
 output "weight" {
   value = data.netbox_device_type.this.weight
+}
+
+output "is_full_depth" {
+  value = data.netbox_device_type.this.is_full_depth
 }

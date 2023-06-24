@@ -25,24 +25,24 @@ func init() {
 }
 
 var c = Configuration{
-    services: map[string]Service{
-        "tenancy": {
+    services: []Service{
+        {
             Name:        "tenancy",
             Description: "Tenancy provides a framework for logically isolating objects within NetBox.",
-            Resources: map[string]*Resource{
-                "tenant": {
+            Resources: []Resource{
+                {
                     Name:        "tenant",
                     Plural:      "tenants",
                     Description: "A tenant represents a discrete grouping of resources used for administrative purposes.",
-                    Attributes: map[string]*Attribute{
-                        "id": {
+                    Attributes: []Attribute{
+                        {
                             Name:        "ID",
                             Description: "The unique numeric ID of the tenant.",
                             Type:        AttributeTypeString,
                             IsKey:       true,
                             IsNullable:  true,
                         },
-                        "name": {
+                        {
                             Name:        "Name",
                             Description: "The name of the tenant.",
                             Type:        AttributeTypeString,
@@ -51,7 +51,7 @@ var c = Configuration{
                             Value:       "Test Tenant",
                             IsNullable:  true,
                         },
-                        "slug": {
+                        {
                             Name:        "Slug",
                             Description: "A unique slug identifier for the tenant.",
                             Type:        AttributeTypeString,
@@ -61,7 +61,7 @@ var c = Configuration{
                             Value:       "test-tenant",
                             IsNullable:  true,
                         },
-                        "description": {
+                        {
                             Name:         "Description",
                             Description:  "A brief description of the tenant.",
                             Type:         AttributeTypeString,
@@ -70,8 +70,8 @@ var c = Configuration{
                             DefaultValue: "",
                         },
                     },
-                    Associations: map[string]*Association{
-                        "group": {
+                    Associations: []Association{
+                        {
                             Name:        "Group",
                             Description: "The tenant group this tenant belongs to.",
                             Type:        "tenant_group",
@@ -81,19 +81,19 @@ var c = Configuration{
                         },
                     },
                 },
-                "tenant_group": {
+                {
                     Name:        "tenant group",
                     Plural:      "tenant groups",
                     Description: "A tenant group represents a collection of tenants.",
-                    Attributes: map[string]*Attribute{
-                        "id": {
+                    Attributes: []Attribute{
+                        {
                             Name:        "ID",
                             Description: "The unique numeric ID of the tenant group.",
                             Type:        AttributeTypeString,
                             IsKey:       true,
                             IsNullable:  true,
                         },
-                        "name": {
+                        {
                             Name:        "Name",
                             Description: "The name of the tenant group.",
                             Type:        AttributeTypeString,
@@ -102,7 +102,7 @@ var c = Configuration{
                             Value:       "Test Tenant Group",
                             IsNullable:  true,
                         },
-                        "slug": {
+                        {
                             Name:        "Slug",
                             Description: "A unique slug identifier for the tenant group.",
                             Type:        AttributeTypeString,
@@ -112,7 +112,7 @@ var c = Configuration{
                             Value:       "test-tenant-group",
                             IsNullable:  true,
                         },
-                        "description": {
+                        {
                             Name:         "Description",
                             Description:  "A brief description of the tenant group.",
                             Type:         AttributeTypeString,
@@ -124,23 +124,23 @@ var c = Configuration{
                 },
             },
         },
-        "dcim": {
+        {
             Name:        "dcim",
             Description: "Data Center Infrastructure Management",
-            Resources: map[string]*Resource{
-                "manufacturer": {
+            Resources: []Resource{
+                {
                     Name:        "manufacturer",
                     Plural:      "manufacturers",
                     Description: "A manufacturer represents a company which produces hardware devices; for example, Juniper or Dell.",
-                    Attributes: map[string]*Attribute{
-                        "id": {
+                    Attributes: []Attribute{
+                        {
                             Name:        "ID",
                             Description: "The unique numeric ID of the manufacturer.",
                             Type:        AttributeTypeString,
                             IsKey:       true,
                             IsNullable:  true,
                         },
-                        "name": {
+                        {
                             Name:        "Name",
                             Description: "The name of the manufacturer.",
                             Type:        AttributeTypeString,
@@ -149,7 +149,7 @@ var c = Configuration{
                             Value:       "Test Manufacturer",
                             IsNullable:  true,
                         },
-                        "slug": {
+                        {
                             Name:        "Slug",
                             Description: "A unique slug identifier for the manufacturer.",
                             Type:        AttributeTypeString,
@@ -159,7 +159,7 @@ var c = Configuration{
                             Value:       "test-manufacturer",
                             IsNullable:  true,
                         },
-                        "description": {
+                        {
                             Name:         "Description",
                             Description:  "A brief description of the manufacturer.",
                             Type:         AttributeTypeString,
@@ -169,19 +169,19 @@ var c = Configuration{
                         },
                     },
                 },
-                "device type": {
+                {
                     Name:        "device type",
                     Plural:      "device types",
                     Description: "A device type represents a particular manufacturer's model of device. For example, N9K-C9396PX or PowerEdge R630.",
-                    Attributes: map[string]*Attribute{
-                        "id": {
+                    Attributes: []Attribute{
+                        {
                             Name:        "ID",
                             Description: "The unique numeric ID of the device type.",
                             Type:        AttributeTypeString,
                             IsKey:       true,
                             IsNullable:  true,
                         },
-                        "model": {
+                        {
                             Name:        "Model",
                             Description: "The model name of the device type.",
                             Type:        AttributeTypeString,
@@ -190,7 +190,7 @@ var c = Configuration{
                             Value:       "Test Device Type",
                             IsNullable:  true,
                         },
-                        "part number": {
+                        {
                             Name:        "Part Number",
                             Description: "The part number associated with the device type.",
                             Type:        AttributeTypeString,
@@ -198,7 +198,7 @@ var c = Configuration{
                             MinLength:   0,
                             IsNullable:  false,
                         },
-                        "slug": {
+                        {
                             Name:        "Slug",
                             Description: "A unique slug identifier for the device type.",
                             Type:        AttributeTypeString,
@@ -208,7 +208,7 @@ var c = Configuration{
                             Value:       "test-device-type",
                             IsNullable:  true,
                         },
-                        "description": {
+                        {
                             Name:         "Description",
                             Description:  "A brief description of the device type.",
                             Type:         AttributeTypeString,
@@ -216,19 +216,19 @@ var c = Configuration{
                             IsNullable:   false,
                             DefaultValue: "",
                         },
-                        "uheight": {
+                        {
                             Name:        "U Height",
                             Description: "The height of the device type, in rack units.",
                             Type:        AttributeTypeFloat64,
                             IsNullable:  true,
                         },
-                        "weight": {
+                        {
                             Name:        "Weight",
                             Description: "The weight of the device type.",
                             Type:        AttributeTypeFloat64,
                             IsNullable:  true,
                         },
-                        "is full depth": {
+                        {
                             Name:        "Is Full Depth",
                             Description: "Indicates whether this device type consumes the full depth of its parent rack.",
                             Type:        AttributeTypeBool,
@@ -236,8 +236,8 @@ var c = Configuration{
                         },
 
                     },
-                    Associations: map[string]*Association{
-                        "manufacturer": {
+                    Associations: []Association{
+                        {
                             Name:        "Manufacturer",
                             Description: "The device type's manufacturer.",
                             Type:        "manufacturer",
@@ -247,19 +247,19 @@ var c = Configuration{
                         },
                     },
                 },
-                "site": {
+                {
                     Name:        "site",
                     Plural:      "sites",
                     Description: "A site represents a logical grouping of devices, typically by physical location or purpose. For example, a site might be a data center, an office building, or a distributed network of servers.",
-                    Attributes: map[string]*Attribute{
-                        "id": {
+                    Attributes: []Attribute{
+                        {
                             Name:        "ID",
                             Description: "The unique numeric ID of the site.",
                             Type:        AttributeTypeString,
                             IsKey:       true,
                             IsNullable:  true,
                         },
-                        "name": {
+                        {
                             Name:        "Name",
                             Description: "The name of the site.",
                             Type:        AttributeTypeString,
@@ -268,7 +268,7 @@ var c = Configuration{
                             Value:       "Test Site",
                             IsNullable:  true,
                         },
-                        "slug": {
+                        {
                             Name:        "Slug",
                             Description: "A unique slug identifier for the site.",
                             Type:        AttributeTypeString,
@@ -278,7 +278,7 @@ var c = Configuration{
                             Value:       "test-site",
                             IsNullable:  true,
                         },
-                        "description": {
+                        {
                             Name:         "Description",
                             Description:  "A brief description of the site.",
                             Type:         AttributeTypeString,
@@ -287,8 +287,8 @@ var c = Configuration{
                             DefaultValue: "",
                         },
                     },
-                    Associations: map[string]*Association{
-                        "tenant": {
+                    Associations: []Association{
+                        {
                             Name:        "Tenant",
                             Description: "The tenant to which this site is assigned.",
                             Type:        "site",
@@ -300,16 +300,16 @@ var c = Configuration{
                 },
             },
         },
-        "ipam": {
+        {
             Name:        "ipam",
             Description: "IP Address Management",
-            Resources: map[string]*Resource{
-                "prefix": {
+            Resources: []Resource{
+                {
                     Name:        "prefix",
                     Plural:      "prefixes",
                     Description: "A prefix represents an assignable range of IP addresses",
-                    Attributes: map[string]*Attribute{
-                        "id": {
+                    Attributes: []Attribute{
+                        {
                             Name:        "ID",
                             Description: "The unique numeric ID of the prefix.",
                             Type:        AttributeTypeString,
@@ -317,7 +317,7 @@ var c = Configuration{
                             Value:       "123",
                             IsNullable:  true,
                         },
-                        "prefix": {
+                        {
                             Name:        "Prefix",
                             Description: "The prefix address in CIDR notation.",
                             Type:        AttributeTypeString,
@@ -327,7 +327,7 @@ var c = Configuration{
                             Value:       "10.0.0.0/24",
                             IsNullable:  true,
                         },
-                        "description": {
+                        {
                             Name:         "Description",
                             Description:  "A brief description of the prefix.",
                             Type:         AttributeTypeString,
@@ -336,8 +336,8 @@ var c = Configuration{
                             DefaultValue: "",
                         },
                     },
-                    Associations: map[string]*Association{
-                        "site": {
+                    Associations: []Association{
+                        {
                             Name:        "Site",
                             Description: "The site to which this prefix is assigned.",
                             Type:        "site",
@@ -345,7 +345,7 @@ var c = Configuration{
                             Max:         1,
                             IsNullable:  true,
                         },
-                        "tenant": {
+                        {
                             Name:        "Tenant",
                             Description: "The tenant to which this prefix is assigned.",
                             Type:        "tenant",
@@ -353,7 +353,7 @@ var c = Configuration{
                             Max:         1,
                             IsNullable:  true,
                         },
-                        "role": {
+                        {
                             Name:        "Role",
                             Description: "The role to which this prefix is assigned.",
                             Type:        "role",
@@ -363,19 +363,19 @@ var c = Configuration{
                         },
                     },
                 },
-                "role": {
+                {
                     Name:        "role",
                     Plural:      "roles",
                     Description: "A role indicates the function of a prefix or VLAN. For example, you might define Data, Voice, and Security roles. A role can be assigned to multiple prefixes and VLANs.",
-                    Attributes: map[string]*Attribute{
-                        "id": {
+                    Attributes: []Attribute{
+                        {
                             Name:        "ID",
                             Description: "The unique numeric ID of the role.",
                             Type:        AttributeTypeString,
                             IsKey:       true,
                             IsNullable:  true,
                         },
-                        "name": {
+                        {
                             Name:        "Name",
                             Description: "The name of the role.",
                             Type:        AttributeTypeString,
@@ -384,7 +384,7 @@ var c = Configuration{
                             Value:       "Test Role",
                             IsNullable:  true,
                         },
-                        "slug": {
+                        {
                             Name:        "Slug",
                             Description: "A unique slug identifier for the role.",
                             Type:        AttributeTypeString,
@@ -394,7 +394,7 @@ var c = Configuration{
                             Value:       "test-role",
                             IsNullable:  true,
                         },
-                        "description": {
+                        {
                             Name:         "Description",
                             Description:  "A brief description of the role.",
                             Type:         AttributeTypeString,
@@ -412,22 +412,22 @@ var c = Configuration{
 func Generate(outputPath string) error {
 
     c.resourceMap = make(map[string]*Resource)
-    for _, service := range c.services {
-        for _, resource := range service.Resources {
-            c.resourceMap[resource.Name] = resource
+    for i, service := range c.services {
+        for j, resource := range service.Resources {
+            c.resourceMap[resource.Name] = &c.services[i].Resources[j]
         }
     }
 
     // update writable models
-    for _, service := range c.services {
-        for _, resource := range service.Resources {
-            switch resource.Name {
+    for i := range c.services {
+        for j := range c.services[i].Resources {
+            switch c.services[i].Resources[j].Name {
             case "role", "manufacturer":
-                resource.WriteableModel = strcase.ToCamel(resource.Name)
+                c.services[i].Resources[j].WriteableModel = strcase.ToCamel(c.services[i].Resources[j].Name)
             default:
-                resource.WriteableModel = "Writable" + strcase.ToCamel(resource.Name)
+                c.services[i].Resources[j].WriteableModel = "Writable" + strcase.ToCamel(c.services[i].Resources[j].Name)
             }
-            resource.ReadableModel = strcase.ToCamel(resource.Name)
+            c.services[i].Resources[j].ReadableModel = strcase.ToCamel(c.services[i].Resources[j].Name)
         }
     }
 
@@ -451,9 +451,17 @@ const (
     FileScopeResource
 )
 
+type FileAction int
+
+const (
+    FileActionCopy FileAction = iota
+    FileActionRender
+)
+
 type FileControl struct {
-    Path  string    `yaml:"path,omitempty"`
-    Scope FileScope `yaml:"scope,omitempty"`
+    Path   string     `yaml:"path,omitempty"`
+    Scope  FileScope  `yaml:"scope,omitempty"`
+    Action FileAction `yaml:"action,omitempty"`
 }
 
 type Control struct {
@@ -464,48 +472,59 @@ type Control struct {
 var control = Control{
     Templates: map[string]FileControl{
         "examples/data-sources/datasource.tf.tpl": {
-            Path:  "examples/data-sources/netbox_{{ snakeCase .Resource.Name }}/datasource.tf",
-            Scope: FileScopeResource,
+            Path:   "examples/data-sources/netbox_{{ snakeCase .Resource.Name }}/datasource.tf",
+            Scope:  FileScopeResource,
+            Action: FileActionRender,
         },
         "examples/data-sources/datasources.tf.tpl": {
-            Path:  "examples/data-sources/netbox_{{ snakeCase .Resource.Plural }}/datasource.tf",
-            Scope: FileScopeResource,
+            Path:   "examples/data-sources/netbox_{{ snakeCase .Resource.Plural }}/datasource.tf",
+            Scope:  FileScopeResource,
+            Action: FileActionRender,
         },
         "examples/provider/provider.tf.tpl": {
-            Path:  "examples/provider/provider.tf",
-            Scope: FileScopeProvider,
+            Path:   "examples/provider/provider.tf",
+            Scope:  FileScopeProvider,
+            Action: FileActionRender,
         },
         "examples/provider.tf.tpl": {
-            Path:  "examples/provider.tf",
-            Scope: FileScopeProvider,
+            Path:   "examples/provider.tf",
+            Scope:  FileScopeProvider,
+            Action: FileActionCopy,
         },
         "examples/terraform.tf.tpl": {
-            Path:  "examples/terraform.tf",
-            Scope: FileScopeProvider,
+            Path:   "examples/terraform.tf",
+            Scope:  FileScopeProvider,
+            Action: FileActionCopy,
         },
         "examples/resources/resource.tf.tpl": {
-            Path:  "examples/resources/netbox_{{ snakeCase .Resource.Name }}/resource.tf",
-            Scope: FileScopeResource,
+            Path:   "examples/resources/netbox_{{ snakeCase .Resource.Name }}/resource.tf",
+            Scope:  FileScopeResource,
+            Action: FileActionRender,
         },
         "examples/resources/import.sh.tpl": {
-            Path:  "examples/resources/netbox_{{ snakeCase .Resource.Name }}/import.sh",
-            Scope: FileScopeResource,
+            Path:   "examples/resources/netbox_{{ snakeCase .Resource.Name }}/import.sh",
+            Scope:  FileScopeResource,
+            Action: FileActionRender,
         },
         "internal/datasource.go.tpl": {
-            Path:  "internal/{{ snakeCase .ServicePackage }}/{{ snakeCase .Resource.Name }}_data_source.go",
-            Scope: FileScopeResource,
+            Path:   "internal/{{ snakeCase .ServicePackage }}/{{ snakeCase .Resource.Name }}_data_source.go",
+            Scope:  FileScopeResource,
+            Action: FileActionRender,
         },
         "internal/datasources.go.tpl": {
-            Path:  "internal/{{ snakeCase .ServicePackage }}/{{ snakeCase .Resource.Plural }}_data_source.go",
-            Scope: FileScopeResource,
+            Path:   "internal/{{ snakeCase .ServicePackage }}/{{ snakeCase .Resource.Plural }}_data_source.go",
+            Scope:  FileScopeResource,
+            Action: FileActionRender,
         },
         "internal/provider.go.tpl": {
-            Path:  "internal/provider/provider.go",
-            Scope: FileScopeProvider,
+            Path:   "internal/provider/provider.go",
+            Scope:  FileScopeProvider,
+            Action: FileActionRender,
         },
         "internal/resource.go.tpl": {
-            Path:  "internal/{{ snakeCase .ServicePackage }}/{{ snakeCase .Resource.Name }}_resource.go",
-            Scope: FileScopeResource,
+            Path:   "internal/{{ snakeCase .ServicePackage }}/{{ snakeCase .Resource.Name }}_resource.go",
+            Scope:  FileScopeResource,
+            Action: FileActionRender,
         },
     },
 }
@@ -528,78 +547,28 @@ func generate(configuration Configuration, outputPath string) error {
             }
 
             if c.Scope == FileScopeProvider {
-                // the output path should not be a template, so we can copy it directly
-                outputPath := filepath.Join(outputPath, c.Path)
-                err = os.MkdirAll(filepath.Dir(outputPath), 0755)
-                if err != nil {
-                    return err
+                data := TemplateData{
+                    Configuration: &configuration,
                 }
 
-                var contents []byte
-                contents, err = templates.ReadFile(path)
+                err = render3(path, outputPath, c, data)
                 if err != nil {
                     return err
                 }
-                ext := filepath.Ext(path)
-                if ext == ".tpl" {
-                    data := TemplateData{
-                        Configuration: &configuration,
-                    }
-                    contents, err = renderTemplate(contents, data)
-                    if err != nil {
-                        return err
-                    }
-                    outputPath = strings.TrimSuffix(outputPath, ".tpl")
-                }
-                err = os.WriteFile(outputPath, contents, 0644)
-                if err != nil {
-                    return err
-                }
-
-                fmt.Println("generated ", outputPath)
 
             } else {
                 // the output path should be a template, so we need to render it
-                for serviceKey, service := range configuration.services {
+                for _, service := range configuration.services {
                     for _, resource := range service.Resources {
                         data := TemplateData{
-                            ServicePackage: serviceKey,
-                            Resource:       resource,
+                            ServicePackage: strcase.ToSnake(service.Name),
+                            Resource:       &resource,
                             Configuration:  &configuration,
                         }
-                        outputPath := filepath.Join(outputPath, renderPath(c.Path, data))
-                        err = os.MkdirAll(filepath.Dir(outputPath), 0755)
+                        err = render3(path, outputPath, c, data)
                         if err != nil {
                             return err
                         }
-
-                        var contents []byte
-                        contents, err = templates.ReadFile(path)
-                        if err != nil {
-                            return err
-                        }
-                        ext := filepath.Ext(path)
-                        if ext == ".tpl" {
-                            contents, err = renderTemplate(contents, data)
-                            if err != nil {
-                                return err
-                            }
-                            outputPath = strings.TrimSuffix(outputPath, ".tpl")
-                        }
-
-                        if filepath.Ext(outputPath) == ".go" {
-                            contents, err = format.Source(contents)
-                            if err != nil {
-                                return err
-                            }
-                        }
-
-                        err = os.WriteFile(outputPath, contents, 0644)
-                        if err != nil {
-                            return err
-                        }
-
-                        fmt.Println("generated ", outputPath)
                     }
                 }
             }
@@ -610,6 +579,46 @@ func generate(configuration Configuration, outputPath string) error {
 
 }
 
+func render3(key string, outputPath string, c FileControl, data TemplateData) error {
+    var err error
+    var path string
+    path = filepath.Join(outputPath, renderPath(c.Path, data))
+    err = os.MkdirAll(filepath.Dir(path), 0755)
+    if err != nil {
+        return err
+    }
+
+    var contents []byte
+    contents, err = templates.ReadFile(key)
+    if err != nil {
+        return err
+    }
+    if c.Action == FileActionRender {
+        fmt.Println("rendering template ", key)
+        contents, err = renderTemplate(contents, data)
+        if err != nil {
+            return err
+        }
+        path = strings.TrimSuffix(path, ".tpl")
+    }
+
+    if filepath.Ext(path) == ".go" {
+        fmt.Println("formatting ", path)
+        contents, err = format.Source(contents)
+        if err != nil {
+            return err
+        }
+    }
+
+    err = os.WriteFile(path, contents, 0644)
+    if err != nil {
+        return err
+    }
+
+    fmt.Println("generated ", path)
+    return nil
+}
+
 func renderTemplate(templateBytes []byte, data TemplateData) ([]byte, error) {
     t := template.Must(template.New("resource").Funcs(funcMap).Parse(string(templateBytes)))
     var buf bytes.Buffer
@@ -617,6 +626,8 @@ func renderTemplate(templateBytes []byte, data TemplateData) ([]byte, error) {
     if err != nil {
         return nil, err
     }
+    s := buf.String()
+    s = s
     return buf.Bytes(), nil
 }
 
