@@ -8,7 +8,6 @@ type AttributeType int
 
 const (
     AttributeTypeString AttributeType = iota
-    AttributeTypeInt
     AttributeTypeInt64
     AttributeTypeFloat64
     AttributeTypeBool
@@ -20,7 +19,6 @@ const (
 
 var AttributeTypes = []AttributeType{
     AttributeTypeString,
-    AttributeTypeInt,
     AttributeTypeInt64,
     AttributeTypeFloat64,
     AttributeTypeBool,
@@ -32,7 +30,6 @@ var AttributeTypes = []AttributeType{
 
 var AttributeTypeMap = map[string]AttributeType{
     "string":      AttributeTypeString,
-    "int":         AttributeTypeInt,
     "int64":       AttributeTypeInt64,
     "float64":     AttributeTypeFloat64,
     "bool":        AttributeTypeBool,
@@ -44,7 +41,6 @@ var AttributeTypeMap = map[string]AttributeType{
 
 var AttributeTypeStringMap = map[AttributeType]string{
     AttributeTypeString:      "string",
-    AttributeTypeInt:         "int",
     AttributeTypeInt64:       "int64",
     AttributeTypeFloat64:     "float64",
     AttributeTypeBool:        "bool",

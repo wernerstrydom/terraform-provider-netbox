@@ -22,6 +22,18 @@ func (a *DescriptionAttribute) IsRequired() bool {
     return false
 }
 
+func (a *DescriptionAttribute) MaxLength() int {
+    return 100
+}
+
+func (a *DescriptionAttribute) MinLength() int {
+    return 0
+}
+
+func (a *DescriptionAttribute) Pattern() string {
+    return ""
+}
+
 func (a *DescriptionAttribute) Name() string {
     return "Description"
 }

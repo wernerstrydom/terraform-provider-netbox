@@ -3,8 +3,10 @@ package dcim
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -14,6 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/numberplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/netbox-community/go-netbox/v3/netbox/client"
 	"github.com/netbox-community/go-netbox/v3/netbox/client/dcim"
@@ -94,65 +97,95 @@ func (p *deviceTypeResource) Schema(
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Computed:    true,
-				Optional:    true,
-				Description: "The unique numeric ID of the device type.",
+				Computed:            true,
+				Optional:            true,
+				Description:         "The unique numeric ID of the device type.",
+				Default:             nil,
+				MarkdownDescription: "The unique numeric ID of the device type.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"model": schema.StringAttribute{
-
-				Required:    true,
-				Description: "The model name of the device type.",
+				Required:            true,
+				Description:         "The model name of the device type.",
+				Default:             nil,
+				MarkdownDescription: "The model name of the device type.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.LengthBetween(1, 100),
 				},
 			},
 			"part_number": schema.StringAttribute{
-
-				Optional:    true,
-				Description: "The part number associated with the device type.",
+				Optional:            true,
+				Description:         "The part number associated with the device type.",
+				Default:             nil,
+				MarkdownDescription: "The part number associated with the device type.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.LengthAtMost(50),
 				},
 			},
 			"slug": schema.StringAttribute{
-
-				Required:    true,
-				Description: "A unique slug identifier for the device type.",
+				Required:            true,
+				Description:         "A unique slug identifier for the device type.",
+				Default:             nil,
+				MarkdownDescription: "A unique slug identifier for the device type.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.LengthBetween(1, 100),
+					stringvalidator.RegexMatches(regexp.MustCompile(`^[-a-zA-Z0-9_]+$`), "???"),
 				},
 			},
 			"description": schema.StringAttribute{
-
-				Optional:    true,
-				Description: "A brief description of the device type.",
+				Optional:            true,
+				Description:         "A brief description of the device type.",
+				Default:             nil,
+				MarkdownDescription: "A brief description of the device type.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
+				Validators: []validator.String{
+					stringvalidator.LengthAtMost(100),
+				},
 			},
 			"u_height": schema.Float64Attribute{
-
-				Optional:    true,
-				Description: "The height of the device type, in rack units.",
+				Optional:            true,
+				Description:         "The height of the device type, in rack units.",
+				Default:             nil,
+				MarkdownDescription: "The height of the device type, in rack units.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.Float64{
 					float64planmodifier.UseStateForUnknown(),
 				},
 			},
 			"weight": schema.Float64Attribute{
-
-				Optional:    true,
-				Description: "The weight of the device type.",
+				Optional:            true,
+				Description:         "The weight of the device type.",
+				Default:             nil,
+				MarkdownDescription: "The weight of the device type.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.Float64{
 					float64planmodifier.UseStateForUnknown(),
 				},
 			},
 			"is_full_depth": schema.BoolAttribute{
-
-				Optional:    true,
-				Description: "Indicates whether this device type consumes the full depth of its parent rack.",
+				Optional:            true,
+				Description:         "Indicates whether this device type consumes the full depth of its parent rack.",
+				Default:             nil,
+				MarkdownDescription: "Indicates whether this device type consumes the full depth of its parent rack.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.Bool{
 					boolplanmodifier.UseStateForUnknown(),
 				},

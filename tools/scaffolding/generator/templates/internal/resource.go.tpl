@@ -3,8 +3,10 @@ package {{ .ServicePackage }}
 import (
 	"context"
 	"fmt"
+    "regexp"
 	"strconv"
 
+    "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -14,6 +16,7 @@ import (
     "github.com/hashicorp/terraform-plugin-framework/resource/schema/numberplanmodifier"
     "github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
     "github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+    "github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/netbox-community/go-netbox/v3/netbox/client"
     "github.com/netbox-community/go-netbox/v3/netbox/client/{{ snakeCase .ServicePackage }}"
@@ -90,16 +93,9 @@ func (p *{{ camelCase .Resource.Name }}Resource) Schema(
     response.Schema = schema.Schema{
         Attributes: map[string]schema.Attribute{
         {{- range $name, $attribute := .Resource.Attributes }}
-            "{{ snakeCase $attribute.Name }}": schema.{{ type $attribute }}Attribute{
-                {{ if $attribute.IsKey }}Computed:    true,{{end}}
-                {{ if $attribute.IsRequired }}Required:{{else}}Optional:{{end}}    true,
-                Description: "{{ $attribute.Description }}",
-                PlanModifiers: []planmodifier.{{ type $attribute }}{
-                    {{ $attribute | type | lower }}planmodifier.UseStateForUnknown(),
-                },
-            },{{ end }}
+            "{{ $attribute.Name | snakeCase }}": {{ resourceSchema $attribute }}{{ end }}
         {{- range $name, $association := .Resource.Associations }}
-            "{{ snakeCase $association.Name }}_id": schema.Int64Attribute{
+            "{{ $association.Name | snakeCase }}_id": schema.Int64Attribute{
              Description: "{{ $association.Description }}",
              Optional: true,
              PlanModifiers: []planmodifier.Int64{

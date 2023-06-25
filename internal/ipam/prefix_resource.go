@@ -3,8 +3,10 @@ package ipam
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -14,6 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/numberplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/netbox-community/go-netbox/v3/netbox/client"
 	"github.com/netbox-community/go-netbox/v3/netbox/client/ipam"
@@ -91,27 +94,41 @@ func (p *prefixResource) Schema(
 	response.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Computed:    true,
-				Optional:    true,
-				Description: "The unique numeric ID of the prefix.",
+				Computed:            true,
+				Optional:            true,
+				Description:         "The unique numeric ID of the prefix.",
+				Default:             nil,
+				MarkdownDescription: "The unique numeric ID of the prefix.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"prefix": schema.StringAttribute{
-
-				Required:    true,
-				Description: "The prefix address in CIDR notation.",
+				Required:            true,
+				Description:         "The prefix address in CIDR notation.",
+				Default:             nil,
+				MarkdownDescription: "The prefix address in CIDR notation.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
+				Validators: []validator.String{
+					stringvalidator.LengthBetween(1, 43),
+					stringvalidator.RegexMatches(regexp.MustCompile(`^[0-9a-fA-F.:]+/[0-9]+$`), "???"),
+				},
 			},
 			"description": schema.StringAttribute{
-
-				Optional:    true,
-				Description: "A brief description of the prefix.",
+				Optional:            true,
+				Description:         "A brief description of the prefix.",
+				Default:             nil,
+				MarkdownDescription: "A brief description of the prefix.",
+				Sensitive:           false,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.String{
+					stringvalidator.LengthAtMost(200),
 				},
 			},
 			"site_id": schema.Int64Attribute{

@@ -22,6 +22,18 @@ func (a *SlugAttribute) IsRequired() bool {
     return true
 }
 
+func (a *SlugAttribute) MaxLength() int {
+    return 100
+}
+
+func (a *SlugAttribute) MinLength() int {
+    return 1
+}
+
+func (a *SlugAttribute) Pattern() string {
+    return "^[-a-zA-Z0-9_]+$"
+}
+
 func (a *SlugAttribute) Name() string {
     return "Slug"
 }

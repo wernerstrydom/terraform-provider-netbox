@@ -30,6 +30,18 @@ func (a *NameAttribute) Description() string {
     return a.description
 }
 
+func (a *NameAttribute) MaxLength() int {
+    return 100
+}
+
+func (a *NameAttribute) MinLength() int {
+    return 1
+}
+
+func (a *NameAttribute) Pattern() string {
+    return ""
+}
+
 func (a *NameAttribute) Value() string {
     return "name1"
 }
