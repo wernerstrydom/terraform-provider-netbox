@@ -113,7 +113,7 @@ var c = Configuration{
                         &IdAttribute{
                             description: "The unique numeric ID of the device type.",
                         },
-                        &StringAttribute{
+                        &stringAttribute{
                             name:        "Model",
                             description: "The model name of the device type.",
                             maxLength:   100,
@@ -121,7 +121,7 @@ var c = Configuration{
                             value:       "Test Device Type",
                             isNullable:  true,
                         },
-                        &StringAttribute{
+                        &stringAttribute{
                             name:        "Part Number",
                             description: "The part number associated with the device type.",
                             maxLength:   50,
@@ -205,7 +205,7 @@ var c = Configuration{
                         &IdAttribute{
                             description: "The unique numeric ID of the prefix.",
                         },
-                        &StringAttribute{
+                        &stringAttribute{
                             name:        "Prefix",
                             description: "The prefix address in CIDR notation.",
                             maxLength:   43,
@@ -214,7 +214,7 @@ var c = Configuration{
                             value:       "10.0.0.0/24",
                             isNullable:  true,
                         },
-                        &StringAttribute{
+                        &stringAttribute{
                             name:         "Description",
                             description:  "A brief description of the prefix.",
                             maxLength:    200,
@@ -263,7 +263,7 @@ var c = Configuration{
                         &SlugAttribute{
                             description: "A unique slug identifier for the role.",
                         },
-                        &StringAttribute{
+                        &stringAttribute{
                             name:         "Description",
                             description:  "A brief description of the role.",
                             maxLength:    200,

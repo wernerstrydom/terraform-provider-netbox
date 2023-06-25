@@ -3,38 +3,25 @@ package {{ .ServicePackage }}
 import (
 	"context"
 	"fmt"
-    "regexp"
-	"strconv"
+    "strconv"
+    {{- range (resourceImports .Resource) }}{{ if not (startsWith . "github.com")}}
+    "{{ . }}"{{end}}{{end}}
 
-    // TODO Update Generator to only include required imports
-
-    "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
-    "github.com/hashicorp/terraform-plugin-framework-validators/float64validator"
-    "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-    "github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-    "github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
-    "github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
-    "github.com/hashicorp/terraform-plugin-framework/resource/schema/numberplanmodifier"
     "github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-    "github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+    {{- range (resourceImports .Resource) }}{{ if (endsWith . "planmodifier")}}
+    "{{ . }}"{{end}}{{end}}
     "github.com/hashicorp/terraform-plugin-framework/schema/validator"
+    {{- range (resourceImports .Resource) }}{{ if (endsWith . "validator")}}
+    "{{ . }}"{{end}}{{end}}
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/netbox-community/go-netbox/v3/netbox/client"
     "github.com/netbox-community/go-netbox/v3/netbox/client/{{ snakeCase .ServicePackage }}"
     "github.com/netbox-community/go-netbox/v3/netbox/models"
 )
 
-// this is for code generation purposes, as to complicate the code generation
-var (
-    _ int64planmodifier.RequiresReplaceIfFunc   = nil
-    _ stringplanmodifier.RequiresReplaceIfFunc  = nil
-    _ boolplanmodifier.RequiresReplaceIfFunc    = nil
-    _ float64planmodifier.RequiresReplaceIfFunc = nil
-    _ numberplanmodifier.RequiresReplaceIfFunc  = nil
-)
 
 type {{ camelCase .Resource.Name }}ResourceModel struct {
 {{ range $name, $attribute := .Resource.Attributes }}

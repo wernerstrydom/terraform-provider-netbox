@@ -6,18 +6,12 @@ import (
 	"regexp"
 	"strconv"
 
-	// TODO Update Generator to only include required imports
-
-	"github.com/hashicorp/terraform-plugin-framework-validators/float64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/numberplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -25,15 +19,6 @@ import (
 	"github.com/netbox-community/go-netbox/v3/netbox/client"
 	"github.com/netbox-community/go-netbox/v3/netbox/client/tenancy"
 	"github.com/netbox-community/go-netbox/v3/netbox/models"
-)
-
-// this is for code generation purposes, as to complicate the code generation
-var (
-	_ int64planmodifier.RequiresReplaceIfFunc   = nil
-	_ stringplanmodifier.RequiresReplaceIfFunc  = nil
-	_ boolplanmodifier.RequiresReplaceIfFunc    = nil
-	_ float64planmodifier.RequiresReplaceIfFunc = nil
-	_ numberplanmodifier.RequiresReplaceIfFunc  = nil
 )
 
 type tenantResourceModel struct {

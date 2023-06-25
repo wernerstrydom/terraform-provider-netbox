@@ -4,6 +4,7 @@ import "gopkg.in/yaml.v3"
 
 var (
     _ Attribute = (*DescriptionAttribute)(nil)
+    _ StringAttribute = (*DescriptionAttribute)(nil)
 )
 
 type DescriptionAttribute struct {

@@ -2,9 +2,18 @@ package generator
 
 import "gopkg.in/yaml.v3"
 
-var _ Attribute = (*StringAttribute)(nil)
+type StringAttribute interface {
+    Attribute
 
-type StringAttribute struct {
+    MaxLength() int
+    MinLength() int
+    Pattern() string
+}
+
+var _ Attribute = (*stringAttribute)(nil)
+var _ StringAttribute = (*stringAttribute)(nil)
+
+type stringAttribute struct {
     name         string
     description  string
     value        string
@@ -17,55 +26,55 @@ type StringAttribute struct {
     defaultValue *string
 }
 
-func (a *StringAttribute) IsRequired() bool {
+func (a *stringAttribute) IsRequired() bool {
     return a.minLength > 0
 }
 
-func (a *StringAttribute) Name() string {
+func (a *stringAttribute) Name() string {
     return a.name
 }
 
-func (a *StringAttribute) Description() string {
+func (a *stringAttribute) Description() string {
     return a.description
 }
 
-func (a *StringAttribute) Value() string {
+func (a *stringAttribute) Value() string {
     return a.value
 }
 
-func (a *StringAttribute) Type() AttributeType {
+func (a *stringAttribute) Type() AttributeType {
     return AttributeTypeString
 }
 
-func (a *StringAttribute) IsReadOnly() bool {
+func (a *stringAttribute) IsReadOnly() bool {
     return a.isReadOnly
 }
 
-func (a *StringAttribute) MaxLength() int {
+func (a *stringAttribute) MaxLength() int {
     return a.maxLength
 }
 
-func (a *StringAttribute) MinLength() int {
+func (a *stringAttribute) MinLength() int {
     return a.minLength
 }
 
-func (a *StringAttribute) Pattern() string {
+func (a *stringAttribute) Pattern() string {
     return a.pattern
 }
 
-func (a *StringAttribute) IsKey() bool {
+func (a *stringAttribute) IsKey() bool {
     return a.isKey
 }
 
-func (a *StringAttribute) IsNullable() bool {
+func (a *stringAttribute) IsNullable() bool {
     return a.isNullable
 }
 
-func (a *StringAttribute) DefaultValue() any {
+func (a *stringAttribute) DefaultValue() any {
     return a.defaultValue
 }
 
-func (a *StringAttribute) MarshalYAML() (interface{}, error) {
+func (a *stringAttribute) MarshalYAML() (interface{}, error) {
     var data struct {
         Name          string        `yaml:"name,omitempty"`
         Description   string        `yaml:"description,omitempty"`
@@ -95,7 +104,7 @@ func (a *StringAttribute) MarshalYAML() (interface{}, error) {
     return data, nil
 }
 
-func (a *StringAttribute) UnmarshalYAML(value *yaml.Node) error {
+func (a *stringAttribute) UnmarshalYAML(value *yaml.Node) error {
     var data struct {
         Name          string        `yaml:"name,omitempty"`
         Description   string        `yaml:"description,omitempty"`

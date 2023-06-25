@@ -45,7 +45,7 @@ func (l *AttributeList) UnmarshalYAML(value *yaml.Node) error {
         var a Attribute
         switch data.Type {
         case AttributeTypeString:
-            var c StringAttribute
+            var c stringAttribute
             if err := v.Decode(&c); err != nil {
                 return err
             }
@@ -95,7 +95,7 @@ func (l *AttributeList) UnmarshalYAML(value *yaml.Node) error {
                 return err
             }
             a = &c
-            
+
         default:
             return fmt.Errorf("unknown attribute type %q", data.Type)
         }

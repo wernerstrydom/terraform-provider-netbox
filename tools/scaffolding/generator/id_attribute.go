@@ -3,11 +3,24 @@ package generator
 import "gopkg.in/yaml.v3"
 
 var (
-    _ Attribute = (*IdAttribute)(nil)
+    _ Attribute       = (*IdAttribute)(nil)
+    _ StringAttribute = (*IdAttribute)(nil)
 )
 
 type IdAttribute struct {
     description string
+}
+
+func (a *IdAttribute) MaxLength() int {
+    return 0
+}
+
+func (a *IdAttribute) MinLength() int {
+    return 0
+}
+
+func (a *IdAttribute) Pattern() string {
+    return `^[0-9]+$`
 }
 
 func (a *IdAttribute) IsKey() bool {

@@ -3,7 +3,8 @@ package generator
 import "gopkg.in/yaml.v3"
 
 var (
-    _ Attribute = (*SlugAttribute)(nil)
+    _ Attribute       = (*SlugAttribute)(nil)
+    _ StringAttribute = (*NameAttribute)(nil)
 )
 
 type SlugAttribute struct {

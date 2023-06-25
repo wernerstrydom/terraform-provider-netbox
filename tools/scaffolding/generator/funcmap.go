@@ -9,17 +9,20 @@ import (
 )
 
 var funcMap = template.FuncMap{
-    "lower":          strings.ToLower,
-    "upper":          strings.ToUpper,
-    "title":          func(s string) string { return strings.Title(strcase.ToDelimited(s, ' ')) },
-    "pascalCase":     strcase.ToCamel,
-    "camelCase":      strcase.ToLowerCamel,
-    "snakeCase":      strcase.ToSnake,
-    "kebabCase":      strcase.ToKebab,
-    "delimited":      strcase.ToDelimited,
-    "escape":         escape,
-    "type":           attributeType,
-    "resourceSchema": resourceSchema,
+    "startsWith":      strings.HasPrefix,
+    "endsWith":        strings.HasSuffix,
+    "lower":           strings.ToLower,
+    "upper":           strings.ToUpper,
+    "title":           func(s string) string { return strings.Title(strcase.ToDelimited(s, ' ')) },
+    "pascalCase":      strcase.ToCamel,
+    "camelCase":       strcase.ToLowerCamel,
+    "snakeCase":       strcase.ToSnake,
+    "kebabCase":       strcase.ToKebab,
+    "delimited":       strcase.ToDelimited,
+    "escape":          escape,
+    "type":            attributeType,
+    "resourceSchema":  resourceSchema,
+    "resourceImports": resourceImports,
 }
 
 func escape(s string) string {
@@ -148,4 +151,50 @@ func resourceSchema(a Attribute) (string, error) {
         return "", err
     }
     return b.String(), nil
+}
+
+func resourceImports(resource Resource) ([]string, error) {
+    imports := make(map[string]bool)
+
+    for _, a := range resource.Attributes {
+        switch a.Type() {
+        case AttributeTypeInt64:
+            imports["github.com/hashicorp/terraform-plugin-framework-validators/int64validator"] = true
+            imports["github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"] = true
+
+        case AttributeTypeFloat64:
+            imports["github.com/hashicorp/terraform-plugin-framework-validators/float64validator"] = true
+            imports["github.com/hashicorp/terraform-plugin-framework/resource/schema/float64planmodifier"] = true
+
+        case AttributeTypeBool:
+            imports["github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"] = true
+
+        default:
+            sa, ok := a.(StringAttribute)
+            if !ok {
+                return nil, fmt.Errorf("unknown attribute type: %d", a.Type())
+            }
+
+            if sa.Pattern() != "" {
+                imports["regexp"] = true
+            }
+
+            if sa.MinLength() > 0 || sa.MaxLength() > 0 {
+                imports["github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"] = true
+            }
+
+            imports["github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"] = true
+        }
+    }
+
+    if len(resource.Associations) > 0 {
+        imports["github.com/hashicorp/terraform-plugin-framework-validators/int64validator"] = true
+        imports["github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"] = true
+    }
+
+    var result []string
+    for k := range imports {
+        result = append(result, k)
+    }
+    return result, nil
 }
