@@ -6,6 +6,10 @@ import (
     "regexp"
 	"strconv"
 
+    // TODO Update Generator to only include required imports
+
+    "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+    "github.com/hashicorp/terraform-plugin-framework-validators/float64validator"
     "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -101,6 +105,9 @@ func (p *{{ camelCase .Resource.Name }}Resource) Schema(
              PlanModifiers: []planmodifier.Int64{
                  int64planmodifier.UseStateForUnknown(),
              },
+             Validators: []validator.Int64{
+                int64validator.AtLeast(1),
+                },
             },{{ end }}
         },
     }

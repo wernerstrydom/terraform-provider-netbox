@@ -138,6 +138,7 @@ var c = Configuration{
                             name:        "U Height",
                             description: "The height of the device type, in rack units.",
                             isNullable:  true,
+                            minValue:    ptr.Float64(1.0),
                         },
                         &Float64Attribute{
                             name:        "Weight",

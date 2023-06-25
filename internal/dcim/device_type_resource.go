@@ -6,6 +6,10 @@ import (
 	"regexp"
 	"strconv"
 
+	// TODO Update Generator to only include required imports
+
+	"github.com/hashicorp/terraform-plugin-framework-validators/float64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -169,6 +173,9 @@ func (p *deviceTypeResource) Schema(
 				PlanModifiers: []planmodifier.Float64{
 					float64planmodifier.UseStateForUnknown(),
 				},
+				Validators: []validator.Float64{
+					float64validator.AtLeast(1),
+				},
 			},
 			"weight": schema.Float64Attribute{
 				Optional:            true,
@@ -179,6 +186,7 @@ func (p *deviceTypeResource) Schema(
 				PlanModifiers: []planmodifier.Float64{
 					float64planmodifier.UseStateForUnknown(),
 				},
+				Validators: []validator.Float64{},
 			},
 			"is_full_depth": schema.BoolAttribute{
 				Optional:            true,
@@ -195,6 +203,9 @@ func (p *deviceTypeResource) Schema(
 				Optional:    true,
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
+				},
+				Validators: []validator.Int64{
+					int64validator.AtLeast(1),
 				},
 			},
 		},

@@ -99,6 +99,14 @@ func resourceSchema(a Attribute) (string, error) {
 				PlanModifiers: []planmodifier.Float64{
 					float64planmodifier.UseStateForUnknown(),
 				},
+                Validators: []validator.Float64{
+                    {{ if and (.MinValue) (.MaxValue) }}float64validator.Between({{ .MinValue }}, {{ .MaxValue }}),
+                    {{end -}}
+					{{ if and (.MinValue) (not .MaxValue) }}float64validator.AtLeast({{ .MinValue }}),
+                    {{ end -}}
+                    {{ if and (not .MinValue) (.MaxValue) }}float64validator.AtMost({{ .MaxValue }}),                    
+                    {{ end -}}	
+				},
 			},`
     case AttributeTypeBool:
         tmpl = `schema.BoolAttribute{
